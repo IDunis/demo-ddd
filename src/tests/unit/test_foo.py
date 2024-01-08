@@ -5,7 +5,7 @@ from src.domain.users.tests import factories
 
 
 async def test_user_creation_not_performed():
-    users_number = await UsersRepository().count()
+    users_number = await UsersRepository()._count()
 
     assert users_number == 0
 
@@ -15,6 +15,6 @@ async def test_user_creation():
     await factories.create_user()
 
     # Perform some operations
-    users_number = await UsersRepository().count()
+    users_number = await UsersRepository()._count()
 
     assert users_number == 1
