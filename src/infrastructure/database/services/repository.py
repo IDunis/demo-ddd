@@ -55,7 +55,7 @@ class BaseRepository(Session, Generic[ConcreteTable]):
             raise DatabaseError
 
         return schema
-
+    
     async def _get(self, key: str, value: Any) -> ConcreteTable:
         """Return only one result by filters"""
 
@@ -65,6 +65,16 @@ class BaseRepository(Session, Generic[ConcreteTable]):
         result: Result = await self.execute(query)
 
         if not (_result := result.scalars().one_or_none()):
+            return None
+
+        return _result
+
+    async def _getOrFail(self, key: str, value: Any) -> ConcreteTable:
+        """Return only one result by filters"""
+
+        _result: Result = await self._get(key, value)
+
+        if _result is None:
             raise NotFoundError
 
         return _result
@@ -86,7 +96,7 @@ class BaseRepository(Session, Generic[ConcreteTable]):
         for schema in schemas:
             yield schema
 
-    async def count(self) -> int:
+    async def _count(self) -> int:
         result: Result = await self.execute(func.count(self.schema_class.id))
         value = result.scalar()
 
