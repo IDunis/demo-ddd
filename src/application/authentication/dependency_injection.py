@@ -1,13 +1,17 @@
 from datetime import datetime, timedelta
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import ValidationError
 
-from src.domain.authentication import AuthenticationRepository, TokenPayload, TokenOptions
-from src.domain.users import UserFlat, UsersRepository
+from src.domain.authentication import (
+    AuthenticationRepository,
+    TokenOptions,
+    TokenPayload,
+)
+from src.domain.users import UserFlat, UserRepository
 from src.infrastructure.application import AuthenticationError
 from src.infrastructure.config import settings
 from src.infrastructure.database import transaction
@@ -21,6 +25,8 @@ __all__ = (
     "get_refresh_token_expiration_time",
     "get_token_type",
     "get_current_user",
+    "hash_password",
+    "verify_password",
 )
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -30,12 +36,20 @@ oauth2_scheme = OAuth2PasswordBearer(
 )
 
 
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+
+def verify_password(password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(password, hashed_password)
+
+
 async def authenticate_user(username: str, password: str):
     async with transaction():
         user = await AuthenticationRepository().get_user(_username=username)
         if not user:
             return False
-        if not pwd_context.verify(password, user.hashed_password):
+        if not verify_password(password, user.hashed_password):
             return False
         return user
 
@@ -49,7 +63,11 @@ def create_access_token(data: dict, options: TokenOptions):
     to_encode = data.copy()
     expire = datetime.utcnow() + get_access_token_expiration_time()
     to_encode.update({"exp": expire}, **options)
-    encoded_jwt = jwt.encode(to_encode, settings.authentication.access_token.secret_key, algorithm=settings.authentication.algorithm)
+    encoded_jwt = jwt.encode(
+        to_encode,
+        settings.authentication.access_token.secret_key,
+        algorithm=settings.authentication.algorithm,
+    )
     return encoded_jwt
 
 
@@ -57,7 +75,11 @@ def create_refresh_token(data: dict, options: TokenOptions):
     to_encode = data.copy()
     expire = datetime.utcnow() + get_refresh_token_expiration_time()
     to_encode.update({"exp": expire}, **options)
-    encoded_jwt = jwt.encode(to_encode, settings.authentication.refresh_token.secret_key, algorithm=settings.authentication.algorithm)
+    encoded_jwt = jwt.encode(
+        to_encode,
+        settings.authentication.refresh_token.secret_key,
+        algorithm=settings.authentication.algorithm,
+    )
     return encoded_jwt
 
 
@@ -88,8 +110,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserFlat:
         raise AuthenticationError from err
 
     async with transaction():
-        user = await UsersRepository().get(id_=token_payload.sub)
+        user = await UserRepository().get(id=token_payload.sub)
 
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Could not find user",
+            )
     # TODO: Check if the token is in the blacklist
 
     return user

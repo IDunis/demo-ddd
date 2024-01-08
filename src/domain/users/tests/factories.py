@@ -11,7 +11,7 @@ from polyfactory.factories.pydantic_factory import ModelFactory
 from src.infrastructure.database import transaction
 
 from ..entities import UserFlat, UserUncommited
-from ..repository import UsersRepository
+from ..repository import UserRepository
 
 
 class UserUncommitedFactory(ModelFactory[UserUncommited]):
@@ -24,6 +24,6 @@ async def create_user(**payload) -> UserFlat:
     """Create a new user in the database."""
 
     async with transaction():
-        return await UsersRepository().create(
+        return await UserRepository().create(
             schema=UserUncommitedFactory.build(**payload)
         )

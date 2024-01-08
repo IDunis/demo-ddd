@@ -4,18 +4,22 @@ from src.infrastructure.database import BaseRepository, UsersTable
 
 from .entities import UserFlat, UserUncommited
 
-all = ("UsersRepository",)
+all = ("UserRepository",)
 
 
-class UsersRepository(BaseRepository[UsersTable]):
+class UserRepository(BaseRepository[UsersTable]):
     schema_class = UsersTable
 
     async def all(self) -> AsyncGenerator[UserFlat, None]:
         async for instance in self._all():
             yield UserFlat.model_validate(instance)
 
-    async def get(self, id_: int) -> UserFlat:
-        instance = await self._get_or_fail(key="id", value=id_)
+    async def get(self, id: int) -> UserFlat:
+        instance = await self._get_or_fail(key="id", value=id)
+        return UserFlat.model_validate(instance)
+
+    async def get_via_username(self, username: str) -> UserFlat:
+        instance = await self._get(key="username", value=username)
         return UserFlat.model_validate(instance)
 
     async def create(self, schema: UserUncommited) -> UserFlat:

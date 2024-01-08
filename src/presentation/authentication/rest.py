@@ -2,13 +2,16 @@ from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Request, status
 
-from src.application import authentication
+from src.application import authentication, users
+from src.domain.users.entities import UserFlat, UserUncommited
 from src.infrastructure.application import Response
 
 from .contracts import (
     RefreshAccessTokenRequestBody,
+    SignUpRequestBody,
     TokenClaimPublic,
     TokenClaimRequestBody,
+    UserPublic,
 )
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -25,7 +28,9 @@ async def token_claim(
 ) -> Response[TokenClaimPublic]:
     """Claim for access and refresh tokens."""
 
-    user = await authentication.authenticate_user(schema.login, schema.password)
+    user = await authentication.authenticate_user(
+        schema.login, schema.password
+    )
     token_type = authentication.get_token_type()
     access_token_expires = authentication.get_access_token_expiration_time()
     if not user:
@@ -36,9 +41,17 @@ async def token_claim(
         )
 
     payload = await authentication.create_payload(user)
-    options = {"_with":"EMAIL","_from":"PASSWORD","_date":datetime.utcnow()}
-    access_token = authentication.create_access_token(data=payload, options=options)
-    refresh_token = authentication.create_refresh_token(data=user.id, options=options)
+    options = {
+        "_with": "EMAIL",
+        "_from": "PASSWORD",
+        "_date": datetime.utcnow(),
+    }
+    access_token = authentication.create_access_token(
+        data=payload, options=options
+    )
+    refresh_token = authentication.create_refresh_token(
+        data=user.id, options=options
+    )
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
@@ -60,3 +73,27 @@ async def token_refresh(
 
     # 🔗 https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/
     raise NotImplementedError
+
+
+@router.post(
+    "/signup",
+    summary="Create new user",
+    response_model=Response[UserPublic],
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_user(
+    request: Request,
+    schema: SignUpRequestBody,
+) -> Response[UserPublic]:
+    user_exist = await users.get_exist(schema.username)
+    if user_exist is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User with this email already exist",
+        )
+
+    # schema.password = authentication.hash_password(schema.password)
+    user: UserFlat = await users.create(UserUncommited(**schema.model_dump()))
+
+    user_public = UserPublic.model_validate(user)
+    return Response[UserPublic](result=user_public)

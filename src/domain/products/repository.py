@@ -14,8 +14,8 @@ class ProductRepository(BaseRepository[ProductsTable]):
         async for instance in self._all():
             yield ProductFlat.model_validate(instance)
 
-    async def get(self, id_: int) -> ProductFlat:
-        instance = await self._get_or_fail(key="id", value=id_)
+    async def get(self, id: int) -> ProductFlat:
+        instance = await self._get_or_fail(key="id", value=id)
         return ProductFlat.model_validate(instance)
 
     async def create(self, schema: ProductUncommited) -> ProductFlat:

@@ -19,14 +19,14 @@ class OrdersRepository(BaseRepository[OrdersTable]):
         async for instance in self._all():
             yield OrderFlat.model_validate(instance)
 
-    async def get(self, id_: int) -> Order:
+    async def get(self, id: int) -> Order:
         query = (
             select(OrdersTable)
             .options(
                 joinedload(getattr(self.schema_class, "user")),
                 joinedload(getattr(self.schema_class, "product")),
             )
-            .where(getattr(self.schema_class, "id") == id_)
+            .where(getattr(self.schema_class, "id") == id)
         )
 
         result: Result = await self.execute(query)

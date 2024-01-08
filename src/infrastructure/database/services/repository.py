@@ -55,7 +55,7 @@ class BaseRepository(Session, Generic[ConcreteTable]):
             raise DatabaseError
 
         return schema
-    
+
     async def _get(self, key: str, value: Any) -> ConcreteTable:
         """Return only one result by filters"""
 
@@ -148,8 +148,8 @@ class BaseRepository(Session, Generic[ConcreteTable]):
         for schema in schemas:
             yield schema
 
-    async def _delete(self, id_: int) -> None:
+    async def _delete(self, id: int) -> None:
         await self.execute(
-            delete(self.schema_class).where(self.schema_class.id == id_)
+            delete(self.schema_class).where(self.schema_class.id == id)
         )
         await self._session.flush()

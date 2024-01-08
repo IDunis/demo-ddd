@@ -1,9 +1,9 @@
 from src.domain.users.entities import UserFlat
 from src.infrastructure.database import BaseRepository, UsersTable
 
-from .entities import TokenPayload, AccessToken, RefreshToken
+from .entities import AccessToken, RefreshToken, TokenPayload
 
-all = ("UsersRepository",)
+all = ("UserRepository",)
 
 
 class AuthenticationRepository(BaseRepository[UsersTable]):
