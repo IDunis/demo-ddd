@@ -69,7 +69,7 @@ class BaseRepository(Session, Generic[ConcreteTable]):
 
         return _result
 
-    async def _getOrFail(self, key: str, value: Any) -> ConcreteTable:
+    async def _get_or_fail(self, key: str, value: Any) -> ConcreteTable:
         """Return only one result by filters"""
 
         _result: Result = await self._get(key, value)
@@ -148,7 +148,7 @@ class BaseRepository(Session, Generic[ConcreteTable]):
         for schema in schemas:
             yield schema
 
-    async def delete(self, id_: int) -> None:
+    async def _delete(self, id_: int) -> None:
         await self.execute(
             delete(self.schema_class).where(self.schema_class.id == id_)
         )

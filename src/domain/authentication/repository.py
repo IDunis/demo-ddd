@@ -10,7 +10,7 @@ class AuthenticationRepository(BaseRepository[UsersTable]):
     schema_class = UsersTable
 
     async def get_user(self, _username: int) -> UserFlat:
-        instance = await self._getOrFail(key="username", value=_username)
+        instance = await self._get_or_fail(key="username", value=_username)
         return UserFlat.model_validate(instance)
 
     async def create_payload(self, instance: UserFlat) -> dict:

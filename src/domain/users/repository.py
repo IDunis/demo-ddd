@@ -15,7 +15,7 @@ class UsersRepository(BaseRepository[UsersTable]):
             yield UserFlat.model_validate(instance)
 
     async def get(self, id_: int) -> UserFlat:
-        instance = await self._getOrFail(key="id", value=id_)
+        instance = await self._get_or_fail(key="id", value=id_)
         return UserFlat.model_validate(instance)
 
     async def create(self, schema: UserUncommited) -> UserFlat:
