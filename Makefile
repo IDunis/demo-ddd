@@ -45,6 +45,11 @@ upgrade.dev:
 upgrade.all: upgrade upgrade.dev
 
 
+# ************************************************
+# ********** generations **********
+# ************************************************
+.PHONY: generate.key  # upgrade all dependencies. Generate new .txt files
+generate.key: openssl rand -hex 32
 
 
 # ************************************************
