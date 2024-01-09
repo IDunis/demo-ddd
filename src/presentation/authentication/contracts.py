@@ -4,7 +4,7 @@ from src.infrastructure.application import PublicEntity
 
 
 class TokenClaimRequestBody(PublicEntity):
-    login: str = Field("OpenAPI documentation")
+    username: str = Field("OpenAPI documentation")
     password: str = Field("OpenAPI documentation")
 
 
@@ -13,14 +13,14 @@ class RefreshAccessTokenRequestBody(PublicEntity):
 
 
 class TokenClaimPublic(PublicEntity):
-    access_token: str = Field("OpenAPI documentation")
-    refresh_token: str = Field("OpenAPI documentation")
-    token_expires: str = Field("OpenAPI documentation")
-    token_type: str = Field("OpenAPI documentation")
+    tokenType: str = Field("OpenAPI documentation")
+    expiresIn: int = Field("OpenAPI documentation")
+    accessToken: str = Field("OpenAPI documentation")
+    refreshToken: str = Field("OpenAPI documentation")
 
 
 class UserBase(PublicEntity):
-    username: str = Field(description="OpenAPI description")
+    username: str = Field(description="OpenAPI documentation")
     password: str = Field(description="OpenAPI documentation")
 
 

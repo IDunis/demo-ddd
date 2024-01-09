@@ -29,7 +29,7 @@ async def token_claim(
     """Claim for access and refresh tokens."""
 
     user = await authentication.authenticate_user(
-        schema.login, schema.password
+        schema.username, schema.password
     )
     token_type = authentication.get_token_type()
     access_token_expires = authentication.get_access_token_expiration_time()
@@ -44,20 +44,22 @@ async def token_claim(
     options = {
         "_with": "EMAIL",
         "_from": "PASSWORD",
-        "_date": datetime.utcnow(),
+        "_date": datetime.utcnow().timestamp(),
     }
     access_token = authentication.create_access_token(
-        data=payload, options=options
+        data=payload, options={}
     )
     refresh_token = authentication.create_refresh_token(
-        data=user.id, options=options
+        data={"id":user.id}, options={}
     )
-    return {
-        "access_token": access_token,
-        "refresh_token": refresh_token,
-        "token_expires": access_token_expires,
-        "token_type": token_type,
+    token_claim = {
+        "tokenType": token_type,
+        "expiresIn": access_token_expires.total_seconds(),
+        "accessToken": access_token,
+        "refreshToken": refresh_token,
     }
+
+    return Response[TokenClaimPublic](result=token_claim)
 
 
 @router.post(
@@ -92,7 +94,7 @@ async def create_user(
             detail="User with this email already exist",
         )
 
-    # schema.password = authentication.hash_password(schema.password)
+    schema.password = authentication.hash_password(schema.password)
     user: UserFlat = await users.create(UserUncommited(**schema.model_dump()))
 
     user_public = UserPublic.model_validate(user)

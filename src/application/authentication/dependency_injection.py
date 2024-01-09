@@ -31,7 +31,7 @@ __all__ = (
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/auth/openapi",
+    tokenUrl="/auth/token",
     scheme_name=settings.authentication.scheme,
 )
 
@@ -41,15 +41,18 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(password, hashed_password)
+    try:
+        return pwd_context.verify(password, hashed_password)
+    except:
+        return False
 
 
 async def authenticate_user(username: str, password: str):
     async with transaction():
-        user = await AuthenticationRepository().get_user(_username=username)
+        user = await AuthenticationRepository().get_user(username=username)
         if not user:
             return False
-        if not verify_password(password, user.hashed_password):
+        if not verify_password(password, user.password):
             return False
         return user
 
@@ -84,15 +87,15 @@ def create_refresh_token(data: dict, options: TokenOptions):
 
 
 def get_access_token_expiration_time():
-    return timedelta(minutes=settings.authentication.access_token.ttl)
+    return timedelta(hours=settings.authentication.access_token.ttl)
 
 
 def get_refresh_token_expiration_time():
-    return timedelta(minutes=settings.authentication.refresh_token.ttl)
+    return timedelta(days=settings.authentication.refresh_token.ttl)
 
 
 def get_token_type():
-    return settings.authentication.algorithm
+    return settings.authentication.scheme
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserFlat:
@@ -102,11 +105,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserFlat:
             settings.authentication.access_token.secret_key,
             algorithms=[settings.authentication.algorithm],
         )
+        print(payload)
         token_payload = TokenPayload(**payload)
 
         if datetime.fromtimestamp(token_payload.exp) < datetime.now():
             raise AuthenticationError
     except (JWTError, ValidationError) as err:
+        print(err)
         raise AuthenticationError from err
 
     async with transaction():

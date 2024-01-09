@@ -45,13 +45,13 @@ class LoggingSettings(BaseModel):
 
 
 class AccessTokenSettings(BaseModel):
-    secret_key: str = "invalid"
-    ttl: int = 100  # seconds
+    secret_key: str = "4ce959cfa398058e1f24e27171fe04bf57d5752671b448a99887ab6b916c07b2"
+    ttl: int = 1  # hours
 
 
 class RefreshTokenSettings(BaseModel):
-    secret_key: str = "invalid"
-    ttl: int = 100  # seconds
+    secret_key: str = "152c65ad34b10b7cf65e81fa2580b27c15535e41bdc985b2a51caeca183caadf"
+    ttl: int = 14  # days
 
 
 class AuthenticationSettings(BaseModel):

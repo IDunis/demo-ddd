@@ -15,7 +15,7 @@ class TokenOptions(InternalEntity):
 
 
 class TokenPayload(InternalEntity):
-    sub: int
+    sub: str
     exp: int
 
 

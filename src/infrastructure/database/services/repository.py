@@ -56,7 +56,7 @@ class BaseRepository(Session, Generic[ConcreteTable]):
 
         return schema
 
-    async def _get(self, key: str, value: Any) -> ConcreteTable:
+    async def _get(self, key: str, value: Any) -> [ConcreteTable, None]:
         """Return only one result by filters"""
 
         query = select(self.schema_class).where(

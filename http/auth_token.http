@@ -1,0 +1,11 @@
+### Create a new product
+@HTTP__BASE_URL = http://127.0.0.1:8000
+
+POST {{HTTP__BASE_URL}}/auth/token
+Content-Type: application/json
+
+{
+    "username": "namdwb2",
+    "password": "secret123"
+}
+
