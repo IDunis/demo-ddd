@@ -21,11 +21,12 @@ class TokenClaimPublic(PublicEntity):
 
 class UserBase(PublicEntity):
     username: str = Field(description="OpenAPI documentation")
-    password: str = Field(description="OpenAPI documentation")
 
 
 class SignUpRequestBody(UserBase):
     """User create request body."""
+
+    password: str = Field(description="OpenAPI documentation")
 
 
 class UserPublic(UserBase):

@@ -46,11 +46,9 @@ async def token_claim(
         "_from": "PASSWORD",
         "_date": datetime.utcnow().timestamp(),
     }
-    access_token = authentication.create_access_token(
-        data=payload, options={}
-    )
+    access_token = authentication.create_access_token(data=payload, options={})
     refresh_token = authentication.create_refresh_token(
-        data={"id":user.id}, options={}
+        data={"id": user.id}, options={}
     )
     token_claim = {
         "tokenType": token_type,

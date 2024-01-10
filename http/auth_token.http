@@ -5,7 +5,7 @@ POST {{HTTP__BASE_URL}}/auth/token
 Content-Type: application/json
 
 {
-    "username": "namdwb2",
+    "username": "namdwb",
     "password": "secret123"
 }
 

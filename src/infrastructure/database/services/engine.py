@@ -2,7 +2,7 @@ from functools import lru_cache
 
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
-from src.infrastructure.config import settings
+from src.infrastructure.application import settings
 
 
 @lru_cache(maxsize=1)

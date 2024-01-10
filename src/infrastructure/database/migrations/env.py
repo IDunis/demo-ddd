@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from src.infrastructure.config import settings
+from src.infrastructure.application import settings
 from src.infrastructure.database.tables import *  # noqa: F401, F403
 
 # this is the Alembic Config object, which provides

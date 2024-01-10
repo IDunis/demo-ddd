@@ -1,6 +1,6 @@
 ### Create a new product
 @HTTP__BASE_URL = http://127.0.0.1:8000
-@TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiZXhwIjoxNzA1MTQ5MjU3fQ.bOPqKT9Hu6WHGG1C4hFc47JPJ1ySnEukZJIj6fIDnLE
+@TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzA1MjQxMjIyfQ.fW9bOWTvXb0Qiv06y18U66-5fod2gyzAzsL26tU7SsM
 
 GET {{HTTP__BASE_URL}}/users
 Content-Type: application/json

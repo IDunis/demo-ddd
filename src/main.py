@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from src import presentation
 from src.infrastructure.application import configure_logger
 from src.infrastructure.application import create as application_factory
-from src.infrastructure.config import settings
+from src.infrastructure.application import settings
 
 # Adjust the logging
 # -------------------------------

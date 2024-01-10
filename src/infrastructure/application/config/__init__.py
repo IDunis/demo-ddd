@@ -23,7 +23,8 @@ class DatabaseSettings(BaseModel):
 
     @property
     def url(self) -> str:
-        return f"sqlite+aiosqlite:///./{self.name}"
+        # return f"sqlite+aiosqlite:///./{self.name}"
+        return f"mysql+aiomysql://root:admin123@localhost:3306/demo?charset=utf8mb4"
 
 
 class LoggingSettings(BaseModel):
@@ -45,12 +46,16 @@ class LoggingSettings(BaseModel):
 
 
 class AccessTokenSettings(BaseModel):
-    secret_key: str = "4ce959cfa398058e1f24e27171fe04bf57d5752671b448a99887ab6b916c07b2"
+    secret_key: str = (
+        "4ce959cfa398058e1f24e27171fe04bf57d5752671b448a99887ab6b916c07b2"
+    )
     ttl: int = 1  # hours
 
 
 class RefreshTokenSettings(BaseModel):
-    secret_key: str = "152c65ad34b10b7cf65e81fa2580b27c15535e41bdc985b2a51caeca183caadf"
+    secret_key: str = (
+        "152c65ad34b10b7cf65e81fa2580b27c15535e41bdc985b2a51caeca183caadf"
+    )
     ttl: int = 14  # days
 
 
@@ -82,7 +87,7 @@ class Settings(BaseSettings):
 
 # Define the root path
 # --------------------------------------
-ROOT_PATH = Path(__file__).parent.parent.parent
+ROOT_PATH = Path(__file__).parent.parent.parent.parent.parent
 
 # ======================================
 # Load settings

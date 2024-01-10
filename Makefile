@@ -91,7 +91,7 @@ run.dev:
 
 .PHONY: format  # fix formatting / and order imports
 format:
-	python -m black .
+	python -m black . --exclude=venv
 	python -m isort .
 
 

@@ -12,8 +12,7 @@ from src.domain.authentication import (
     TokenPayload,
 )
 from src.domain.users import UserFlat, UserRepository
-from src.infrastructure.application import AuthenticationError
-from src.infrastructure.config import settings
+from src.infrastructure.application import AuthenticationError, settings
 from src.infrastructure.database import transaction
 
 __all__ = (
