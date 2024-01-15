@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Main IBuzz bot script.
+Main TradeBot bot script.
 Read the documentation to know what cli arguments you need.
 """
 import logging
@@ -13,15 +13,15 @@ from src.util.gc_setup import gc_set_threshold
 
 # check min. python version
 if sys.version_info < (3, 9):  # pragma: no cover
-    sys.exit("IBuzz requires Python version >= 3.9")
+    sys.exit("TradeBot requires Python version >= 3.9")
 
 from src import __version__
 from src.commands import Arguments
-from src.exceptions import FreqtradeException, OperationalException
+from src.exceptions import TradeException, OperationalException
 # from src.loggers import setup_logging_pre
 
 
-logger = logging.getLogger('ibuzz')
+logger = logging.getLogger('trader')
 
 def start_trading(args: Dict[str, Any]) -> int:
     """
@@ -63,25 +63,27 @@ def main(sysargv: Optional[List[str]] = None) -> None:
         arguments = Arguments(sysargv)
         args = arguments.get_parsed_arg()
         
+        logger.info(f'TradeBot {__version__}')
+        gc_set_threshold()
+        return_code = start_trading(args)
+        
         # Call subcommand.
-        if 'func' in args:
-            logger.info(f'IBuzz {__version__}')
-            gc_set_threshold()
-            # return_code = args['func'](args)
-            return_code = start_trading(args)
-        else:
-            # No subcommand was issued.
-            # raise OperationalException(
-            #     "Usage of IBuzz requires a subcommand to be specified."
-            # )
-            return_code = start_trading(args)
+        # if 'func' in args:
+        #     logger.info(f'TradeBot {__version__}')
+        #     gc_set_threshold()
+        #     return_code = args['func'](args)
+        # else:
+        #     # No subcommand was issued.
+        #     raise OperationalException(
+        #         "Usage of TradeBot requires a subcommand to be specified."
+        #     )
 
     except SystemExit as e:  # pragma: no cover
         return_code = e
     except KeyboardInterrupt:
         logger.info('SIGINT received, aborting ...')
         return_code = 0
-    except FreqtradeException as e:
+    except TradeException as e:
         logger.error(str(e))
         return_code = 2
     except Exception:

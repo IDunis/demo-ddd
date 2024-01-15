@@ -1,5 +1,5 @@
 """
-Freqtrade is the main module of this bot. It contains the class Freqtrade()
+TradeBot is the main module of this bot. It contains the class TradeBot()
 """
 import logging
 from datetime import datetime, timezone
@@ -15,9 +15,9 @@ from src.mixins import LoggingMixin
 logger = logging.getLogger(__name__)
 
 
-class IBuzzBot(LoggingMixin):
+class TradeBot(LoggingMixin):
     """
-    Freqtrade is the main class of the bot.
+    TradeBot is the main class of the bot.
     This is from here the bot start its logic.
     """
 
@@ -30,8 +30,8 @@ class IBuzzBot(LoggingMixin):
         self.config = config
 
         # RPC runs in separate threads, can start handling external commands just after
-        # initialization, even before Freqtradebot has a chance to start its throttling,
-        # so anything in the Freqtradebot instance should be ready (initialized), including
+        # initialization, even before TradeBot has a chance to start its throttling,
+        # so anything in the TradeBot instance should be ready (initialized), including
         # the initial state of the bot.
         # Keep this at the end of this initialization method.
         self.rpc: RPCManager = RPCManager(self)

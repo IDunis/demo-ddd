@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-__main__.py for Freqtrade
-To launch Freqtrade as a module
+__main__.py for TradeBot
+To launch TradeBot as a module
 
-> python -m freqtrade (with Python >= 3.9)
+> python -m src (with Python >= 3.9)
 """
 
 from src import main

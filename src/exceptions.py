@@ -1,18 +1,18 @@
-class FreqtradeException(Exception):
+class TradeException(Exception):
     """
-    Freqtrade base exception. Handled at the outermost level.
+    Trade base exception. Handled at the outermost level.
     All other exception types are subclasses of this exception type.
     """
 
 
-class OperationalException(FreqtradeException):
+class OperationalException(TradeException):
     """
     Requires manual intervention and will stop the bot.
     Most of the time, this is caused by an invalid Configuration.
     """
 
 
-class DependencyException(FreqtradeException):
+class DependencyException(TradeException):
     """
     Indicates that an assumed dependency is not met.
     This could happen when there is currently not enough money on the account.
@@ -71,7 +71,7 @@ class DDosProtection(TemporaryError):
     """
 
 
-class StrategyError(FreqtradeException):
+class StrategyError(TradeException):
     """
     Errors with custom user-code detected.
     Usually caused by errors in the strategy.

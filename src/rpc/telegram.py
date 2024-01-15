@@ -23,7 +23,7 @@ from src.__init__ import __version__
 from src.constants import Config
 from src.enums import RPCMessageType
 # from src.exceptions import OperationalException
-# from src.persistence import Trade
+from src.persistence import Trade
 from src.rpc import RPC, RPCException, RPCHandler
 from src.rpc.rpc_types import RPCSendMsg
 
@@ -48,8 +48,7 @@ def safe_async_db(func: Callable[..., Any]):
         try:
             return func(*args, **kwargs)
         finally:
-            # Trade.session.remove()
-            print(f"TODO: Trade.session.remove()")
+            Trade.session.remove()
 
     return wrapper
 
@@ -87,8 +86,7 @@ def authorized_only(command_handler: Callable[..., Coroutine[Any, Any, None]]):
             logger.info(f'Rejected unauthorized message from: {update.message.chat_id}')
             return wrapper
         # Rollback session to avoid getting data stored in a transaction.
-        # Trade.rollback()
-        print(f"TODO: Trade.rollback()")
+        Trade.rollback()
         logger.debug(
             'Executing handler: %s for chat_id: %s',
             command_handler.__name__,
@@ -101,8 +99,7 @@ def authorized_only(command_handler: Callable[..., Coroutine[Any, Any, None]]):
         except BaseException:
             logger.exception('Exception occurred within Telegram module')
         finally:
-            # Trade.session.remove()
-            print(f"TODO: Trade.session.remove()")
+            Trade.session.remove()
 
     return wrapper
 
@@ -287,8 +284,7 @@ class Telegram(RPCHandler):
         message = self.compose_message(deepcopy(msg))
         if message:
             asyncio.run_coroutine_threadsafe(
-                self._send_msg(message, disable_notification=(noti == 'silent')),
-                self._loop)
+                self._send_msg(message, disable_notification=(noti == 'silent')), self._loop)
 
     @authorized_only
     async def _status(self, update: Update, context: CallbackContext) -> None:

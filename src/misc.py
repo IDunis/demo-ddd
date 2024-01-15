@@ -1,10 +1,10 @@
 """
-Various tool function for Freqtrade and scripts
+Various tool function for TradeBot and scripts
 """
 import gzip
 import logging
 from pathlib import Path
-from typing import Any, TextIO, Union
+from typing import Any, TextIO, Optional, Union
 
 import pandas as pd
 import rapidjson
@@ -102,3 +102,23 @@ def deep_merge_dicts(source, destination, allow_null_overrides: bool = True):
             destination[key] = value
 
     return destination
+
+def round_dict(d, n):
+    """
+    Rounds float values in the dict to n digits after the decimal point.
+    """
+    return {k: (round(v, n) if isinstance(v, float) else v) for k, v in d.items()}
+
+
+def safe_value_fallback(obj: dict, key1: str, key2: Optional[str] = None, default_value=None):
+    """
+    Search a value in obj, return this if it's not None.
+    Then search key2 in obj - return that if it's not none - then use default_value.
+    Else falls back to None.
+    """
+    if key1 in obj and obj[key1] is not None:
+        return obj[key1]
+    else:
+        if key2 and key2 in obj and obj[key2] is not None:
+            return obj[key2]
+    return default_value

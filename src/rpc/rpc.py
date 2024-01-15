@@ -69,14 +69,14 @@ class RPC:
     # Bind _fiat_converter if needed
     _fiat_converter: Optional[CryptoToFiatConverter] = None
 
-    def __init__(self, freqtrade) -> None:
+    def __init__(self, trader) -> None:
         """
         Initializes all enabled rpc modules
-        :param freqtrade: Instance of a freqtrade bot
+        :param trader: Instance of a trader bot
         :return: None
         """
-        self._freqtrade = freqtrade
-        self._config: Config = freqtrade.config
+        self._trader = trader
+        self._config: Config = trader.config
         if self._config.get('fiat_display_currency'):
             self._fiat_converter = CryptoToFiatConverter()
 
@@ -110,7 +110,7 @@ class RPC:
             'unfilledtimeout': config.get('unfilledtimeout'),
             'use_custom_stoploss': config.get('use_custom_stoploss'),
             'order_types': config.get('order_types'),
-            'bot_name': config.get('bot_name', 'freqtrade'),
+            'bot_name': config.get('bot_name', 'trader'),
             'timeframe': config.get('timeframe'),
             'exchange': config['exchange']['name'],
             'strategy': config['strategy'],
@@ -129,21 +129,21 @@ class RPC:
 
     def _rpc_start(self) -> Dict[str, str]:
         """ Handler for start """
-        if self._freqtrade.state == State.RUNNING:
+        if self._trader.state == State.RUNNING:
             return {'status': 'already running'}
 
-        self._freqtrade.state = State.RUNNING
+        self._trader.state = State.RUNNING
         return {'status': 'starting trader ...'}
 
     def _rpc_stop(self) -> Dict[str, str]:
         """ Handler for stop """
-        if self._freqtrade.state == State.RUNNING:
-            self._freqtrade.state = State.STOPPED
+        if self._trader.state == State.RUNNING:
+            self._trader.state = State.STOPPED
             return {'status': 'stopping trader ...'}
 
         return {'status': 'already stopped'}
 
     def _rpc_reload_config(self) -> Dict[str, str]:
         """ Handler for reload_config. """
-        self._freqtrade.state = State.RELOAD_CONFIG
+        self._trader.state = State.RELOAD_CONFIG
         return {'status': 'Reloading config ...'}

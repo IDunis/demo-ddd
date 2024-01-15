@@ -1,5 +1,5 @@
 """
-Main Freqtrade worker class.
+Main TradeBot worker class.
 """
 import logging
 import time
@@ -14,7 +14,7 @@ from src.configuration import Configuration
 from src.constants import PROCESS_THROTTLE_SECS, RETRY_TIMEOUT, Config
 from src.enums import RPCMessageType, State
 from src.exceptions import OperationalException, TemporaryError
-from src.ibuzzbot import IBuzzBot
+from src.tradebot import TradeBot
 
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class Worker:
     """
-    Freqtradebot worker class
+    TradeBot worker class
     """
 
     def __init__(self, args: Dict[str, Any], config: Optional[Config] = None) -> None:
@@ -49,7 +49,7 @@ class Worker:
             self._config = Configuration(self._args, None).get_config()
             
         # Init the instance of the bot
-        self.ibuzz = IBuzzBot(self._config)
+        self.trader = TradeBot(self._config)
 
         internals_config = self._config.get('internals', {})
         self._throttle_secs = internals_config.get('process_throttle_secs',
@@ -81,21 +81,21 @@ class Worker:
         :param old_state: the previous service state from the previous call
         :return: current service state
         """
-        state = self.ibuzz.state
+        state = self.trader.state
 
         # Log state transition
         if state != old_state:
 
             if old_state != State.RELOAD_CONFIG:
-                self.ibuzz.notify_status(f'{state.name.lower()}')
+                self.trader.notify_status(f'{state.name.lower()}')
 
             logger.info(
                 f"Changing state{f' from {old_state.name}' if old_state else ''} to: {state.name}")
             if state == State.RUNNING:
-                self.ibuzz.startup()
+                self.trader.startup()
 
             if state == State.STOPPED:
-                self.ibuzz.check_for_open_trades()
+                self.trader.check_for_open_trades()
 
             # Reset heartbeat timestamp to log the heartbeat message at
             # first throttling iteration when the state changes
@@ -120,7 +120,7 @@ class Worker:
             now = time.time()
             if (now - self._heartbeat_msg) > self._heartbeat_interval:
                 version = __version__
-                # strategy_version = self.ibuzz.strategy.version()
+                # strategy_version = self.trader.strategy.version()
                 # if (strategy_version is not None):
                 #     version += ', strategy_version: ' + strategy_version
                 logger.info(f"Bot heartbeat. PID={getpid()}, "
@@ -162,11 +162,11 @@ class Worker:
         time.sleep(sleep_duration)
 
     def _process_stopped(self) -> None:
-        self.ibuzz.process_stopped()
+        self.trader.process_stopped()
 
     def _process_running(self) -> None:
         try:
-            self.ibuzz.process()
+            self.trader.process()
         except TemporaryError as error:
             logger.warning(f"Error: {error}, retrying in {RETRY_TIMEOUT} seconds...")
             time.sleep(RETRY_TIMEOUT)
@@ -174,29 +174,29 @@ class Worker:
             tb = traceback.format_exc()
             hint = 'Issue `/start` if you think it is safe to restart.'
 
-            self.ibuzz.notify_status(
+            self.trader.notify_status(
                 f'*OperationalException:*\n```\n{tb}```\n {hint}',
                 msg_type=RPCMessageType.EXCEPTION
             )
 
             logger.exception('OperationalException. Stopping trader ...')
-            self.ibuzz.state = State.STOPPED
+            self.trader.state = State.STOPPED
 
     def _reconfigure(self) -> None:
         """
-        Cleans up current ibuzzbot instance, reloads the configuration and
+        Cleans up current TradeBot instance, reloads the configuration and
         replaces it with the new instance
         """
         # Tell systemd that we initiated reconfiguration
         self._notify("RELOADING=1")
 
-        # Clean up current ibuzz modules
-        self.ibuzz.cleanup()
+        # Clean up current TradeBot modules
+        self.trader.cleanup()
 
         # Load and validate config and create new instance of the bot
         self._init(True)
 
-        self.ibuzz.notify_status('config reloaded')
+        self.trader.notify_status('config reloaded')
 
         # Tell systemd that we completed reconfiguration
         self._notify("READY=1")
@@ -205,6 +205,6 @@ class Worker:
         # Tell systemd that we are exiting now
         self._notify("STOPPING=1")
 
-        if self.ibuzz:
-            self.ibuzz.notify_status('process died')
-            self.ibuzz.cleanup()
+        if self.trader:
+            self.trader.notify_status('process died')
+            self.trader.cleanup()
