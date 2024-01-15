@@ -15,3 +15,10 @@ structlog
 uvicorn[standard]
 # uvloop
 websockets==12.0
+python-telegram-bot==20.7
+sdnotify==0.3.2
+python-rapidjson==1.14
+pandas==2.1.4
+schedule==1.2.1
+cachetools==5.3.2
+pycoingecko==3.1.0
