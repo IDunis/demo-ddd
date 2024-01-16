@@ -19,7 +19,7 @@ from src.enums import TradingMode
 from src.exceptions import DependencyException, OperationalException
 
 from src.misc import safe_value_fallback
-from src.persistence.base import ModelBase, SessionType
+from src.persistence.base import ModelBase, SessionType, init_session
 from src.util import dt_from_ts, dt_now, dt_ts
 
 
@@ -47,7 +47,7 @@ class Order(ModelBase):
     """
     __tablename__ = 'orders'
     __allow_unmapped__ = True
-    session: ClassVar[SessionType]
+    session: ClassVar[SessionType] = init_session()
 
     # Uniqueness should be ensured over pair, order_id
     # its likely that order_id is unique per Pair on some exchanges.
@@ -1045,7 +1045,7 @@ class Trade(ModelBase, LocalTrade):
     Note: Fields must be aligned with LocalTrade class
     """
     __tablename__ = 'trades'
-    session: ClassVar[SessionType]
+    session: ClassVar[SessionType] = init_session()
 
     use_db: bool = True
 

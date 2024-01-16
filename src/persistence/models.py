@@ -14,7 +14,7 @@ from sqlalchemy.pool import StaticPool
 from src.exceptions import OperationalException
 from src.persistence.base import ModelBase
 from src.persistence.key_value_store import _KeyValueStoreModel
-from src.persistence.trade_model import Trade
+from src.persistence.trade_model import Trade, Order
 
 
 logger = logging.getLogger(__name__)
@@ -73,6 +73,7 @@ def init_db(db_url: str) -> None:
     # Since we also use fastAPI, we need to make it aware of the request id, too
     Trade.session = scoped_session(sessionmaker(
         bind=engine, autoflush=False), scopefunc=get_request_or_thread_id)
+    Order.session = Trade.session
     _KeyValueStoreModel.session = Trade.session
 
     ModelBase.metadata.create_all(engine)
