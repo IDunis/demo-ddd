@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+"""
+Main TradeBot bot script.
+Read the documentation to know what cli arguments you need.
+"""
+import logging
+import signal
+import sys
+from typing import Any,Dict, List, Optional
+
+from nexttrade.util.gc_setup import gc_set_threshold
+
+
+# check min. python version
+if sys.version_info < (3, 9):  # pragma: no cover
+    sys.exit("TradeBot requires Python version >= 3.9")
+
+from nexttrade import __version__
+from nexttrade.commands import Arguments
+from nexttrade.exceptions import TradeException, OperationalException
+# from nexttrade.loggers import setup_logging_pre
+
+
+logger = logging.getLogger('trader')
+
+def start_trading(args: Dict[str, Any]) -> int:
+    """
+    Main entry point for trading mode
+    """
+    # Import here to avoid loading worker module when it's not used
+    from nexttrade.worker import Worker
+
+    def term_handler(signum, frame):
+        # Raise KeyboardInterrupt - so we can handle it in the same way as Ctrl-C
+        raise KeyboardInterrupt()
+
+    # Create and run worker
+    worker = None
+    try:
+        signal.signal(signal.SIGTERM, term_handler)
+        worker = Worker(args)
+        worker.run()
+    except Exception as e:
+        logger.error(str(e))
+        logger.exception("Fatal exception!")
+    except (KeyboardInterrupt):
+        logger.info('SIGINT received, aborting ...')
+    finally:
+        if worker:
+            logger.info("worker found ... calling exit")
+            worker.exit()
+    return 0
+
+def main(sysargv: Optional[List[str]] = None) -> None:
+    """
+    This function will initiate the bot and start the trading loop.
+    :return: None
+    """
+
+    return_code: Any = 1
+    try:
+        # setup_logging_pre()
+        arguments = Arguments(sysargv)
+        args = arguments.get_parsed_arg()
+
+        logger.info(f'TradeBot {__version__}')
+        gc_set_threshold()
+        return_code = start_trading(args)
+
+        # Call subcommand.
+        # if 'func' in args:
+        #     logger.info(f'TradeBot {__version__}')
+        #     gc_set_threshold()
+        #     return_code = args['func'](args)
+        # else:
+        #     # No subcommand was issued.
+        #     raise OperationalException(
+        #         "Usage of TradeBot requires a subcommand to be specified."
+        #     )
+
+    except SystemExit as e:  # pragma: no cover
+        return_code = e
+    except KeyboardInterrupt:
+        logger.info('SIGINT received, aborting ...')
+        return_code = 0
+    except TradeException as e:
+        logger.error(str(e))
+        return_code = 2
+    except Exception:
+        logger.exception('Fatal exception!')
+    finally:
+        sys.exit(return_code)
+
+
+if __name__ == '__main__':  # pragma: no cover
+    main()

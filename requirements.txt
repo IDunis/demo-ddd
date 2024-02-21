@@ -1,0 +1,30 @@
+# blankly
+SQLAlchemy[asyncio,mypy]
+aioredis
+aiosqlite
+alembic
+bcrypt
+fastapi
+greenlet
+gunicorn
+loguru
+passlib[bcrypt]
+pydantic[email]
+pydantic-settings
+python-jose[cryptography]
+structlog
+uvicorn
+# uvloop
+websockets
+python-telegram-bot
+sdnotify
+python-rapidjson
+numpy
+pandas
+schedule
+cachetools
+pycoingecko
+ccxt
+arrow
+matplotlib==3.4.2
+ta==0.7.0  # Assuming you are using TA-Lib for technical analysis

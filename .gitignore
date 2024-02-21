@@ -32,7 +32,7 @@ venv/
 dump.sql
 
 # Volumes
-data/
+# data/
 
 
 
