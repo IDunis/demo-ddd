@@ -134,6 +134,11 @@ class Balance:
         self.free: float = 0.0
         self.locked: float = 0.0
 
+class MarginBalance(Balance):
+    def __init__(self):
+        super().__init__()
+        self.borrowed: float = 0.0
+        self.interest: float = 0.0
 
 class TralityPosition:
     def __init__(self):
@@ -209,6 +214,11 @@ class TralityPortfolio:
         self.worst_trade_return: float = 0.0
         self.best_trade_return: float = 0.0
 
+class OrderMarginSideEffect(Enum):
+    NoSideEffect = 1
+    Borrow = 2
+    Repay = 3
+    AutoDetermine = 4
 class LoanStatus(Enum):
     Pending = 1
     Failed = 2
@@ -377,3 +387,51 @@ def query_portfolio_profitablity() -> dict: # PortfolioProfitabilityMetric
 
 def margin_borrow(asset: str, amount: float) -> Loan:
     return Loan()
+def margin_repay(asset: str, amount: float) -> Repayment:
+    return Repayment()
+def margin_order_market_amount(symbol: str, amount: float, side_effect: OrderMarginSideEffect) -> TralityOrder:
+    return TralityOrder()
+def margin_order_market_value(symbol: str, value: float, side_effect: OrderMarginSideEffect) -> TralityOrder:
+    return TralityOrder()
+def margin_order_limit_amount(symbol: str, amount: float, limit_price: float, side_effect: OrderMarginSideEffect) -> TralityOrder:
+    return TralityOrder()
+def margin_order_limit_value(symbol: str, value: float, side_effect: OrderMarginSideEffect) -> TralityOrder:
+    return TralityOrder()
+def margin_order_iftouched_market_amount(symbol: str, amount: float, stop_pric: float, side_effect: OrderMarginSideEffect) -> TralityOrder:
+    return TralityOrder()
+def margin_order_iftouched_market_value(symbol: str, value: float, stop_price: float, side_effect: OrderMarginSideEffect) -> TralityOrder:
+    return TralityOrder()
+def margin_close_position(symbol: str) -> TralityOrder:
+    return TralityOrder()
+def margin_adjust_position(symbol: str, weight: float) -> TralityOrder:
+    return TralityOrder()
+def query_margin_daily_interest_rate(asset: str) -> Decimal:
+    return Decimal(1.1)
+def query_balance_borrowed(asset: str) -> Decimal:
+    balance = MarginBalance()
+    return Decimal(balance.borrowed)
+def query_balance_interest(asset: str) -> Decimal:
+    balance = MarginBalance()
+    return Decimal(balance.interest)
+def query_margin_level() -> float:
+    return 1.0
+def margin_allowed() -> bool:
+    return True
+def margin_enabled() -> bool:
+    return True
+
+def symbol_limits(symbol: str) -> Limit:
+    return Limit()
+
+def get_quoted_asset() -> str:
+    return ''
+def symbol_to_asset(symbol: str) -> str:
+    return ''
+
+def validate_symbol(symbol: str) -> bool:
+    return True
+
+def get_timestamp() -> int:
+    return 1609459200
+def get_version() -> int:
+    return 1

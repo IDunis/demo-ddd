@@ -211,3 +211,30 @@
 # all_balances = query_balances()
 # for balance in all_balances:
 #     print(balance.free)
+
+
+
+# # this order will buy BTC
+# buy_order = margin_order_market_amount(symbol = "BTCUSDT", amount = 0.01, side_effect = OrderMarginSideEffect.AutoDetermine)
+# # this order will sell BTC
+# sell_order = margin_order_market_amount(symbol = "BTCUSDT", amount = -0.01, side_effect = OrderMarginSideEffect.AutoDetermine)
+
+# # this order will buy BTC
+# buy_order = margin_order_market_value(symbol = "BTCUSDT", value = 500, side_effect = OrderMarginSideEffect.AutoDetermine)
+# # this order will sell BTC
+# sell_order = margin_order_market_value(symbol = "BTCUSDT", value = -500, side_effect = OrderMarginSideEffect.AutoDetermine)
+
+# # this order will buy BTC with a limit order
+# buy_order = margin_order_limit_amount(symbol = "BTCUSDT", amount = 0.01, limit_price=22000, side_effect = OrderMarginSideEffect.AutoDetermine)
+# # this order will sell BTC with a limit order
+# sell_order = margin_order_limit_amount(symbol = "BTCUSDT", amount = -0.01, limit_price=22000, side_effect = OrderMarginSideEffect.AutoDetermine)
+
+# # this order will buy BTC with a limit order
+# buy_order = margin_order_limit_value(symbol = "BTCUSDT", value = 500, limit_price=22000, side_effect = OrderMarginSideEffect.AutoDetermine)
+# # this order will sell BTC with a limit order
+# sell_order = margin_order_limit_value(symbol = "BTCUSDT", value = -500, limit_price=22000, side_effect = OrderMarginSideEffect.AutoDetermine)
+
+# # this will place a margin BTC stop buy order
+# buy_order = margin_order_iftouched_market_amount(symbol = "BTCUSDT", amount = 0.01, stop_price=22000,  side_effect = OrderMarginSideEffect.AutoDetermine)
+# # this will place a margin BTC stop sell order
+# sell_order = margin_order_iftouched_market_amount(symbol = "BTCUSDT", amount = -0.01, stop_price=22000, side_effect = OrderMarginSideEffect.AutoDetermine)

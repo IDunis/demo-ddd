@@ -26,5 +26,14 @@ cachetools
 pycoingecko
 ccxt
 arrow
-matplotlib==3.4.2
+dateutil
+pytz
+math
+numbers
+itertools
+re
+json
+ta-lib
+tulipy
 ta==0.7.0  # Assuming you are using TA-Lib for technical analysis
+matplotlib==3.4.2
