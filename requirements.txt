@@ -32,6 +32,7 @@ math
 numbers
 itertools
 re
+psutil
 json
 ta-lib
 tulipy
