@@ -14,6 +14,7 @@ from numpy import NAN, inf, int64, mean
 from pandas import DataFrame, NaT
 from sqlalchemy import func, select
 
+from trapilot.constants import Config
 from trapilot.rpc.rpc_types import RPCSendMsg
 
 logger = logging.getLogger(__name__)
@@ -42,7 +43,7 @@ class RPCException(Exception):
 
 class RPCHandler:
 
-    def __init__(self, rpc: 'RPC', config: dict) -> None:
+    def __init__(self, rpc: 'RPC', config: Config) -> None:
         """
         Initializes RPCHandlers
         :param rpc: instance of RPC Helper class
@@ -50,7 +51,7 @@ class RPCHandler:
         :return: None
         """
         self._rpc = rpc
-        self._config: dict = config
+        self._config: Config = config
 
     @property
     def name(self) -> str:
@@ -78,4 +79,4 @@ class RPC:
         :return: None
         """
         self._tradebot = tradebot
-        self._config: dict = tradebot.config
+        self._config: Config = tradebot.config

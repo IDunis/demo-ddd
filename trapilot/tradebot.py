@@ -12,8 +12,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from schedule import Scheduler
 
+from trapilot.constants import Config, ExchangeConfig
 from trapilot.enums import State, TradingMode
 from trapilot.mixins import LoggingMixin
+from trapilot.persistence import init_db
 from trapilot.rpc.rpc_manager import RPCManager
 from trapilot.wallets import Wallets
 
@@ -27,7 +29,7 @@ class TradeBot(LoggingMixin):
     This is from here the bot start its logic.
     """
 
-    def __init__(self, config: dict) -> None:
+    def __init__(self, config: Config) -> None:
         """
         Init all variables and objects the bot needs to work
         :param config: configuration dict, you can use Configuration.get_config()
@@ -40,6 +42,18 @@ class TradeBot(LoggingMixin):
 
         # Init objects
         self.config = config
+        exchange_config: ExchangeConfig = deepcopy(config['exchange'])
+        # Remove credentials from original exchange config to avoid accidental credentail exposure
+        # remove_exchange_credentials(config['exchange'], True)
+
+        # self.strategy: IStrategy = StrategyResolver.load_strategy(self.config)
+
+        # Check config consistency here since strategies can set certain options
+        # validate_config_consistency(config)
+
+        # self.exchange = ExchangeResolver.load_exchange(
+        #     self.config, exchange_config=exchange_config, load_leverage_tiers=True)
+
         init_db(self.config['db_url'])
 
         self.wallets = Wallets(self.config, self.exchange)

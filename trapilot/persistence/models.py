@@ -11,11 +11,11 @@ from sqlalchemy.exc import NoSuchModuleError
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from trapilot.exceptions import OperationalException
 from trapilot.persistence.base import ModelBase
 from trapilot.persistence.pairlock import PairLock
-from trapilot.persistence.trade_model import Order, Position, OffsetTrade, Loan, Repayment
+from trapilot.persistence.trade_model import Order, Position, OffsetTrade, Loan, Repayment, Trade
 
-from trapilot.exceptions import OperationalException
 
 logger = logging.getLogger(__name__)
 
@@ -80,6 +80,6 @@ def init_db(db_url: str) -> None:
     Loan.session = Trade.session
     Repayment.session = Trade.session
 
-    previous_tables = inspect(engine).get_table_names()
-    ModelBase.metadata.create_all(engine)
+    # previous_tables = inspect(engine).get_table_names()
+    # ModelBase.metadata.create_all(engine)
     # check_migrate(engine, decl_base=ModelBase, previous_tables=previous_tables)
