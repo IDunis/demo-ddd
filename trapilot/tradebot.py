@@ -13,10 +13,12 @@ from typing import Any, Dict, List, Optional, Tuple
 from schedule import Scheduler
 
 from trapilot.constants import Config, ExchangeConfig
-from trapilot.enums import State, TradingMode
+from freqtrade.enums import (ExitCheckTuple, ExitType, RPCMessageType, SignalDirection, State, TradingMode)
 from trapilot.mixins import LoggingMixin
 from trapilot.persistence import init_db
+from trapilot.resolvers import ExchangeResolver, StrategyResolver
 from trapilot.rpc.rpc_manager import RPCManager
+from trapilot.strategy.interface import IStrategy
 from trapilot.wallets import Wallets
 
 
@@ -46,13 +48,13 @@ class TradeBot(LoggingMixin):
         # Remove credentials from original exchange config to avoid accidental credentail exposure
         # remove_exchange_credentials(config['exchange'], True)
 
-        # self.strategy: IStrategy = StrategyResolver.load_strategy(self.config)
+        self.strategy: IStrategy = StrategyResolver.load_strategy(self.config)
 
         # Check config consistency here since strategies can set certain options
         # validate_config_consistency(config)
 
-        # self.exchange = ExchangeResolver.load_exchange(
-        #     self.config, exchange_config=exchange_config, load_leverage_tiers=True)
+        self.exchange = ExchangeResolver.load_exchange(
+            self.config, exchange_config=exchange_config, load_leverage_tiers=True)
 
         init_db(self.config['db_url'])
 
@@ -90,4 +92,22 @@ class TradeBot(LoggingMixin):
                 for minutes in [1, 31]:
                     t = str(time(time_slot, minutes, 2))
                     self._schedule.every().day.at(t).do(update)
+
+    def notify_status(self, msg: str, msg_type=RPCMessageType.STATUS) -> None:
+        """
+        Public method for users of this class (worker, etc.) to send notifications
+        via RPC about changes in the bot status.
+        """
+        # self.rpc.send_msg({
+        #     'type': msg_type,
+        #     'status': msg
+        # })
+
+    def cleanup(self) -> None:
+        """
+        Cleanup pending resources on an already stopped bot
+        :return: None
+        """
+        logger.info('Cleaning up modules ...')
+
 

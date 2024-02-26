@@ -1,6 +1,7 @@
 # flake8: noqa: F401
 from freqtrade.enums.candletype import CandleType
 from trapilot.enums.loantype import LoanStatus
+from trapilot.enums.marketstatetype import MarketDirection
 from trapilot.enums.ordertype import OrderValue, OrderSide, OrderStatus, OrderMarginSideEffect
 from trapilot.enums.positiontype import PositionStatus
 from trapilot.enums.repaymenttype import RepaymentStatus
