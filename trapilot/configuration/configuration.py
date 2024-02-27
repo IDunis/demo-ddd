@@ -187,9 +187,9 @@ class Configuration:
                 "remove_pumps": False
             },
             "telegram": {
-                "enabled": False,
-                "token": "your_telegram_token",
-                "chat_id": "your_telegram_chat_id",
+                "enabled": True,
+                "token": "6918557089:AAFoQ8-nhmpWR4hhf-_CCXTd2psCqnEglWo",
+                "chat_id": "1008005852",
                 "notification_settings": {
                     "status": "on",
                     "warning": "on",

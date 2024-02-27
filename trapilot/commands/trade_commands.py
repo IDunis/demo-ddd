@@ -30,6 +30,6 @@ def start_trading(args: Dict[str, Any]) -> int:
         logger.info('SIGINT received, aborting ...')
     finally:
         if worker:
-            logger.info("worker found ... calling exit")
+            logger.info("Worker found ... calling exit")
             worker.exit()
     return 0

@@ -24,6 +24,6 @@ class RPCManager:
         # Enable telegram
         if config.get('telegram', {}).get('enabled', False):
             logger.info('Enabling rpc.telegram ...')
-            from freqtrade.rpc.telegram import Telegram
+            from trapilot.rpc.telegram import Telegram
             self.registered_modules.append(Telegram(self._rpc, config))
 

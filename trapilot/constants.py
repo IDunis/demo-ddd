@@ -33,6 +33,13 @@ USERPATH_STRATEGIES = 'strategies'
 USERPATH_NOTEBOOKS = 'notebooks'
 USERPATH_FREQAIMODELS = 'freqaimodels'
 
+
+DECIMAL_PER_COIN_FALLBACK = 3  # Should be low to avoid listing all possible FIAT's
+DECIMALS_PER_COIN = {
+  'BTC': 8,
+  'ETH': 5,
+}
+
 # List of pairs with their timeframes
 PairWithTimeframe = Tuple[str, str, CandleType]
 ListPairsWithTimeframes = List[PairWithTimeframe]

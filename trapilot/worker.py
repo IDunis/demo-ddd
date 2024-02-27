@@ -59,6 +59,11 @@ class Worker:
         self._sd_notify = sdnotify.SystemdNotifier() if \
             self._config.get('internals', {}).get('sd_notify', False) else None
 
+    @staticmethod
+    def _sleep(sleep_duration: float) -> None:
+        """Local sleep method - to improve testability"""
+        time.sleep(sleep_duration)
+
     def _notify(self, message: str) -> None:
         """
         Removes the need to verify in all occurrences if sd_notify is enabled
@@ -68,9 +73,11 @@ class Worker:
             logger.debug(f"sd_notify: {message}")
             self._sd_notify.notify(message)
 
-    def run(self) -> None:
+    def run(self, run_interval = 0) -> None:
         state = None
         while True:
+            if run_interval > 0:
+                self._sleep(run_interval)
             state = self._worker(old_state=state)
             if state == State.RELOAD_CONFIG:
                 self._reconfigure()
@@ -165,11 +172,6 @@ class Worker:
                      )
         self._sleep(sleep_duration)
         return result
-
-    @staticmethod
-    def _sleep(sleep_duration: float) -> None:
-        """Local sleep method - to improve testability"""
-        time.sleep(sleep_duration)
 
     def _process_stopped(self) -> None:
         self.bot.process_stopped()

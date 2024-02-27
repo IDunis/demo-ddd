@@ -360,6 +360,46 @@ class LocalTrade:
             raise OperationalException(
                 f"{self.trading_mode.value} trading requires param interest_rate on trades")
 
+    @staticmethod
+    def get_trades_proxy(*, pair: Optional[str] = None, is_open: Optional[bool] = None,
+                         open_date: Optional[datetime] = None,
+                         close_date: Optional[datetime] = None,
+                         ) -> List['LocalTrade']:
+        """
+        Helper function to query Trades.
+        Returns a List of trades, filtered on the parameters given.
+        In live mode, converts the filter to a database query and returns all rows
+        In Backtest mode, uses filters on Trade.trades to get the result.
+
+        :param pair: Filter by pair
+        :param is_open: Filter by open/closed status
+        :param open_date: Filter by open_date (filters via trade.open_date > input)
+        :param close_date: Filter by close_date (filters via trade.close_date > input)
+                           Will implicitly only return closed trades.
+        :return: unsorted List[Trade]
+        """
+
+        # Offline mode - without database
+        if is_open is not None:
+            if is_open:
+                sel_trades = LocalTrade.trades_open
+            else:
+                sel_trades = LocalTrade.trades
+
+        else:
+            # Not used during backtesting, but might be used by a strategy
+            sel_trades = list(LocalTrade.trades + LocalTrade.trades_open)
+
+        if pair:
+            sel_trades = [trade for trade in sel_trades if trade.pair == pair]
+        if open_date:
+            sel_trades = [trade for trade in sel_trades if trade.open_date > open_date]
+        if close_date:
+            sel_trades = [trade for trade in sel_trades if trade.close_date
+                          and trade.close_date > close_date]
+
+        return sel_trades
+
     def recalc_open_trade_value(self) -> None:
         """
         Recalculate open_trade_value.
@@ -488,6 +528,93 @@ class Trade(ModelBase, LocalTrade):
             # Skip recalculation when loading from json
             self.realized_profit = 0
             self.recalc_open_trade_value()
+
+    @staticmethod
+    def commit():
+        Trade.session.commit()
+
+    @staticmethod
+    def rollback():
+        Trade.session.rollback()
+
+    @staticmethod
+    def get_trades_proxy(*, pair: Optional[str] = None, is_open: Optional[bool] = None,
+                         open_date: Optional[datetime] = None,
+                         close_date: Optional[datetime] = None,
+                         ) -> List['LocalTrade']:
+        """
+        Helper function to query Trades.j
+        Returns a List of trades, filtered on the parameters given.
+        In live mode, converts the filter to a database query and returns all rows
+        In Backtest mode, uses filters on Trade.trades to get the result.
+
+        :return: unsorted List[Trade]
+        """
+        if Trade.use_db:
+            trade_filter = []
+            if pair:
+                trade_filter.append(Trade.pair == pair)
+            if open_date:
+                trade_filter.append(Trade.open_date > open_date)
+            if close_date:
+                trade_filter.append(Trade.close_date > close_date)
+            if is_open is not None:
+                trade_filter.append(Trade.is_open.is_(is_open))
+            return cast(List[LocalTrade], Trade.get_trades(trade_filter).all())
+        else:
+            return LocalTrade.get_trades_proxy(
+                pair=pair, is_open=is_open,
+                open_date=open_date,
+                close_date=close_date
+            )
+
+    @staticmethod
+    def get_open_trades() -> List[Any]:
+        """
+        Retrieve open trades
+        """
+        return Trade.get_trades_proxy(is_open=True)
+
+    @staticmethod
+    def get_trades_query(trade_filter=None, include_orders: bool = True) -> Select:
+        """
+        Helper function to query Trades using filters.
+        NOTE: Not supported in Backtesting.
+        :param trade_filter: Optional filter to apply to trades
+                             Can be either a Filter object, or a List of filters
+                             e.g. `(trade_filter=[Trade.id == trade_id, Trade.is_open.is_(True),])`
+                             e.g. `(trade_filter=Trade.id == trade_id)`
+        :return: unsorted query object
+        """
+        if not Trade.use_db:
+            raise NotImplementedError('`Trade.get_trades()` not supported in backtesting mode.')
+        if trade_filter is not None:
+            if not isinstance(trade_filter, list):
+                trade_filter = [trade_filter]
+            this_query = select(Trade).filter(*trade_filter)
+        else:
+            this_query = select(Trade)
+        if not include_orders:
+            # Don't load order relations
+            # Consider using noload or raiseload instead of lazyload
+            this_query = this_query.options(lazyload(Trade.orders))
+        return this_query
+
+    @staticmethod
+    def get_trades(trade_filter=None, include_orders: bool = True) -> ScalarResult['Trade']:
+        """
+        Helper function to query Trades using filters.
+        NOTE: Not supported in Backtesting.
+        :param trade_filter: Optional filter to apply to trades
+                             Can be either a Filter object, or a List of filters
+                             e.g. `(trade_filter=[Trade.id == trade_id, Trade.is_open.is_(True),])`
+                             e.g. `(trade_filter=Trade.id == trade_id)`
+        :return: unsorted query object
+        """
+        query = Trade.get_trades_query(trade_filter, include_orders)
+        # this should remain split. if use_db is False, session is not available and the above will
+        # raise an exception.
+        return Trade.session.scalars(query)
 
     def recalc_open_trade_value(self) -> None:
         """
