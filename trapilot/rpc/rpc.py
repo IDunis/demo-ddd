@@ -19,6 +19,7 @@ from trapilot.exceptions import PricingError, ExchangeError
 from trapilot.enums import State, TradingMode
 from trapilot.persistence import Trade
 from trapilot.rpc.rpc_types import RPCSendMsg
+from trapilot.util import (dt_humanize, shorten_date)
 
 logger = logging.getLogger(__name__)
 

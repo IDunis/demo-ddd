@@ -110,4 +110,14 @@ class TradeBot(LoggingMixin):
         """
         logger.info('Cleaning up modules ...')
 
+    def startup(self) -> None:
+        """
+        Called on startup and after reloading the bot - triggers notifications and
+        performs startup tasks
+        """
+        # migrate_binance_futures_names(self.config)
+        # set_startup_time()
+
+        self.rpc.startup_messages(self.config)
+
 
