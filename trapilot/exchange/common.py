@@ -2,7 +2,7 @@ import asyncio
 import logging
 import time
 from functools import wraps
-from typing import Any, Callable, Optional, TypeVar, cast, overload
+from typing import Any, Callable, Dict, List, Optional, TypeVar, cast, overload
 
 from trapilot.constants import ExchangeConfig
 from trapilot.exceptions import DDosProtection, RetryableOrderError, TemporaryError
@@ -48,27 +48,29 @@ MAP_EXCHANGE_CHILDCLASS = {
     'binanceusdm': 'binance',
     'okex': 'okx',
     'gateio': 'gate',
+    'huboi': 'htx',
 }
 
 SUPPORTED_EXCHANGES = [
     'binance',
     'bitmart',
     'gate',
-    'huobi',
+    'htx',
     'kraken',
     'okx',
 ]
 
-EXCHANGE_HAS_REQUIRED = [
+# either the main, or replacement methods (array) is required
+EXCHANGE_HAS_REQUIRED: Dict[str, List[str]] = {
     # Required / private
-    'fetchOrder',
-    'cancelOrder',
-    'createOrder',
-    'fetchBalance',
+    'fetchOrder': ['fetchOpenOrder', 'fetchClosedOrder'],
+    'cancelOrder': [],
+    'createOrder': [],
+    'fetchBalance': [],
 
     # Public endpoints
-    'fetchOHLCV',
-]
+    'fetchOHLCV': [],
+}
 
 EXCHANGE_HAS_OPTIONAL = [
     # Private
@@ -85,6 +87,7 @@ EXCHANGE_HAS_OPTIONAL = [
     # 'fetchPositions',  # Futures trading
     # 'fetchLeverageTiers',  # Futures initialization
     # 'fetchMarketLeverageTiers',  # Futures initialization
+    # 'fetchOpenOrder', 'fetchClosedOrder',  # replacement for fetchOrder
     # 'fetchOpenOrders', 'fetchClosedOrders',  # 'fetchOrders',  # Refinding balance...
 ]
 
@@ -125,7 +128,7 @@ def retrier_async(f):
                 if isinstance(ex, DDosProtection):
                     if kucoin and "429000" in str(ex):
                         # Temporary fix for 429000 error on kucoin
-                        # see https://github.com/freqtrade/freqtrade/issues/5700 for details.
+                        # see https://github.com/trapilot/trapilot/issues/5700 for details.
                         _get_logging_mixin().log_once(
                             f"Kucoin 429 error, avoid triggering DDosProtection backoff delay. "
                             f"{count} tries left before giving up", logmethod=logger.warning)

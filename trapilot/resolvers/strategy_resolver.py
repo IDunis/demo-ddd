@@ -48,7 +48,7 @@ class StrategyResolver(IResolver):
         strategy: IStrategy = StrategyResolver._load_strategy(
             strategy_name, config=config,
             extra_dir=config.get('strategy_path'))
-        strategy.load_params_from_file()
+        strategy.ft_load_params_from_file()
         # Set attributes
         # Check if we need to override configuration
         #             (Attribute name,                    default,     subkey)
@@ -160,6 +160,69 @@ class StrategyResolver(IResolver):
 
     @staticmethod
     def validate_strategy(strategy: IStrategy) -> IStrategy:
+        if strategy.config.get('trading_mode', TradingMode.SPOT) != TradingMode.SPOT:
+            # Require new method
+            warn_deprecated_setting(strategy, 'sell_profit_only', 'exit_profit_only', True)
+            warn_deprecated_setting(strategy, 'sell_profit_offset', 'exit_profit_offset', True)
+            warn_deprecated_setting(strategy, 'use_sell_signal', 'use_exit_signal', True)
+            warn_deprecated_setting(strategy, 'ignore_roi_if_buy_signal',
+                                    'ignore_roi_if_entry_signal', True)
+
+            if not check_override(strategy, IStrategy, 'populate_entry_trend'):
+                raise OperationalException("`populate_entry_trend` must be implemented.")
+            if not check_override(strategy, IStrategy, 'populate_exit_trend'):
+                raise OperationalException("`populate_exit_trend` must be implemented.")
+            if check_override(strategy, IStrategy, 'check_buy_timeout'):
+                raise OperationalException("Please migrate your implementation "
+                                           "of `check_buy_timeout` to `check_entry_timeout`.")
+            if check_override(strategy, IStrategy, 'check_sell_timeout'):
+                raise OperationalException("Please migrate your implementation "
+                                           "of `check_sell_timeout` to `check_exit_timeout`.")
+
+            if check_override(strategy, IStrategy, 'custom_sell'):
+                raise OperationalException(
+                    "Please migrate your implementation of `custom_sell` to `custom_exit`.")
+
+        else:
+            # TODO: Implementing one of the following methods should show a deprecation warning
+            #  buy_trend and sell_trend, custom_sell
+            warn_deprecated_setting(strategy, 'sell_profit_only', 'exit_profit_only')
+            warn_deprecated_setting(strategy, 'sell_profit_offset', 'exit_profit_offset')
+            warn_deprecated_setting(strategy, 'use_sell_signal', 'use_exit_signal')
+            warn_deprecated_setting(strategy, 'ignore_roi_if_buy_signal',
+                                    'ignore_roi_if_entry_signal')
+
+            if (
+                not check_override(strategy, IStrategy, 'populate_buy_trend')
+                and not check_override(strategy, IStrategy, 'populate_entry_trend')
+            ):
+                raise OperationalException(
+                    "`populate_entry_trend` or `populate_buy_trend` must be implemented.")
+            if (
+                not check_override(strategy, IStrategy, 'populate_sell_trend')
+                and not check_override(strategy, IStrategy, 'populate_exit_trend')
+            ):
+                raise OperationalException(
+                    "`populate_exit_trend` or `populate_sell_trend` must be implemented.")
+
+            _populate_fun_len = len(getfullargspec(strategy.populate_indicators).args)
+            _buy_fun_len = len(getfullargspec(strategy.populate_buy_trend).args)
+            _sell_fun_len = len(getfullargspec(strategy.populate_sell_trend).args)
+            if any(x == 2 for x in [
+                _populate_fun_len,
+                _buy_fun_len,
+                _sell_fun_len
+            ]):
+                raise OperationalException(
+                    "Strategy Interface v1 is no longer supported. "
+                    "Please update your strategy to implement "
+                    "`populate_indicators`, `populate_entry_trend` and `populate_exit_trend` "
+                    "with the metadata argument. ")
+
+        has_after_fill = ('after_fill' in getfullargspec(strategy.custom_stoploss).args
+                          and check_override(strategy, IStrategy, 'custom_stoploss'))
+        if has_after_fill:
+            strategy._ft_stop_uses_after_fill = True
 
         return strategy
 
@@ -211,6 +274,7 @@ class StrategyResolver(IResolver):
         )
 
         if strategy:
+
             return StrategyResolver.validate_strategy(strategy)
 
         raise OperationalException(

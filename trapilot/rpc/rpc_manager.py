@@ -30,6 +30,69 @@ class RPCManager:
             from trapilot.rpc.telegram import Telegram
             self.registered_modules.append(Telegram(self._rpc, config))
 
+        # Enable discord
+        if config.get('discord', {}).get('enabled', False):
+            logger.info('Enabling rpc.discord ...')
+            from trapilot.rpc.discord import Discord
+            self.registered_modules.append(Discord(self._rpc, config))
+
+        # Enable Webhook
+        if config.get('webhook', {}).get('enabled', False):
+            logger.info('Enabling rpc.webhook ...')
+            from trapilot.rpc.webhook import Webhook
+            self.registered_modules.append(Webhook(self._rpc, config))
+
+        # Enable local rest api server for cmd line control
+        if config.get('api_server', {}).get('enabled', False):
+            logger.info('Enabling rpc.api_server')
+            from trapilot.rpc.api_server import ApiServer
+            apiserver = ApiServer(config)
+            apiserver.add_rpc_handler(self._rpc)
+            self.registered_modules.append(apiserver)
+
+    def cleanup(self) -> None:
+        """ Stops all enabled rpc modules """
+        logger.info('Cleaning up rpc modules ...')
+        while self.registered_modules:
+            mod = self.registered_modules.pop()
+            logger.info('Cleaning up rpc.%s ...', mod.name)
+            mod.cleanup()
+            del mod
+
+    def send_msg(self, msg: RPCSendMsg) -> None:
+        """
+        Send given message to all registered rpc modules.
+        A message consists of one or more key value pairs of strings.
+        e.g.:
+        {
+            'status': 'stopping bot'
+        }
+        """
+        if msg.get('type') not in NO_ECHO_MESSAGES:
+            logger.info('Sending rpc message: %s', msg)
+        for mod in self.registered_modules:
+            logger.debug('Forwarding message to rpc.%s', mod.name)
+            try:
+                mod.send_msg(msg)
+            except NotImplementedError:
+                logger.error(f"Message type '{msg['type']}' not implemented by handler {mod.name}.")
+            except Exception:
+                logger.exception('Exception occurred within RPC module %s', mod.name)
+
+    def process_msg_queue(self, queue: deque) -> None:
+        """
+        Process all messages in the queue.
+        """
+        while queue:
+            msg = queue.popleft()
+            logger.info('Sending rpc strategy_msg: %s', msg)
+            for mod in self.registered_modules:
+                if mod._config.get(mod.name, {}).get('allow_custom_messages', False):
+                    mod.send_msg({
+                        'type': RPCMessageType.STRATEGY_MSG,
+                        'msg': msg,
+                    })
+
     def startup_messages(self, config: Config, pairlist, protections) -> None:
         if config['dry_run']:
             self.send_msg({
@@ -66,24 +129,3 @@ class RPCManager:
                 'type': RPCMessageType.STARTUP,
                 'status': f'Using Protections: \n{prots}'
             })
-
-    def send_msg(self, msg: RPCSendMsg) -> None:
-        """
-        Send given message to all registered rpc modules.
-        A message consists of one or more key value pairs of strings.
-        e.g.:
-        {
-            'status': 'stopping bot'
-        }
-        """
-        if msg.get('type') not in NO_ECHO_MESSAGES:
-            logger.info('Sending rpc message: %s', msg)
-        for mod in self.registered_modules:
-            logger.debug('Forwarding message to rpc.%s', mod.name)
-            try:
-                mod.send_msg(msg)
-            except NotImplementedError:
-                logger.error(f"Message type '{msg['type']}' not implemented by handler {mod.name}.")
-            except Exception:
-                logger.exception('Exception occurred within RPC module %s', mod.name)
-

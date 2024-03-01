@@ -3,7 +3,7 @@
 __main__.py for Trapilot
 To launch Trapilot as a module
 
-> python -m trapilot (with Python >= 3.10)
+> python -m trapilot (with Python >= 3.9)
 """
 
 from trapilot import main

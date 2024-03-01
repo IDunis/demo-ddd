@@ -1,0 +1,1 @@
+python -m trapilot trade --logfile user_data/logs/trade.log --db-url sqlite:///user_data/tradesv3.sqlite --config user_data/config.json --strategy Supertrend

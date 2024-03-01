@@ -33,7 +33,10 @@ venv/
 dump.sql
 
 # Volumes
-data/
+.data/
+user_data/*
+!user_data/strategies
+!user_data/config.json
 
 
 

@@ -10,9 +10,9 @@ from typing import Any, Dict, List, Optional
 
 import rapidjson
 
-from freqtrade.constants import MINIMAL_CONFIG, Config
-from freqtrade.exceptions import OperationalException
-from freqtrade.misc import deep_merge_dicts
+from trapilot.constants import MINIMAL_CONFIG, Config
+from trapilot.exceptions import OperationalException
+from trapilot.misc import deep_merge_dicts
 
 
 logger = logging.getLogger(__name__)

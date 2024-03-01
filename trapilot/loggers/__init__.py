@@ -4,16 +4,16 @@ from logging.handlers import RotatingFileHandler, SysLogHandler
 
 from trapilot.constants import Config
 from trapilot.exceptions import OperationalException
-from trapilot.loggers.buffering_handler import BufferingHandler
+from trapilot.loggers.buffering_handler import FTBufferingHandler
 from trapilot.loggers.set_log_levels import set_loggers
-from trapilot.loggers.std_err_stream_handler import StdErrStreamHandler
+from trapilot.loggers.std_err_stream_handler import FTStdErrStreamHandler
 
 
 logger = logging.getLogger(__name__)
 LOGFORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 # Initialize bufferhandler - will be used for /log endpoints
-bufferHandler = BufferingHandler(1000)
+bufferHandler = FTBufferingHandler(1000)
 bufferHandler.setFormatter(Formatter(LOGFORMAT))
 
 
@@ -35,7 +35,7 @@ def setup_logging_pre() -> None:
     logging.basicConfig(
         level=logging.INFO,
         format=LOGFORMAT,
-        handlers=[StdErrStreamHandler(), bufferHandler]
+        handlers=[FTStdErrStreamHandler(), bufferHandler]
     )
 
 

@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class Worker:
     """
-    Trapilot worker class
+    Freqtradebot worker class
     """
 
     def __init__(self, args: Dict[str, Any], config: Optional[Config] = None) -> None:
@@ -50,19 +50,15 @@ class Worker:
             self._config = Configuration(self._args, None).get_config()
 
         # Init the instance of the bot
-        self.bot = TradeBot(self._config)
+        self.tradebot = TradeBot(self._config)
 
         internals_config = self._config.get('internals', {})
-        self._throttle_secs = internals_config.get('process_throttle_secs', PROCESS_THROTTLE_SECS)
+        self._throttle_secs = internals_config.get('process_throttle_secs',
+                                                   PROCESS_THROTTLE_SECS)
         self._heartbeat_interval = internals_config.get('heartbeat_interval', 60)
 
         self._sd_notify = sdnotify.SystemdNotifier() if \
             self._config.get('internals', {}).get('sd_notify', False) else None
-
-    @staticmethod
-    def _sleep(sleep_duration: float) -> None:
-        """Local sleep method - to improve testability"""
-        time.sleep(sleep_duration)
 
     def _notify(self, message: str) -> None:
         """
@@ -73,11 +69,9 @@ class Worker:
             logger.debug(f"sd_notify: {message}")
             self._sd_notify.notify(message)
 
-    def run(self, run_interval = 0) -> None:
+    def run(self) -> None:
         state = None
         while True:
-            if run_interval > 0:
-                self._sleep(run_interval)
             state = self._worker(old_state=state)
             if state == State.RELOAD_CONFIG:
                 self._reconfigure()
@@ -88,21 +82,21 @@ class Worker:
         :param old_state: the previous service state from the previous call
         :return: current service state
         """
-        state = self.bot.state
+        state = self.tradebot.state
 
         # Log state transition
         if state != old_state:
 
             if old_state != State.RELOAD_CONFIG:
-                self.bot.notify_status(f'{state.name.lower()}')
+                self.tradebot.notify_status(f'{state.name.lower()}')
 
             logger.info(
                 f"Changing state{f' from {old_state.name}' if old_state else ''} to: {state.name}")
             if state == State.RUNNING:
-                self.bot.startup()
+                self.tradebot.startup()
 
             if state == State.STOPPED:
-                self.bot.check_for_open_trades()
+                self.tradebot.check_for_open_trades()
 
             # Reset heartbeat timestamp to log the heartbeat message at
             # first throttling iteration when the state changes
@@ -127,7 +121,7 @@ class Worker:
             now = time.time()
             if (now - self._heartbeat_msg) > self._heartbeat_interval:
                 version = __version__
-                strategy_version = self.bot.strategy.version()
+                strategy_version = self.tradebot.strategy.version()
                 if (strategy_version is not None):
                     version += ', strategy_version: ' + strategy_version
                 logger.info(f"Bot heartbeat. PID={getpid()}, "
@@ -173,12 +167,17 @@ class Worker:
         self._sleep(sleep_duration)
         return result
 
+    @staticmethod
+    def _sleep(sleep_duration: float) -> None:
+        """Local sleep method - to improve testability"""
+        time.sleep(sleep_duration)
+
     def _process_stopped(self) -> None:
-        self.bot.process_stopped()
+        self.tradebot.process_stopped()
 
     def _process_running(self) -> None:
         try:
-            self.bot.process()
+            self.tradebot.process()
         except TemporaryError as error:
             logger.warning(f"Error: {error}, retrying in {RETRY_TIMEOUT} seconds...")
             time.sleep(RETRY_TIMEOUT)
@@ -186,29 +185,29 @@ class Worker:
             tb = traceback.format_exc()
             hint = 'Issue `/start` if you think it is safe to restart.'
 
-            self.bot.notify_status(
+            self.tradebot.notify_status(
                 f'*OperationalException:*\n```\n{tb}```\n {hint}',
                 msg_type=RPCMessageType.EXCEPTION
             )
 
             logger.exception('OperationalException. Stopping trader ...')
-            self.bot.state = State.STOPPED
+            self.tradebot.state = State.STOPPED
 
     def _reconfigure(self) -> None:
         """
-        Cleans up current TradeBot instance, reloads the configuration and
+        Cleans up current freqtradebot instance, reloads the configuration and
         replaces it with the new instance
         """
         # Tell systemd that we initiated reconfiguration
         self._notify("RELOADING=1")
 
         # Clean up current trapilot modules
-        self.bot.cleanup()
+        self.tradebot.cleanup()
 
         # Load and validate config and create new instance of the bot
         self._init(True)
 
-        self.bot.notify_status('config reloaded')
+        self.tradebot.notify_status('config reloaded')
 
         # Tell systemd that we completed reconfiguration
         self._notify("READY=1")
@@ -217,6 +216,6 @@ class Worker:
         # Tell systemd that we are exiting now
         self._notify("STOPPING=1")
 
-        if self.bot:
-            self.bot.notify_status('process died')
-            self.bot.cleanup()
+        if self.tradebot:
+            self.tradebot.notify_status('process died')
+            self.tradebot.cleanup()

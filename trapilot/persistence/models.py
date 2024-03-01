@@ -13,8 +13,10 @@ from sqlalchemy.pool import StaticPool
 
 from trapilot.exceptions import OperationalException
 from trapilot.persistence.base import ModelBase
+from trapilot.persistence.key_value_store import _KeyValueStoreModel
+from trapilot.persistence.migrations import check_migrate
 from trapilot.persistence.pairlock import PairLock
-from trapilot.persistence.trade_model import Order, Position, OffsetTrade, Loan, Repayment, Trade
+from trapilot.persistence.trade_model import Order, Trade
 
 
 logger = logging.getLogger(__name__)
@@ -75,11 +77,8 @@ def init_db(db_url: str) -> None:
         bind=engine, autoflush=False), scopefunc=get_request_or_thread_id)
     Order.session = Trade.session
     PairLock.session = Trade.session
-    Position.session = Trade.session
-    OffsetTrade.session = Trade.session
-    Loan.session = Trade.session
-    Repayment.session = Trade.session
+    _KeyValueStoreModel.session = Trade.session
 
-    # previous_tables = inspect(engine).get_table_names()
+    previous_tables = inspect(engine).get_table_names()
     ModelBase.metadata.create_all(engine)
-    # check_migrate(engine, decl_base=ModelBase, previous_tables=previous_tables)
+    check_migrate(engine, decl_base=ModelBase, previous_tables=previous_tables)

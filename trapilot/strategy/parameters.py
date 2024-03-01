@@ -7,6 +7,14 @@ from abc import ABC, abstractmethod
 from contextlib import suppress
 from typing import Any, Optional, Sequence, Union
 
+from trapilot.enums import HyperoptState
+from trapilot.optimize.hyperopt_tools import HyperoptStateContainer
+
+
+with suppress(ImportError):
+    from skopt.space import Integer, Real, Categorical
+    from trapilot.optimize.space import SKDecimal
+
 from trapilot.exceptions import OperationalException
 
 
@@ -46,6 +54,18 @@ class BaseParameter(ABC):
     def __repr__(self):
         return f'{self.__class__.__name__}({self.value})'
 
+    @abstractmethod
+    def get_space(self, name: str) -> Union['Integer', 'Real', 'SKDecimal', 'Categorical']:
+        """
+        Get-space - will be used by Hyperopt to get the hyperopt Space
+        """
+
+    def can_optimize(self):
+        return (
+            self.in_space
+            and self.optimize
+            and HyperoptStateContainer.state != HyperoptState.OPTIMIZE
+        )
 
 
 class NumericParameter(BaseParameter):
@@ -108,6 +128,27 @@ class IntParameter(NumericParameter):
         super().__init__(low=low, high=high, default=default, space=space, optimize=optimize,
                          load=load, **kwargs)
 
+    def get_space(self, name: str) -> 'Integer':
+        """
+        Create skopt optimization space.
+        :param name: A name of parameter field.
+        """
+        return Integer(low=self.low, high=self.high, name=name, **self._space_params)
+
+    @property
+    def range(self):
+        """
+        Get each value in this space as list.
+        Returns a List from low to high (inclusive) in Hyperopt mode.
+        Returns a List with 1 item (`value`) in "non-hyperopt" mode, to avoid
+        calculating 100ds of indicators.
+        """
+        if self.can_optimize():
+            # Scikit-optimize ranges are "inclusive", while python's "range" is exclusive
+            return range(self.low, self.high + 1)
+        else:
+            return range(self.value, self.value + 1)
+
 
 class RealParameter(NumericParameter):
     default: float
@@ -131,6 +172,12 @@ class RealParameter(NumericParameter):
         super().__init__(low=low, high=high, default=default, space=space, optimize=optimize,
                          load=load, **kwargs)
 
+    def get_space(self, name: str) -> 'Real':
+        """
+        Create skopt optimization space.
+        :param name: A name of parameter field.
+        """
+        return Real(low=self.low, high=self.high, name=name, **self._space_params)
 
 
 class DecimalParameter(NumericParameter):
@@ -159,6 +206,29 @@ class DecimalParameter(NumericParameter):
         super().__init__(low=low, high=high, default=default, space=space, optimize=optimize,
                          load=load, **kwargs)
 
+    def get_space(self, name: str) -> 'SKDecimal':
+        """
+        Create skopt optimization space.
+        :param name: A name of parameter field.
+        """
+        return SKDecimal(low=self.low, high=self.high, decimals=self._decimals, name=name,
+                         **self._space_params)
+
+    @property
+    def range(self):
+        """
+        Get each value in this space as list.
+        Returns a List from low to high (inclusive) in Hyperopt mode.
+        Returns a List with 1 item (`value`) in "non-hyperopt" mode, to avoid
+        calculating 100ds of indicators.
+        """
+        if self.can_optimize():
+            low = int(self.low * pow(10, self._decimals))
+            high = int(self.high * pow(10, self._decimals)) + 1
+            return [round(n * pow(0.1, self._decimals), self._decimals) for n in range(low, high)]
+        else:
+            return [self.value]
+
 
 class CategoricalParameter(BaseParameter):
     default: Any
@@ -185,6 +255,26 @@ class CategoricalParameter(BaseParameter):
         self.opt_range = categories
         super().__init__(default=default, space=space, optimize=optimize,
                          load=load, **kwargs)
+
+    def get_space(self, name: str) -> 'Categorical':
+        """
+        Create skopt optimization space.
+        :param name: A name of parameter field.
+        """
+        return Categorical(self.opt_range, name=name, **self._space_params)
+
+    @property
+    def range(self):
+        """
+        Get each value in this space as list.
+        Returns a List of categories in Hyperopt mode.
+        Returns a List with 1 item (`value`) in "non-hyperopt" mode, to avoid
+        calculating 100ds of indicators.
+        """
+        if self.can_optimize():
+            return self.opt_range
+        else:
+            return [self.value]
 
 
 class BooleanParameter(CategoricalParameter):

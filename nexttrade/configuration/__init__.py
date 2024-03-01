@@ -1,1 +1,0 @@
-from nexttrade.configuration.configuration import Configuration

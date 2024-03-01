@@ -11,12 +11,12 @@ from trapilot.util.gc_setup import gc_set_threshold
 
 
 # check min. python version
-if sys.version_info < (3, 10):  # pragma: no cover
-    sys.exit("Trapilot requires Python version >= 3.10")
+if sys.version_info < (3, 9):  # pragma: no cover
+    sys.exit("Trapilot requires Python version >= 3.9")
 
 from trapilot import __version__
 from trapilot.commands import Arguments
-from trapilot.exceptions import TradeException, OperationalException
+from trapilot.exceptions import FreqtradeException, OperationalException
 from trapilot.loggers import setup_logging_pre
 
 
@@ -32,7 +32,6 @@ def main(sysargv: Optional[List[str]] = None) -> None:
     return_code: Any = 1
     try:
         setup_logging_pre()
-        args = sysargv
         arguments = Arguments(sysargv)
         args = arguments.get_parsed_arg()
 
@@ -44,9 +43,9 @@ def main(sysargv: Optional[List[str]] = None) -> None:
         else:
             # No subcommand was issued.
             raise OperationalException(
-                "Usage of Freqtrade requires a subcommand to be specified.\n"
+                "Usage of Trapilot requires a subcommand to be specified.\n"
                 "To have the bot executing trades in live/dry-run modes, "
-                "depending on the value of the `dry_run` setting in the config, run Freqtrade "
+                "depending on the value of the `dry_run` setting in the config, run Trapilot "
                 "as `trapilot trade [options...]`.\n"
                 "To see the full list of options available, please use "
                 "`trapilot --help` or `trapilot <command> --help`."
@@ -57,7 +56,7 @@ def main(sysargv: Optional[List[str]] = None) -> None:
     except KeyboardInterrupt:
         logger.info('SIGINT received, aborting ...')
         return_code = 0
-    except TradeException as e:
+    except FreqtradeException as e:
         logger.error(str(e))
         return_code = 2
     except Exception:

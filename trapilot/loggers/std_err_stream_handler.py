@@ -2,7 +2,7 @@ import sys
 from logging import Handler
 
 
-class StdErrStreamHandler(Handler):
+class FTStdErrStreamHandler(Handler):
     def flush(self):
         """
         Override Flush behaviour - we keep half of the configured capacity

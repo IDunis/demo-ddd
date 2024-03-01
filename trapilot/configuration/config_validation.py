@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def _extend_validator(validator_class):
     """
-    Extended validator for the trapilot configuration JSON Schema.
+    Extended validator for the Trapilot configuration JSON Schema.
     Currently it only handles defaults for subschemas.
     """
     validate_properties = validator_class.VALIDATORS['properties']
@@ -34,7 +34,7 @@ def _extend_validator(validator_class):
     )
 
 
-trapilotValidator = _extend_validator(Draft4Validator)
+FreqtradeValidator = _extend_validator(Draft4Validator)
 
 
 def validate_config_schema(conf: Dict[str, Any], preliminary: bool = False) -> Dict[str, Any]:
@@ -56,7 +56,7 @@ def validate_config_schema(conf: Dict[str, Any], preliminary: bool = False) -> D
     else:
         conf_schema['required'] = constants.SCHEMA_MINIMAL_REQUIRED
     try:
-        trapilotValidator(conf_schema).validate(conf)
+        FreqtradeValidator(conf_schema).validate(conf)
         return conf
     except ValidationError as e:
         logger.critical(
