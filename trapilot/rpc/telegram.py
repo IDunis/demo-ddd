@@ -143,9 +143,9 @@ class Telegram(RPCHandler):
         """
         self._keyboard: List[List[Union[str, KeyboardButton]]] = [
             ['/ETH', '/DOT', '/CHZ', '/BTC'],
-            ['/daily', '/profit', '/balance'],
-            ['/status', '/status table', '/performance'],
-            ['/count', '/start', '/stop', '/help']
+            # ['/daily', '/profit', '/balance'],
+            # ['/status', '/status table', '/performance', '/count'],
+            ['/start', '/stop', '/help']
         ]
         # do not allow commands with mandatory arguments and critical cmds
         # TODO: DRY! - its not good to list all valid cmds here. But otherwise
@@ -632,32 +632,64 @@ class Telegram(RPCHandler):
     @authorized_only
     async def _tracking_chz(self, update: Update, context: CallbackContext) -> None:
         try:
-            tickers = self._rpc._tradebot.exchange.get_tickers(symbols=["CHZ/USDT",], cached=False)
-            formatted_json_string = json.dumps(tickers, indent=4)
+            symbol = "CHZ/USDT"
+            tickers = self._rpc._tradebot.exchange.get_tickers(symbols=[symbol], cached=False)
+            formatted_json_string = json.dumps({
+                "last": tickers[symbol]["last"],
+                "high": tickers[symbol]["high"],
+                "low": tickers[symbol]["low"],
+                "open": tickers[symbol]["open"],
+                "close": tickers[symbol]["close"],
+                "average": tickers[symbol]["average"],
+            }, indent=4)
             await self._send_msg(formatted_json_string)
         except Exception:
             raise RPCException('Error getting current tickers.')
     @authorized_only
     async def _tracking_dot(self, update: Update, context: CallbackContext) -> None:
         try:
-            tickers = self._rpc._tradebot.exchange.get_tickers(symbols=["DOT/USDT"], cached=False)
-            formatted_json_string = json.dumps(tickers, indent=4)
+            symbol = "DOT/USDT"
+            tickers = self._rpc._tradebot.exchange.get_tickers(symbols=[symbol], cached=False)
+            formatted_json_string = json.dumps({
+                "last": tickers[symbol]["last"],
+                "high": tickers[symbol]["high"],
+                "low": tickers[symbol]["low"],
+                "open": tickers[symbol]["open"],
+                "close": tickers[symbol]["close"],
+                "average": tickers[symbol]["average"],
+            }, indent=4)
             await self._send_msg(formatted_json_string)
         except Exception:
             raise RPCException('Error getting current tickers.')
     @authorized_only
     async def _tracking_eth(self, update: Update, context: CallbackContext) -> None:
         try:
-            tickers = self._rpc._tradebot.exchange.get_tickers(symbols=["ETH/USDT"], cached=False)
-            formatted_json_string = json.dumps(tickers, indent=4)
+            symbol = "ETH/USDT"
+            tickers = self._rpc._tradebot.exchange.get_tickers(symbols=[symbol], cached=False)
+            formatted_json_string = json.dumps({
+                "last": tickers[symbol]["last"],
+                "high": tickers[symbol]["high"],
+                "low": tickers[symbol]["low"],
+                "open": tickers[symbol]["open"],
+                "close": tickers[symbol]["close"],
+                "average": tickers[symbol]["average"],
+            }, indent=4)
             await self._send_msg(formatted_json_string)
         except Exception:
             raise RPCException('Error getting current tickers.')
     @authorized_only
     async def _tracking_btc(self, update: Update, context: CallbackContext) -> None:
         try:
-            tickers = self._rpc._tradebot.exchange.get_tickers(symbols=["BIT/USDT"], cached=False)
-            formatted_json_string = json.dumps(tickers, indent=4)
+            symbol = "BTC/USDT"
+            tickers = self._rpc._tradebot.exchange.get_tickers(symbols=[symbol], cached=False)
+            formatted_json_string = json.dumps({
+                "last": tickers[symbol]["last"],
+                "high": tickers[symbol]["high"],
+                "low": tickers[symbol]["low"],
+                "open": tickers[symbol]["open"],
+                "close": tickers[symbol]["close"],
+                "average": tickers[symbol]["average"],
+            }, indent=4)
             await self._send_msg(formatted_json_string)
         except Exception:
             raise RPCException('Error getting current tickers.')

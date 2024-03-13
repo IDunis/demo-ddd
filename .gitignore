@@ -28,6 +28,8 @@ venv/
 # Sqlite
 *.sqlite
 *.sqlite3
+*.sqlite-*
+*.sqlite3-*
 
 # Databases dumps
 dump.sql
