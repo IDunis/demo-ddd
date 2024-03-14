@@ -142,17 +142,16 @@ class Telegram(RPCHandler):
         section.
         """
         self._keyboard: List[List[Union[str, KeyboardButton]]] = [
-            ['/ETH', '/DOT', '/CHZ', '/BTC'],
             # ['/daily', '/profit', '/balance'],
             # ['/status', '/status table', '/performance', '/count'],
-            ['/start', '/stop', '/help']
+            ['/start', '/stop', '/prices', '/help']
         ]
         # do not allow commands with mandatory arguments and critical cmds
         # TODO: DRY! - its not good to list all valid cmds here. But otherwise
         #       this needs refactoring of the whole telegram module (same
         #       problem in _help()).
         valid_keys: List[str] = [
-            r'/start$', r'/stop$', r'/status$', r'/status table$',
+            r'/start$', r'/stop$', r'/prices$', r'/status$', r'/status table$',
             r'/trades$', r'/performance$', r'/buys', r'/entries',
             r'/sells', r'/exits', r'/mix_tags',
             r'/daily$', r'/daily \d+$', r'/profit$', r'/profit \d+',
@@ -206,10 +205,7 @@ class Telegram(RPCHandler):
 
         # Register command handler and start telegram message polling
         handles = [
-            CommandHandler('BTC', self._tracking_btc),
-            CommandHandler('ETH', self._tracking_eth),
-            CommandHandler('DOT', self._tracking_dot),
-            CommandHandler('CHZ', self._tracking_chz),
+            CommandHandler('prices', self._tracking_prices),
             CommandHandler('status', self._status),
             CommandHandler('profit', self._profit),
             CommandHandler('balance', self._balance),
@@ -630,67 +626,15 @@ class Telegram(RPCHandler):
 
 
     @authorized_only
-    async def _tracking_chz(self, update: Update, context: CallbackContext) -> None:
+    async def _tracking_prices(self, update: Update, context: CallbackContext) -> None:
         try:
-            symbol = "CHZ/USDT"
-            tickers = self._rpc._tradebot.exchange.get_tickers(symbols=[symbol], cached=False)
-            formatted_json_string = json.dumps({
-                "last": tickers[symbol]["last"],
-                "high": tickers[symbol]["high"],
-                "low": tickers[symbol]["low"],
-                "open": tickers[symbol]["open"],
-                "close": tickers[symbol]["close"],
-                "average": tickers[symbol]["average"],
-            }, indent=4)
-            await self._send_msg(formatted_json_string)
-        except Exception:
-            raise RPCException('Error getting current tickers.')
-    @authorized_only
-    async def _tracking_dot(self, update: Update, context: CallbackContext) -> None:
-        try:
-            symbol = "DOT/USDT"
-            tickers = self._rpc._tradebot.exchange.get_tickers(symbols=[symbol], cached=False)
-            formatted_json_string = json.dumps({
-                "last": tickers[symbol]["last"],
-                "high": tickers[symbol]["high"],
-                "low": tickers[symbol]["low"],
-                "open": tickers[symbol]["open"],
-                "close": tickers[symbol]["close"],
-                "average": tickers[symbol]["average"],
-            }, indent=4)
-            await self._send_msg(formatted_json_string)
-        except Exception:
-            raise RPCException('Error getting current tickers.')
-    @authorized_only
-    async def _tracking_eth(self, update: Update, context: CallbackContext) -> None:
-        try:
-            symbol = "ETH/USDT"
-            tickers = self._rpc._tradebot.exchange.get_tickers(symbols=[symbol], cached=False)
-            formatted_json_string = json.dumps({
-                "last": tickers[symbol]["last"],
-                "high": tickers[symbol]["high"],
-                "low": tickers[symbol]["low"],
-                "open": tickers[symbol]["open"],
-                "close": tickers[symbol]["close"],
-                "average": tickers[symbol]["average"],
-            }, indent=4)
-            await self._send_msg(formatted_json_string)
-        except Exception:
-            raise RPCException('Error getting current tickers.')
-    @authorized_only
-    async def _tracking_btc(self, update: Update, context: CallbackContext) -> None:
-        try:
-            symbol = "BTC/USDT"
-            tickers = self._rpc._tradebot.exchange.get_tickers(symbols=[symbol], cached=False)
-            formatted_json_string = json.dumps({
-                "last": tickers[symbol]["last"],
-                "high": tickers[symbol]["high"],
-                "low": tickers[symbol]["low"],
-                "open": tickers[symbol]["open"],
-                "close": tickers[symbol]["close"],
-                "average": tickers[symbol]["average"],
-            }, indent=4)
-            await self._send_msg(formatted_json_string)
+            symbols = ["BTC/USDT", "ETH/USDT", "DOT/USDT", "CHZ/USDT"]
+            tickers = self._rpc._tradebot.exchange.get_tickers(symbols=symbols, cached=False)
+            for symbol in tickers:
+                ticker = tickers[symbol]
+                await self._send_msg(
+                    f"*{symbol}:* `{ticker['last']}`"
+                )
         except Exception:
             raise RPCException('Error getting current tickers.')
 

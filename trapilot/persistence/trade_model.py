@@ -2,13 +2,14 @@
 This module contains the class to persist trades into SQLite
 """
 import logging
+import json
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from math import isclose
 from typing import Any, ClassVar, Dict, List, Optional, Sequence, cast
 
-from sqlalchemy import (Enum, Float, ForeignKey, Integer, ScalarResult, Select, String,
+from sqlalchemy import (Enum, Float, ForeignKey, Integer, ScalarResult, Select, String, Boolean, JSON,
                         UniqueConstraint, desc, func, select)
 from sqlalchemy.orm import Mapped, lazyload, mapped_column, relationship, validates
 from typing_extensions import Self
@@ -35,6 +36,30 @@ class ProfitStruct:
     profit_ratio: float
     total_profit: float
     total_profit_ratio: float
+
+
+class Configuration(ModelBase):
+    __tablename__ = 'configurations'
+    __allow_unmapped__ = True
+    session: ClassVar[SessionType]
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    dry_run: Mapped[bool] = mapped_column(Boolean, default=True)
+    max_open_trades: Mapped[int] = mapped_column(Integer, default=1)
+    stake_currency: Mapped[str] = mapped_column(String(10), default="USDT")
+    stake_amount: Mapped[float] = mapped_column(Float(), default=0.05)
+    tradable_balance_ratio: Mapped[float] = mapped_column(Float(), default=0.99)
+    fiat_display_currency: Mapped[str] = mapped_column(String(5), default="USD")
+    timeframe: Mapped[str] = mapped_column(String(5), default="5m")
+    cancel_open_orders_on_exit: Mapped[bool] = mapped_column(Boolean, default=False)
+    unfilledtimeout: Mapped[Optional[str]] = mapped_column(String(255), default=json.dumps({"entry": 10, "exit": 10, "exit_timeout_count": 0, "unit": "minutes"}))
+    entry_pricing: Mapped[Optional[str]] = mapped_column(String(255), default=json.dumps({"price_side": "same", "use_order_book": True, "order_book_top": 1, "price_last_balance": 0.0, "check_depth_of_market": {"enabled": False, "bids_to_ask_delta": 1}}))
+    exit_pricing: Mapped[Optional[str]] = mapped_column(String(255), default=json.dumps({"price_side": "same", "use_order_book": True, "order_book_top": 1}))
+    exchange: Mapped[Optional[str]] = mapped_column(String(255), default=json.dumps({"name": "binance", "key": "", "secret": "", "ccxt_config": {}, "ccxt_async_config": {}, "pair_whitelist": [], "pair_blacklist": ["BNB/.*"]}))
+    pairlists: Mapped[Optional[str]] = mapped_column(String(255), default="[" + json.dumps({"method": "StaticPairList"}) + "]")
+    telegram: Mapped[Optional[str]] = mapped_column(String(255), default=json.dumps({"enabled": True, "token": "", "chat_id": ""}))
+    api_server: Mapped[Optional[str]] = mapped_column(String(255), default=json.dumps({"enabled": False, "listen_ip_address": "127.0.0.1", "listen_port": 8080, "verbosity": "error", "jwt_secret_key": "", "CORS_origins": [], "username": "", "password": ""}))
+    force_entry_enable: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
 class Order(ModelBase):

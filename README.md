@@ -12,3 +12,6 @@ If using Windows:
     From Windows Start Menu, Start [VS2015 x64 Native Tools Command Prompt]
     Move to C:\ta-lib\c\make\cdr\win32\msvc
     Build the Library nmake
+
+
+python -m trapilot trade --strategy Supertrend
