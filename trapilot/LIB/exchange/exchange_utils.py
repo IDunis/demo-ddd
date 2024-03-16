@@ -7,13 +7,23 @@ from math import ceil, floor
 from typing import Any, Dict, List, Optional, Tuple
 
 import ccxt
-from ccxt import (DECIMAL_PLACES, ROUND, ROUND_DOWN, ROUND_UP,
-                  SIGNIFICANT_DIGITS, TICK_SIZE, TRUNCATE,
-                  decimal_to_precision)
+from ccxt import (
+    DECIMAL_PLACES,
+    ROUND,
+    ROUND_DOWN,
+    ROUND_UP,
+    SIGNIFICANT_DIGITS,
+    TICK_SIZE,
+    TRUNCATE,
+    decimal_to_precision,
+)
 
-from trapilot.LIB.exchange.common import (BAD_EXCHANGES, EXCHANGE_HAS_OPTIONAL,
-                                          EXCHANGE_HAS_REQUIRED,
-                                          SUPPORTED_EXCHANGES)
+from trapilot.LIB.exchange.common import (
+    BAD_EXCHANGES,
+    EXCHANGE_HAS_OPTIONAL,
+    EXCHANGE_HAS_REQUIRED,
+    SUPPORTED_EXCHANGES,
+)
 from trapilot.LIB.types import ValidExchangesType
 from trapilot.LIB.util import FtPrecise
 from trapilot.LIB.util.datetime_helpers import dt_from_ts, dt_ts

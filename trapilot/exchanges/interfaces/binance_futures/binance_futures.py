@@ -20,10 +20,12 @@ from binance.client import Client
 
 from trapilot.exchanges.auth.auth_constructor import AuthConstructor
 from trapilot.exchanges.futures.futures_exchange import FuturesExchange
-from trapilot.exchanges.interfaces.binance_futures.binance_futures_interface import \
-    BinanceFuturesInterface
-from trapilot.exchanges.interfaces.futures_exchange_interface import \
-    FuturesExchangeInterface
+from trapilot.exchanges.interfaces.binance_futures.binance_futures_interface import (
+    BinanceFuturesInterface,
+)
+from trapilot.exchanges.interfaces.futures_exchange_interface import (
+    FuturesExchangeInterface,
+)
 
 
 class BinanceFutures(FuturesExchange):
@@ -38,13 +40,13 @@ class BinanceFutures(FuturesExchange):
 
         # Load auth from keys file
         auth = AuthConstructor(
-            keys_path, portfolio_name, "binance", ["API_KEY", "API_SECRET", "sandbox"]
+            keys_path, portfolio_name, "binance", ["api_key", "api_secret", "dry_run"]
         )
 
         self.__calls = Client(
-            api_key=auth.keys["API_KEY"],
-            api_secret=auth.keys["API_SECRET"],
-            testnet=auth.keys["sandbox"],
+            api_key=auth.keys["api_key"],
+            api_secret=auth.keys["api_secret"],
+            testnet=auth.keys["dry_run"],
         )
 
         self.__interface = BinanceFuturesInterface(self.exchange_type, self.calls)

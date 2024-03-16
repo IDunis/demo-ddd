@@ -3,10 +3,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from trapilot.LIB.constants import (DATETIME_PRINT_FORMAT,
-                                    DEFAULT_TRADES_COLUMNS, Config)
+from trapilot.LIB.constants import DATETIME_PRINT_FORMAT, DEFAULT_TRADES_COLUMNS, Config
 from trapilot.LIB.data.converter.trade_converter import (
-    trades_convert_types, trades_df_remove_duplicates)
+    trades_convert_types,
+    trades_df_remove_duplicates,
+)
 from trapilot.LIB.data.history.idatahandler import get_datahandler
 from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.plugins.pairlist.pairlist_helpers import expand_pairlist

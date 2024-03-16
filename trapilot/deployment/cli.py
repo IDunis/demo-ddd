@@ -32,8 +32,7 @@ import zipfile
 import requests
 
 from trapilot.deployment.api import API
-from trapilot.utils.utils import (info_print, load_deployment_settings,
-                                  load_json_file)
+from trapilot.utils.utils import info_print, load_deployment_settings, load_json_file
 
 very_important_string = """
 ██████╗ ██╗      █████╗ ███╗   ██╗██╗  ██╗██╗  ██╗   ██╗    ███████╗██╗███╗   ██╗ █████╗ ███╗   ██╗ ██████╗███████╗

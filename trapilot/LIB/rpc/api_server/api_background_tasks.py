@@ -8,12 +8,14 @@ from trapilot.LIB.constants import Config
 from trapilot.LIB.enums import CandleType
 from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.persistence import FtNoDBContext
-from trapilot.LIB.rpc.api_server.api_schemas import (BackgroundTaskStatus,
-                                                     BgJobStarted,
-                                                     ExchangeModePayloadMixin,
-                                                     PairListsPayload,
-                                                     PairListsResponse,
-                                                     WhitelistEvaluateResponse)
+from trapilot.LIB.rpc.api_server.api_schemas import (
+    BackgroundTaskStatus,
+    BgJobStarted,
+    ExchangeModePayloadMixin,
+    PairListsPayload,
+    PairListsResponse,
+    WhitelistEvaluateResponse,
+)
 from trapilot.LIB.rpc.api_server.deps import get_config, get_exchange
 from trapilot.LIB.rpc.api_server.webserver_bgwork import ApiBG
 

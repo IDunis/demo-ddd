@@ -35,24 +35,36 @@ from bokeh.plotting import ColumnDataSource, figure, show
 
 import trapilot
 import trapilot.exchanges.interfaces.paper_trade.metrics as metrics
-from trapilot.data.data_reader import (DataReader, FundingRateEventReader,
-                                       PriceReader, TickReader)
+from trapilot.data.data_reader import (
+    DataReader,
+    FundingRateEventReader,
+    PriceReader,
+    TickReader,
+)
 from trapilot.exchanges.exchange import ABCExchange
-from trapilot.exchanges.interfaces.paper_trade.abc_backtest_controller import \
-    ABCBacktestController
-from trapilot.exchanges.interfaces.paper_trade.backtest.format_platform_result import \
-    format_platform_result
-from trapilot.exchanges.interfaces.paper_trade.backtest_result import \
-    BacktestResult
-from trapilot.exchanges.interfaces.paper_trade.futures.futures_paper_trade_interface import \
-    FuturesPaperTradeInterface
-from trapilot.exchanges.interfaces.paper_trade.paper_trade_interface import \
-    PaperTradeInterface
+from trapilot.exchanges.interfaces.paper_trade.abc_backtest_controller import (
+    ABCBacktestController,
+)
+from trapilot.exchanges.interfaces.paper_trade.backtest.format_platform_result import (
+    format_platform_result,
+)
+from trapilot.exchanges.interfaces.paper_trade.backtest_result import BacktestResult
+from trapilot.exchanges.interfaces.paper_trade.futures.futures_paper_trade_interface import (
+    FuturesPaperTradeInterface,
+)
+from trapilot.exchanges.interfaces.paper_trade.paper_trade_interface import (
+    PaperTradeInterface,
+)
 from trapilot.utils.time_builder import time_interval_to_seconds
-from trapilot.utils.utils import (aggregate_prices_by_resolution,
-                                  get_base_asset, get_quote_asset, info_print,
-                                  load_backtest_preferences, update_progress,
-                                  write_backtest_preferences)
+from trapilot.utils.utils import (
+    aggregate_prices_by_resolution,
+    get_base_asset,
+    get_quote_asset,
+    info_print,
+    load_backtest_preferences,
+    update_progress,
+    write_backtest_preferences,
+)
 
 
 def to_string_key(separated_list):
@@ -225,7 +237,7 @@ class BackTestController(ABCBacktestController):  # circular import to type mode
 
     class PriceIdentifiers(enum.Enum):
         exchange: str = 0
-        sandbox: bool = 1
+        dry_run: bool = 1
         symbol: str = 2
         epoch_start: int = 3
         epoch_stop: int = 4
@@ -320,7 +332,7 @@ class BackTestController(ABCBacktestController):  # circular import to type mode
 
             identifiers_ = []
             for file in range(len(files)):
-                # example file name: 'coinbase_pro.sandbox.BTC-USD.1622400000.1622510793.60.csv'
+                # example file name: 'coinbase_pro.dry_run.BTC-USD.1622400000.1622510793.60.csv'
                 # Remove the .csv from each of the files: BTC-USD.1622400000.1622510793.60
                 identifier = files[file][:-4].split(",")
                 # Cast to float first before
@@ -328,7 +340,7 @@ class BackTestController(ABCBacktestController):  # circular import to type mode
                     identifiers_.append(
                         {
                             self.PriceIdentifiers.exchange: identifier[0],
-                            self.PriceIdentifiers.sandbox: identifier[1] == "True",
+                            self.PriceIdentifiers.dry_run: identifier[1] == "True",
                             self.PriceIdentifiers.symbol: identifier[2],
                             self.PriceIdentifiers.epoch_start: int(
                                 float(identifier[3])
@@ -361,7 +373,7 @@ class BackTestController(ABCBacktestController):  # circular import to type mode
 
             def sort_identifier(identifier_: dict):
                 exchange_ = identifier_[self.PriceIdentifiers.exchange]
-                sandbox_ = identifier_[self.PriceIdentifiers.sandbox]
+                sandbox_ = identifier_[self.PriceIdentifiers.dry_run]
                 symbol_ = identifier_[self.PriceIdentifiers.symbol]
                 resolution_ = identifier_[self.PriceIdentifiers.resolution]
 
@@ -418,7 +430,7 @@ class BackTestController(ABCBacktestController):  # circular import to type mode
                 - resolution
             )
             exchange = self.interface.get_exchange_type()
-            sandbox = True
+            dry_run = True
 
             if end_time < start_time:
                 raise RuntimeError(
@@ -432,7 +444,7 @@ class BackTestController(ABCBacktestController):  # circular import to type mode
                 # Make sure to copy it because if you don't you delete this for any similar resolution
                 # If you don't copy it fails if you use two price events at the same resolution
                 available_prices = copy.deepcopy(
-                    local_history_blocks[exchange][sandbox][symbol][resolution]
+                    local_history_blocks[exchange][dry_run][symbol][resolution]
                 )
                 # Pull the epoch start and epoch stop for this particular symbol / resolution
                 for price_set in available_prices:
@@ -624,7 +636,7 @@ class BackTestController(ABCBacktestController):  # circular import to type mode
         # Add it as a new price
         self.__user_added_times.append(
             {
-                self.PriceIdentifiers.sandbox: True,
+                self.PriceIdentifiers.dry_run: True,
                 self.PriceIdentifiers.symbol: symbol,
                 self.PriceIdentifiers.resolution: resolution,
                 self.PriceIdentifiers.epoch_start: start_time,

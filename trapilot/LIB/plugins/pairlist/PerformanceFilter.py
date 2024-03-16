@@ -10,8 +10,7 @@ import pandas as pd
 from trapilot.LIB.constants import Config
 from trapilot.LIB.exchange.types import Tickers
 from trapilot.LIB.persistence import Trade
-from trapilot.LIB.plugins.pairlist.IPairList import (IPairList,
-                                                     PairlistParameter)
+from trapilot.LIB.plugins.pairlist.IPairList import IPairList, PairlistParameter
 
 logger = logging.getLogger(__name__)
 

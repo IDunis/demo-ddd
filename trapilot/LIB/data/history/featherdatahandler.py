@@ -4,8 +4,7 @@ from typing import Optional
 from pandas import DataFrame, read_feather, to_datetime
 
 from trapilot.LIB.configuration import TimeRange
-from trapilot.LIB.constants import (DEFAULT_DATAFRAME_COLUMNS,
-                                    DEFAULT_TRADES_COLUMNS)
+from trapilot.LIB.constants import DEFAULT_DATAFRAME_COLUMNS, DEFAULT_TRADES_COLUMNS
 from trapilot.LIB.enums import CandleType
 
 from .idatahandler import IDataHandler

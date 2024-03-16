@@ -17,8 +17,7 @@ from trapilot.LIB.configuration.load_config import CONFIG_PARSE_MODE
 from trapilot.LIB.constants import Config
 from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.exchange.types import Tickers
-from trapilot.LIB.plugins.pairlist.IPairList import (IPairList,
-                                                     PairlistParameter)
+from trapilot.LIB.plugins.pairlist.IPairList import IPairList, PairlistParameter
 from trapilot.LIB.plugins.pairlist.pairlist_helpers import expand_pairlist
 
 logger = logging.getLogger(__name__)

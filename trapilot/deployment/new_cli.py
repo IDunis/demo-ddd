@@ -37,19 +37,31 @@ from questionary import Choice
 from trapilot import __version__
 from trapilot.deployment.api import API
 from trapilot.deployment.deploy import get_python_version, zip_dir
-from trapilot.deployment.exchange_data import (EXCHANGE_CHOICES,
-                                               EXCHANGE_CHOICES_NO_KEYLESS,
-                                               EXCHANGES, Exchange,
-                                               exc_display_name)
+from trapilot.deployment.exchange_data import (
+    EXCHANGE_CHOICES,
+    EXCHANGE_CHOICES_NO_KEYLESS,
+    EXCHANGES,
+    Exchange,
+    exc_display_name,
+)
 from trapilot.deployment.keys import add_key, load_keys, write_keys
 from trapilot.deployment.login import get_token, logout, poll_login
-from trapilot.deployment.ui import (confirm, path, print_failure,
-                                    print_success, print_work, select,
-                                    show_spinner, text)
+from trapilot.deployment.ui import (
+    confirm,
+    path,
+    print_failure,
+    print_success,
+    print_work,
+    select,
+    show_spinner,
+    text,
+)
 from trapilot.utils.gc_setup import gc_set_threshold
-from trapilot.utils.utils import (load_backtest_preferences,
-                                  load_deployment_settings,
-                                  load_user_preferences)
+from trapilot.utils.utils import (
+    load_backtest_preferences,
+    load_deployment_settings,
+    load_user_preferences,
+)
 
 TEMPLATES = {
     "strategy": {"none": "none.py", "rsi_bot": "rsi_bot.py"},
@@ -132,7 +144,6 @@ def add_key_interactive(exchange: Exchange):
             "What TLD are you using?",
             [Choice(f"{exchange.name}.{tld}", tld) for tld in exchange.tlds],
         ).unsafe_ask()
-    print(tld)
     name = text("Give this key a name:", instruction="(Optional)").unsafe_ask()
 
     saved_data = {}
@@ -140,7 +151,7 @@ def add_key_interactive(exchange: Exchange):
         saved_data[key] = (
             text(f"{instruction}:", validate=validate_non_empty).unsafe_ask().strip()
         )
-    saved_data["sandbox"] = confirm(
+    saved_data["dry_run"] = confirm(
         "Is this testnet/sandbox key?", default=False
     ).unsafe_ask()
 

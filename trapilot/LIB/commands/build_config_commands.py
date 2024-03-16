@@ -6,8 +6,7 @@ from typing import Any, Dict, List
 from questionary import Separator, prompt
 
 from trapilot.LIB.configuration.detect_environment import running_in_docker
-from trapilot.LIB.configuration.directory_operations import \
-    chown_user_directory
+from trapilot.LIB.configuration.directory_operations import chown_user_directory
 from trapilot.LIB.constants import UNLIMITED_STAKE_AMOUNT
 from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.exchange import MAP_EXCHANGE_CHILDCLASS, available_exchanges

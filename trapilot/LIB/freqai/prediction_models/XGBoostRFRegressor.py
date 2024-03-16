@@ -3,8 +3,7 @@ from typing import Any, Dict
 
 from xgboost import XGBRFRegressor
 
-from trapilot.LIB.freqai.base_models.BaseRegressionModel import \
-    BaseRegressionModel
+from trapilot.LIB.freqai.base_models.BaseRegressionModel import BaseRegressionModel
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
 from trapilot.LIB.freqai.tensorboard import TBCallback
 

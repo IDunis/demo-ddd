@@ -22,12 +22,9 @@ import time
 import trapilot
 from trapilot.exchanges.abc_exchange import ABCExchange
 from trapilot.exchanges.auth.utils import write_auth_cache
-from trapilot.exchanges.interfaces.abc_exchange_interface import \
-    ABCExchangeInterface
-from trapilot.exchanges.interfaces.alpaca.alpaca_interface import \
-    AlpacaInterface
-from trapilot.exchanges.interfaces.binance.binance_interface import \
-    BinanceInterface
+from trapilot.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
+from trapilot.exchanges.interfaces.alpaca.alpaca_interface import AlpacaInterface
+from trapilot.exchanges.interfaces.binance.binance_interface import BinanceInterface
 from trapilot.exchanges.interfaces.ssi.ssi_interface import SsiInterface
 
 
@@ -53,16 +50,16 @@ class Exchange(ABCExchange, abc.ABC):
         """
         This will try to maintain compatibility with older versions if they fail to pivot to the new version immediately
         """
-        if "sandbox" not in auth.keys:
+        if "dry_run" not in auth.keys:
             try:
                 return self.preferences["settings"]["use_sandbox"]
             except KeyError:
                 raise KeyError(
-                    "No sandbox setting found in either user_data/settings.json or user_data/keys.json. Please use the example"
+                    "No dry_run setting found in either user_data/settings.json or user_data/keys.json. Please use the example"
                     " above this error to modify your user_data/keys.json."
                 )
         else:
-            return auth.keys["sandbox"]
+            return auth.keys["dry_run"]
 
     def construct_interface_and_cache(self, calls):
         """

@@ -14,8 +14,7 @@ from pandas import isna, json_normalize
 from trapilot.LIB.constants import FTHYPT_FILEVERSION, Config
 from trapilot.LIB.enums import HyperoptState
 from trapilot.LIB.exceptions import OperationalException
-from trapilot.LIB.misc import (deep_merge_dicts, round_dict,
-                               safe_value_fallback2)
+from trapilot.LIB.misc import deep_merge_dicts, round_dict, safe_value_fallback2
 from trapilot.LIB.optimize.hyperopt_epoch_filters import hyperopt_filter_epochs
 from trapilot.LIB.optimize.optimize_reports import generate_wins_draws_losses
 from trapilot.LIB.util import fmt_coin

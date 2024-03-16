@@ -18,16 +18,17 @@ from trapilot.LIB.constants import FULL_DATAFRAME_THRESHOLD
 from trapilot.LIB.data.dataprovider import DataProvider
 from trapilot.LIB.enums import RPCMessageType
 from trapilot.LIB.misc import remove_entry_exit_signals
-from trapilot.LIB.rpc.api_server.ws.channel import (WebSocketChannel,
-                                                    create_channel)
+from trapilot.LIB.rpc.api_server.ws.channel import WebSocketChannel, create_channel
 from trapilot.LIB.rpc.api_server.ws.message_stream import MessageStream
-from trapilot.LIB.rpc.api_server.ws_schemas import (WSAnalyzedDFMessage,
-                                                    WSAnalyzedDFRequest,
-                                                    WSMessageSchema,
-                                                    WSRequestSchema,
-                                                    WSSubscribeRequest,
-                                                    WSWhitelistMessage,
-                                                    WSWhitelistRequest)
+from trapilot.LIB.rpc.api_server.ws_schemas import (
+    WSAnalyzedDFMessage,
+    WSAnalyzedDFRequest,
+    WSMessageSchema,
+    WSRequestSchema,
+    WSSubscribeRequest,
+    WSWhitelistMessage,
+    WSWhitelistRequest,
+)
 
 if TYPE_CHECKING:
     import websockets.connect

@@ -10,9 +10,13 @@ import pandas as pd
 from pandas import DataFrame, to_datetime
 
 from trapilot.LIB.configuration import TimeRange
-from trapilot.LIB.constants import (DEFAULT_DATAFRAME_COLUMNS,
-                                    DEFAULT_TRADES_COLUMNS, TRADES_DTYPES,
-                                    Config, TradeList)
+from trapilot.LIB.constants import (
+    DEFAULT_DATAFRAME_COLUMNS,
+    DEFAULT_TRADES_COLUMNS,
+    TRADES_DTYPES,
+    Config,
+    TradeList,
+)
 from trapilot.LIB.enums import CandleType
 from trapilot.LIB.exceptions import OperationalException
 
@@ -146,8 +150,9 @@ def convert_trades_format(
                 "Converting from csv is only supported for kraken."
                 "Please refer to the documentation for details about this special mode."
             )
-        from trapilot.LIB.data.converter.trade_converter_kraken import \
-            import_kraken_trades_from_csv
+        from trapilot.LIB.data.converter.trade_converter_kraken import (
+            import_kraken_trades_from_csv,
+        )
 
         import_kraken_trades_from_csv(config, convert_to)
         return

@@ -55,8 +55,8 @@ class AuthConstructor(abc.ABC):
                 example_str = json.dumps(
                     {
                         "portfolio": {
-                            "API_KEY": "********************",
-                            "API_SECRET": "********************",
+                            "api_key": "********************",
+                            "api_secret": "********************",
                             f"{i}": False,
                         }
                     },
@@ -69,11 +69,11 @@ class AuthConstructor(abc.ABC):
                         f"{example_str}"
                     )
 
-                if i != "sandbox":
+                if i != "dry_run":
                     raise AuthError(error_message)
                 else:
                     info_print(
-                        f"Please add the sandbox keys to your user_data/keys.json file. The use_sandbox setting will be "
+                        f"Please add the dry_run keys to your user_data/keys.json file. The use_sandbox setting will be "
                         f"removed in the next update: \n"
                         f"{example_str}"
                     )

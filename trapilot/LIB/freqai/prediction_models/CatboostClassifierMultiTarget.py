@@ -5,10 +5,10 @@ from typing import Any, Dict
 
 from catboost import CatBoostClassifier, Pool
 
-from trapilot.LIB.freqai.base_models.BaseClassifierModel import \
-    BaseClassifierModel
-from trapilot.LIB.freqai.base_models.FreqaiMultiOutputClassifier import \
-    FreqaiMultiOutputClassifier
+from trapilot.LIB.freqai.base_models.BaseClassifierModel import BaseClassifierModel
+from trapilot.LIB.freqai.base_models.FreqaiMultiOutputClassifier import (
+    FreqaiMultiOutputClassifier,
+)
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
 
 logger = logging.getLogger(__name__)

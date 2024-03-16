@@ -66,8 +66,8 @@ class BinanceInterface(ExchangeInterface):
             raise exceptions.APIException(
                 f"Debugging info: {e} - {e.response} - {e.message}\n"
                 "Invalid API Key, IP, or permissions for action - are you trying "
-                "to use your normal exchange keys while in sandbox mode? "
-                "\nTry toggling the 'sandbox' setting in your user_data/keys.json, check "
+                "to use your normal exchange keys while in dry_run mode? "
+                "\nTry toggling the 'dry_run' setting in your user_data/keys.json, check "
                 "if the keys were input correctly into your user_data/keys.json or ensure you have set "
                 "the correct binance_tld in user_data/settings.json.\n"
             )

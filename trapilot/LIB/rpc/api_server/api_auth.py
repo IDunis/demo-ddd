@@ -8,8 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, status
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.security.http import HTTPBasic, HTTPBasicCredentials
 
-from trapilot.LIB.rpc.api_server.api_schemas import (AccessAndRefreshToken,
-                                                     AccessToken)
+from trapilot.LIB.rpc.api_server.api_schemas import AccessAndRefreshToken, AccessToken
 from trapilot.LIB.rpc.api_server.deps import get_api_config
 
 logger = logging.getLogger(__name__)

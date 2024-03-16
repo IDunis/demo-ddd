@@ -8,22 +8,25 @@ from typing import Any, Dict, List
 from fastapi import APIRouter, BackgroundTasks, Depends
 from fastapi.exceptions import HTTPException
 
-from trapilot.LIB.configuration.config_validation import \
-    validate_config_consistency
+from trapilot.LIB.configuration.config_validation import validate_config_consistency
 from trapilot.LIB.constants import Config
-from trapilot.LIB.data.btanalysis import (delete_backtest_result,
-                                          get_backtest_result,
-                                          get_backtest_resultlist,
-                                          load_and_merge_backtest_result,
-                                          update_backtest_metadata)
+from trapilot.LIB.data.btanalysis import (
+    delete_backtest_result,
+    get_backtest_result,
+    get_backtest_resultlist,
+    load_and_merge_backtest_result,
+    update_backtest_metadata,
+)
 from trapilot.LIB.enums import BacktestState
 from trapilot.LIB.exceptions import DependencyException, OperationalException
 from trapilot.LIB.exchange.common import remove_exchange_credentials
 from trapilot.LIB.misc import deep_merge_dicts, is_file_in_dir
-from trapilot.LIB.rpc.api_server.api_schemas import (BacktestHistoryEntry,
-                                                     BacktestMetadataUpdate,
-                                                     BacktestRequest,
-                                                     BacktestResponse)
+from trapilot.LIB.rpc.api_server.api_schemas import (
+    BacktestHistoryEntry,
+    BacktestMetadataUpdate,
+    BacktestRequest,
+    BacktestResponse,
+)
 from trapilot.LIB.rpc.api_server.deps import get_config
 from trapilot.LIB.rpc.api_server.webserver_bgwork import ApiBG
 from trapilot.LIB.rpc.rpc import RPCException
@@ -37,7 +40,9 @@ router = APIRouter()
 
 def __run_backtest_bg(btconfig: Config):
     from trapilot.LIB.optimize.optimize_reports import (
-        generate_backtest_stats, store_backtest_stats)
+        generate_backtest_stats,
+        store_backtest_stats,
+    )
     from trapilot.LIB.resolvers import StrategyResolver
 
     asyncio.set_event_loop(asyncio.new_event_loop())

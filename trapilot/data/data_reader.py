@@ -21,8 +21,9 @@ from enum import Enum
 
 import pandas as pd
 
-from trapilot.exchanges.interfaces.futures_exchange_interface import \
-    FuturesExchangeInterface
+from trapilot.exchanges.interfaces.futures_exchange_interface import (
+    FuturesExchangeInterface,
+)
 from trapilot.utils import convert_epochs
 
 

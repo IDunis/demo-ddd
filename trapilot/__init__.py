@@ -21,12 +21,12 @@ import trapilot.indicators
 import trapilot.utils.utils
 from trapilot.deployment.reporter_headers import Reporter as __Reporter_Headers
 from trapilot.enums import OrderStatus, OrderType, Side, TimeInForce
-from trapilot.exchanges.interfaces.abc_exchange_interface import \
-    ABCExchangeInterface as Interface
+from trapilot.exchanges.interfaces.abc_exchange_interface import (
+    ABCExchangeInterface as Interface,
+)
 from trapilot.exchanges.interfaces.alpaca.alpaca import Alpaca
 from trapilot.exchanges.interfaces.binance.binance import Binance
-from trapilot.exchanges.interfaces.binance_futures.binance_futures import \
-    BinanceFutures
+from trapilot.exchanges.interfaces.binance_futures.binance_futures import BinanceFutures
 from trapilot.exchanges.interfaces.paper_trade.paper_trade import PaperTrade
 from trapilot.exchanges.managers.general_stream_manager import GeneralManager
 from trapilot.exchanges.managers.orderbook_manager import OrderbookManager

@@ -29,12 +29,12 @@ class SSI(Exchange):
 
         # Load the auth from the keys file
         auth = AuthConstructor(
-            keys_path, portfolio_name, "ssi", ["API_KEY", "API_SECRET", "sandbox"]
+            keys_path, portfolio_name, "ssi", ["api_key", "api_secret", "dry_run"]
         )
 
-        sandbox = super().evaluate_sandbox(auth)
+        dry_run = super().evaluate_sandbox(auth)
 
-        calls = create_client(auth, sandbox)
+        calls = create_client(auth, dry_run)
 
         # Always finish the method with this function
         super().construct_interface_and_cache(calls)

@@ -7,8 +7,8 @@ import talib.abstract as ta
 from pandas import DataFrame
 from technical import qtpylib
 
-from trapilot.LIB.strategy import (IntParameter, IStrategy,  # noqa
-                                   merge_informative_pair)
+from trapilot.LIB.strategy import IStrategy  # noqa
+from trapilot.LIB.strategy import IntParameter, merge_informative_pair
 
 logger = logging.getLogger(__name__)
 

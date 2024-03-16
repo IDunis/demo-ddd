@@ -20,8 +20,7 @@ import alpaca_trade_api
 
 from trapilot.exchanges.auth.auth_constructor import AuthConstructor
 from trapilot.exchanges.exchange import Exchange
-from trapilot.exchanges.interfaces.alpaca.alpaca_api import \
-    create_alpaca_client
+from trapilot.exchanges.interfaces.alpaca.alpaca_api import create_alpaca_client
 
 
 class Alpaca(Exchange):
@@ -32,12 +31,12 @@ class Alpaca(Exchange):
 
         # Load the auth from the keys file
         auth = AuthConstructor(
-            keys_path, portfolio_name, "alpaca", ["API_KEY", "API_SECRET", "sandbox"]
+            keys_path, portfolio_name, "alpaca", ["api_key", "api_secret", "dry_run"]
         )
 
-        sandbox = super().evaluate_sandbox(auth)
+        dry_run = super().evaluate_sandbox(auth)
 
-        calls = create_alpaca_client(auth, sandbox)
+        calls = create_alpaca_client(auth, dry_run)
 
         # Always finish the method with this function
         super().construct_interface_and_cache(calls)

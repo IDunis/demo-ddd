@@ -23,6 +23,7 @@ from binance.client import Client as BinanceClient
 
 from trapilot.deployment.exchange_data import Exchange
 from trapilot.deployment.ui import confirm, print_failure, show_spinner
+from trapilot.persistence.settings import SettingKey
 
 
 def load_keys():
@@ -63,6 +64,24 @@ def add_key(exchange: Exchange, tld: str, key_name: str, data: dict):
         ).unsafe_ask()
     ):
         write_keys(saved_data)
+        key = SettingKey.get_keys(
+            [
+                SettingKey.exhange.is_(exchange.name),
+                SettingKey.dry_run.is_(data.get("dry_run")),
+            ]
+        ).first()
+        if not key:
+            key = SettingKey(
+                exhange=exchange.name,
+                api_key=data.get("api_key"),
+                api_secret=data.get("api_secret"),
+            )
+            SettingKey.session.add(key)
+            SettingKey.session.commit()
+        else:
+            key.api_key = data.get("api_key")
+            key.api_secret = data.get("api_secret")
+            SettingKey.commit()
         return True
     return False
 

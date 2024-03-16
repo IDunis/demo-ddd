@@ -8,8 +8,7 @@ from typing import Any, Dict, Optional
 from trapilot.LIB.constants import Config
 from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.exchange.types import Ticker
-from trapilot.LIB.plugins.pairlist.IPairList import (IPairList,
-                                                     PairlistParameter)
+from trapilot.LIB.plugins.pairlist.IPairList import IPairList, PairlistParameter
 
 logger = logging.getLogger(__name__)
 

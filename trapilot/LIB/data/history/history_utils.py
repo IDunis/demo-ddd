@@ -7,21 +7,25 @@ from typing import Dict, List, Optional, Tuple
 from pandas import DataFrame, concat
 
 from trapilot.LIB.configuration import TimeRange
-from trapilot.LIB.constants import (DATETIME_PRINT_FORMAT,
-                                    DEFAULT_DATAFRAME_COLUMNS,
-                                    DL_DATA_TIMEFRAMES, DOCS_LINK, Config)
-from trapilot.LIB.data.converter import (clean_ohlcv_dataframe,
-                                         convert_trades_to_ohlcv,
-                                         ohlcv_to_dataframe,
-                                         trades_df_remove_duplicates,
-                                         trades_list_to_df)
-from trapilot.LIB.data.history.idatahandler import (IDataHandler,
-                                                    get_datahandler)
+from trapilot.LIB.constants import (
+    DATETIME_PRINT_FORMAT,
+    DEFAULT_DATAFRAME_COLUMNS,
+    DL_DATA_TIMEFRAMES,
+    DOCS_LINK,
+    Config,
+)
+from trapilot.LIB.data.converter import (
+    clean_ohlcv_dataframe,
+    convert_trades_to_ohlcv,
+    ohlcv_to_dataframe,
+    trades_df_remove_duplicates,
+    trades_list_to_df,
+)
+from trapilot.LIB.data.history.idatahandler import IDataHandler, get_datahandler
 from trapilot.LIB.enums import CandleType
 from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.exchange import Exchange
-from trapilot.LIB.plugins.pairlist.pairlist_helpers import \
-    dynamic_expand_pairlist
+from trapilot.LIB.plugins.pairlist.pairlist_helpers import dynamic_expand_pairlist
 from trapilot.LIB.util import dt_ts, format_ms_time
 from trapilot.LIB.util.datetime_helpers import dt_now
 from trapilot.LIB.util.migrations import migrate_data

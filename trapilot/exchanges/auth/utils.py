@@ -30,14 +30,14 @@ auth_cache = {}
 #     exchange_type = "coinbase_pro"
 #     name, portfolio = __load_auth(keys_file, name, exchange_type)
 #
-#     return [portfolio["API_KEY"], portfolio["API_SECRET"], portfolio["API_PASS"]], name
+#     return [portfolio["api_key"], portfolio["api_secret"], portfolio["API_PASS"]], name
 #
 #
 # def load_auth_binance(keys_file, name):
 #     exchange_type = "binance"
 #     name, portfolio = __load_auth(keys_file, name, exchange_type)
 #
-#     return [portfolio["API_KEY"], portfolio["API_SECRET"]], name
+#     return [portfolio["api_key"], portfolio["api_secret"]], name
 
 
 def load_auth(exchange_type, keys_file=None, name=None):

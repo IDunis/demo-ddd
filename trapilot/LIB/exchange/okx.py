@@ -6,8 +6,12 @@ import ccxt
 
 from trapilot.LIB.constants import BuySell
 from trapilot.LIB.enums import CandleType, MarginMode, PriceType, TradingMode
-from trapilot.LIB.exceptions import (DDosProtection, OperationalException,
-                                     RetryableOrderError, TemporaryError)
+from trapilot.LIB.exceptions import (
+    DDosProtection,
+    OperationalException,
+    RetryableOrderError,
+    TemporaryError,
+)
 from trapilot.LIB.exchange import Exchange, date_minus_candles
 from trapilot.LIB.exchange.common import retrier
 from trapilot.LIB.misc import safe_value_fallback2

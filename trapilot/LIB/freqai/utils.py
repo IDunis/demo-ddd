@@ -15,8 +15,7 @@ from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.exchange import timeframe_to_seconds
 from trapilot.LIB.freqai.data_drawer import FreqaiDataDrawer
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
-from trapilot.LIB.plugins.pairlist.pairlist_helpers import \
-    dynamic_expand_pairlist
+from trapilot.LIB.plugins.pairlist.pairlist_helpers import dynamic_expand_pairlist
 
 logger = logging.getLogger(__name__)
 
@@ -207,7 +206,8 @@ def get_tb_logger(model_type: str, path: Path, activate: bool) -> Any:
 
         return TBLogger(path, activate)
     else:
-        from trapilot.LIB.freqai.tensorboard.base_tensorboard import \
-            BaseTensorboardLogger
+        from trapilot.LIB.freqai.tensorboard.base_tensorboard import (
+            BaseTensorboardLogger,
+        )
 
         return BaseTensorboardLogger(path, activate)

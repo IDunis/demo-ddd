@@ -7,8 +7,7 @@ from pandas import DataFrame
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 
-from trapilot.LIB.freqai.base_models.BaseClassifierModel import \
-    BaseClassifierModel
+from trapilot.LIB.freqai.base_models.BaseClassifierModel import BaseClassifierModel
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
 
 logger = logging.getLogger(__name__)

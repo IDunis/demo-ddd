@@ -4,8 +4,7 @@ from typing import Dict
 
 from trapilot.LIB.constants import LAST_BT_RESULT_FN
 from trapilot.LIB.misc import file_dump_joblib, file_dump_json
-from trapilot.LIB.optimize.backtest_caching import \
-    get_backtest_metadata_filename
+from trapilot.LIB.optimize.backtest_caching import get_backtest_metadata_filename
 from trapilot.LIB.types import BacktestResultType
 
 logger = logging.getLogger(__name__)

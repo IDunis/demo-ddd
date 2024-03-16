@@ -18,8 +18,9 @@
 
 import time
 
-from trapilot.exchanges.interfaces.abc_exchange_interface import \
-    ABCExchangeInterface as Interface
+from trapilot.exchanges.interfaces.abc_exchange_interface import (
+    ABCExchangeInterface as Interface,
+)
 from trapilot.utils.utils import AttributeDict, format_with_new_line
 
 

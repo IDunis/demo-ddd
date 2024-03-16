@@ -3,10 +3,10 @@ from typing import Any, Dict
 
 from xgboost import XGBRegressor
 
-from trapilot.LIB.freqai.base_models.BaseRegressionModel import \
-    BaseRegressionModel
-from trapilot.LIB.freqai.base_models.FreqaiMultiOutputRegressor import \
-    FreqaiMultiOutputRegressor
+from trapilot.LIB.freqai.base_models.BaseRegressionModel import BaseRegressionModel
+from trapilot.LIB.freqai.base_models.FreqaiMultiOutputRegressor import (
+    FreqaiMultiOutputRegressor,
+)
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
 
 logger = logging.getLogger(__name__)

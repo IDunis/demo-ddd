@@ -55,5 +55,5 @@ def create_client(auth: AuthConstructor, sandbox_mode=True):
         api_url = live_url
 
     return REST(
-        auth.keys["API_KEY"], auth.keys["API_SECRET"], api_url, "v2", raw_data=True
+        auth.keys["api_key"], auth.keys["api_secret"], api_url, "v2", raw_data=True
     )

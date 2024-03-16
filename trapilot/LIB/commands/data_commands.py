@@ -4,11 +4,12 @@ from collections import defaultdict
 from typing import Any, Dict
 
 from trapilot.LIB.configuration import TimeRange, setup_utils_configuration
-from trapilot.LIB.constants import (DATETIME_PRINT_FORMAT, DL_DATA_TIMEFRAMES,
-                                    Config)
-from trapilot.LIB.data.converter import (convert_ohlcv_format,
-                                         convert_trades_format,
-                                         convert_trades_to_ohlcv)
+from trapilot.LIB.constants import DATETIME_PRINT_FORMAT, DL_DATA_TIMEFRAMES, Config
+from trapilot.LIB.data.converter import (
+    convert_ohlcv_format,
+    convert_trades_format,
+    convert_trades_to_ohlcv,
+)
 from trapilot.LIB.data.history import download_data_main
 from trapilot.LIB.enums import RunMode, TradingMode
 from trapilot.LIB.exceptions import OperationalException

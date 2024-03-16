@@ -5,8 +5,7 @@ from typing import Any, Dict
 
 from catboost import CatBoostRegressor, Pool
 
-from trapilot.LIB.freqai.base_models.BaseRegressionModel import \
-    BaseRegressionModel
+from trapilot.LIB.freqai.base_models.BaseRegressionModel import BaseRegressionModel
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
 
 logger = logging.getLogger(__name__)

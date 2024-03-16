@@ -22,8 +22,9 @@ from typing import Union
 
 import pandas
 
-from trapilot.exchanges.interfaces.abc_base_exchange_interface import \
-    ABCBaseExchangeInterface
+from trapilot.exchanges.interfaces.abc_base_exchange_interface import (
+    ABCBaseExchangeInterface,
+)
 from trapilot.exchanges.orders.limit_order import LimitOrder
 from trapilot.exchanges.orders.market_order import MarketOrder
 from trapilot.utils.utils import AttributeDict

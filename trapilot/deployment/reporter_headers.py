@@ -20,8 +20,7 @@ import smtplib
 import ssl
 from typing import Any
 
-from trapilot.exchanges.interfaces.paper_trade.backtest_result import \
-    BacktestResult
+from trapilot.exchanges.interfaces.paper_trade.backtest_result import BacktestResult
 from trapilot.frameworks.screener.screener import Screener
 from trapilot.frameworks.strategy import Strategy
 from trapilot.utils.utils import load_notify_preferences

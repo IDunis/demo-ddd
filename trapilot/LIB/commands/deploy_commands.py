@@ -7,7 +7,9 @@ import requests
 
 from trapilot.LIB.configuration import setup_utils_configuration
 from trapilot.LIB.configuration.directory_operations import (
-    copy_sample_files, create_userdata_dir)
+    copy_sample_files,
+    create_userdata_dir,
+)
 from trapilot.LIB.constants import USERPATH_STRATEGIES
 from trapilot.LIB.enums import RunMode
 from trapilot.LIB.exceptions import OperationalException

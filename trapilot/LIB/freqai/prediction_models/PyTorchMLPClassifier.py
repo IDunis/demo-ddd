@@ -2,11 +2,12 @@ from typing import Any, Dict
 
 import torch
 
-from trapilot.LIB.freqai.base_models.BasePyTorchClassifier import \
-    BasePyTorchClassifier
+from trapilot.LIB.freqai.base_models.BasePyTorchClassifier import BasePyTorchClassifier
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
 from trapilot.LIB.freqai.torch.PyTorchDataConvertor import (
-    DefaultPyTorchDataConvertor, PyTorchDataConvertor)
+    DefaultPyTorchDataConvertor,
+    PyTorchDataConvertor,
+)
 from trapilot.LIB.freqai.torch.PyTorchMLPModel import PyTorchMLPModel
 from trapilot.LIB.freqai.torch.PyTorchModelTrainer import PyTorchModelTrainer
 

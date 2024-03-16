@@ -21,8 +21,9 @@ import abc
 import trapilot
 from trapilot.exchanges.abc_base_exchange import ABCBaseExchange
 from trapilot.exchanges.auth.utils import write_auth_cache
-from trapilot.exchanges.interfaces.futures_exchange_interface import \
-    FuturesExchangeInterface
+from trapilot.exchanges.interfaces.futures_exchange_interface import (
+    FuturesExchangeInterface,
+)
 from trapilot.utils.utils import info_print
 
 

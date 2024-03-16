@@ -29,7 +29,9 @@ import trapilot
 from trapilot.exchanges.abc_exchange_websocket import ABCExchangeWebsocket
 from trapilot.exchanges.auth.utils import load_auth
 from trapilot.exchanges.interfaces.alpaca.alpaca_websocket_utils import (
-    parse_alpaca_timestamp, switch_type)
+    parse_alpaca_timestamp,
+    switch_type,
+)
 from trapilot.utils.utils import info_print
 
 
@@ -65,7 +67,7 @@ def create_ticker_connection(symbol, url, channel):
 
     ws.send(
         msgpack.packb(
-            {"action": "auth", "key": auth["API_KEY"], "secret": auth["API_SECRET"]}
+            {"action": "auth", "key": auth["api_key"], "secret": auth["api_secret"]}
         )
     )
     # Check if the response is valid

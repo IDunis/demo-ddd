@@ -20,8 +20,7 @@ import abc
 from functools import lru_cache
 
 import trapilot.utils.utils as utils
-from trapilot.exchanges.interfaces.abc_exchange_interface import \
-    ABCExchangeInterface
+from trapilot.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
 
 
 # TODO: need to add a cancel all orders function

@@ -25,8 +25,11 @@ from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.exchange import timeframe_to_seconds
 from trapilot.LIB.freqai.data_drawer import FreqaiDataDrawer
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
-from trapilot.LIB.freqai.utils import (get_tb_logger, plot_feature_importance,
-                                       record_params)
+from trapilot.LIB.freqai.utils import (
+    get_tb_logger,
+    plot_feature_importance,
+    record_params,
+)
 from trapilot.LIB.strategy.interface import IStrategy
 
 pd.options.mode.chained_assignment = None

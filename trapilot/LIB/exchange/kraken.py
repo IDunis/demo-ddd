@@ -9,8 +9,7 @@ from pandas import DataFrame
 
 from trapilot.LIB.constants import BuySell
 from trapilot.LIB.enums import MarginMode, TradingMode
-from trapilot.LIB.exceptions import (DDosProtection, OperationalException,
-                                     TemporaryError)
+from trapilot.LIB.exceptions import DDosProtection, OperationalException, TemporaryError
 from trapilot.LIB.exchange import Exchange
 from trapilot.LIB.exchange.common import retrier
 from trapilot.LIB.exchange.types import Tickers

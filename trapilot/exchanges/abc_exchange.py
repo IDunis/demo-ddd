@@ -19,8 +19,9 @@
 import abc
 
 from trapilot.exchanges.abc_base_exchange import ABCBaseExchange
-from trapilot.exchanges.interfaces.abc_base_exchange_interface import \
-    ABCBaseExchangeInterface
+from trapilot.exchanges.interfaces.abc_base_exchange_interface import (
+    ABCBaseExchangeInterface,
+)
 
 
 class ABCExchange(ABCBaseExchange, abc.ABC):

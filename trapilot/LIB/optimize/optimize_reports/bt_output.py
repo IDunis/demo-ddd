@@ -4,8 +4,9 @@ from typing import Any, Dict, List
 from tabulate import tabulate
 
 from trapilot.LIB.constants import UNLIMITED_STAKE_AMOUNT, Config
-from trapilot.LIB.optimize.optimize_reports.optimize_reports import \
-    generate_periodic_breakdown_stats
+from trapilot.LIB.optimize.optimize_reports.optimize_reports import (
+    generate_periodic_breakdown_stats,
+)
 from trapilot.LIB.types import BacktestResultType
 from trapilot.LIB.util import decimals_per_coin, fmt_coin
 

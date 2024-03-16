@@ -5,12 +5,22 @@ from collections import defaultdict
 from copy import deepcopy
 from typing import List, Optional
 
-from trapilot.enums import (ContractType, HedgeMode, MarginType, OrderStatus,
-                            OrderType, PositionMode, Side, TimeInForce)
-from trapilot.exchanges.interfaces.futures_exchange_interface import \
-    FuturesExchangeInterface
-from trapilot.exchanges.interfaces.paper_trade.backtesting_wrapper import \
-    BacktestingWrapper
+from trapilot.enums import (
+    ContractType,
+    HedgeMode,
+    MarginType,
+    OrderStatus,
+    OrderType,
+    PositionMode,
+    Side,
+    TimeInForce,
+)
+from trapilot.exchanges.interfaces.futures_exchange_interface import (
+    FuturesExchangeInterface,
+)
+from trapilot.exchanges.interfaces.paper_trade.backtesting_wrapper import (
+    BacktestingWrapper,
+)
 from trapilot.exchanges.orders.futures.futures_order import FuturesOrder
 from trapilot.utils import utils as utils
 from trapilot.utils.exceptions import BacktestingException, InvalidOrder

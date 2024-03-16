@@ -52,8 +52,8 @@ class API:
     API_TESTNET_URL = "https://testnet.binance.vision/api"
 
     def __init__(self, auth, tld: str = ".us", testnet: bool = False):
-        self.api_key = auth.keys["API_KEY"]
-        self.secret_key = auth.keys["API_SECRET"]
+        self.api_key = auth.keys["api_key"]
+        self.secret_key = auth.keys["api_secret"]
 
         self.__auth = BinanceExchangeAuth(self.api_key)
         if not testnet:

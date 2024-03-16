@@ -7,16 +7,20 @@ import pandas as pd
 
 from trapilot.LIB.configuration import TimeRange
 from trapilot.LIB.constants import Config
-from trapilot.LIB.data.btanalysis import (analyze_trade_parallelism,
-                                          extract_trades_of_period,
-                                          load_trades)
+from trapilot.LIB.data.btanalysis import (
+    analyze_trade_parallelism,
+    extract_trades_of_period,
+    load_trades,
+)
 from trapilot.LIB.data.converter import trim_dataframe
 from trapilot.LIB.data.dataprovider import DataProvider
 from trapilot.LIB.data.history import get_timerange, load_data
-from trapilot.LIB.data.metrics import (calculate_max_drawdown,
-                                       calculate_underwater,
-                                       combine_dataframes_with_mean,
-                                       create_cum_profit)
+from trapilot.LIB.data.metrics import (
+    calculate_max_drawdown,
+    calculate_underwater,
+    combine_dataframes_with_mean,
+    create_cum_profit,
+)
 from trapilot.LIB.enums import CandleType
 from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.exchange import timeframe_to_prev_date, timeframe_to_seconds

@@ -24,14 +24,17 @@ from typing import Any, Union
 from trapilot.exchanges.abc_base_exchange import ABCBaseExchange
 from trapilot.exchanges.exchange import Exchange
 from trapilot.exchanges.futures.futures_exchange import FuturesExchange
-from trapilot.exchanges.interfaces.abc_exchange_interface import \
-    ABCExchangeInterface
-from trapilot.exchanges.interfaces.paper_trade.abc_backtest_controller import \
-    ABCBacktestController
+from trapilot.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
+from trapilot.exchanges.interfaces.paper_trade.abc_backtest_controller import (
+    ABCBacktestController,
+)
 from trapilot.exchanges.interfaces.paper_trade.backtest_controller import (
-    BackTestController, BacktestResult)
-from trapilot.exchanges.interfaces.paper_trade.futures.futures_paper_trade import \
-    FuturesPaperTrade
+    BackTestController,
+    BacktestResult,
+)
+from trapilot.exchanges.interfaces.paper_trade.futures.futures_paper_trade import (
+    FuturesPaperTrade,
+)
 from trapilot.exchanges.interfaces.paper_trade.paper_trade import PaperTrade
 from trapilot.utils.time_builder import time_interval_to_seconds
 

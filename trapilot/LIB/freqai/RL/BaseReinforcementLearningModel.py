@@ -23,10 +23,12 @@ from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
 from trapilot.LIB.freqai.freqai_interface import IFreqaiModel
 from trapilot.LIB.freqai.RL.Base5ActionRLEnv import Actions, Base5ActionRLEnv
-from trapilot.LIB.freqai.RL.BaseEnvironment import (BaseActions,
-                                                    BaseEnvironment, Positions)
-from trapilot.LIB.freqai.tensorboard.TensorboardCallback import \
-    TensorboardCallback
+from trapilot.LIB.freqai.RL.BaseEnvironment import (
+    BaseActions,
+    BaseEnvironment,
+    Positions,
+)
+from trapilot.LIB.freqai.tensorboard.TensorboardCallback import TensorboardCallback
 from trapilot.LIB.persistence import Trade
 
 logger = logging.getLogger(__name__)

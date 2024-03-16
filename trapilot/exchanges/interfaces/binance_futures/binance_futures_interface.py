@@ -20,8 +20,7 @@ import time
 from operator import itemgetter
 from typing import Optional
 
-from trapilot.exchanges.interfaces.binance.binance_interface import \
-    BinanceInterface
+from trapilot.exchanges.interfaces.binance.binance_interface import BinanceInterface
 
 try:
     from functools import cached_property
@@ -38,10 +37,19 @@ import pandas as pd
 from binance.client import Client
 
 import trapilot
-from trapilot.enums import (ContractType, HedgeMode, MarginType, OrderStatus,
-                            OrderType, PositionMode, Side, TimeInForce)
-from trapilot.exchanges.interfaces.futures_exchange_interface import \
-    FuturesExchangeInterface
+from trapilot.enums import (
+    ContractType,
+    HedgeMode,
+    MarginType,
+    OrderStatus,
+    OrderType,
+    PositionMode,
+    Side,
+    TimeInForce,
+)
+from trapilot.exchanges.interfaces.futures_exchange_interface import (
+    FuturesExchangeInterface,
+)
 from trapilot.exchanges.orders.futures.futures_order import FuturesOrder
 from trapilot.utils import time_builder, utils
 
@@ -86,7 +94,7 @@ class BinanceFuturesInterface(FuturesExchangeInterface):
             self.calls.futures_account()
         except Exception as e:
             raise Exception(
-                f"{e.error_message}. Are you trying to use your normal exchange keys while in sandbox mode? \nTry "
+                f"{e.error_message}. Are you trying to use your normal exchange keys while in dry_run mode? \nTry "
                 "toggling the 'use_sandbox' setting in your user_data/settings.json or check if the keys were input "
                 "correctly into your user_data/keys.json."
             )

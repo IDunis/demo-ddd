@@ -18,10 +18,17 @@
 
 from dataclasses import dataclass, field
 
-from trapilot.enums import (ContractType, OrderStatus, OrderType, PositionMode,
-                            Side, TimeInForce)
-from trapilot.exchanges.interfaces.abc_base_exchange_interface import \
-    ABCBaseExchangeInterface
+from trapilot.enums import (
+    ContractType,
+    OrderStatus,
+    OrderType,
+    PositionMode,
+    Side,
+    TimeInForce,
+)
+from trapilot.exchanges.interfaces.abc_base_exchange_interface import (
+    ABCBaseExchangeInterface,
+)
 
 
 @dataclass

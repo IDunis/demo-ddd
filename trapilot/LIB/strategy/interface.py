@@ -10,22 +10,39 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from pandas import DataFrame
 
-from trapilot.LIB.constants import (CUSTOM_TAG_MAX_LENGTH, Config, IntOrInf,
-                                    ListPairsWithTimeframes)
+from trapilot.LIB.constants import (
+    CUSTOM_TAG_MAX_LENGTH,
+    Config,
+    IntOrInf,
+    ListPairsWithTimeframes,
+)
 from trapilot.LIB.data.dataprovider import DataProvider
-from trapilot.LIB.enums import (CandleType, ExitCheckTuple, ExitType,
-                                MarketDirection, RunMode, SignalDirection,
-                                SignalTagType, SignalType, TradingMode)
+from trapilot.LIB.enums import (
+    CandleType,
+    ExitCheckTuple,
+    ExitType,
+    MarketDirection,
+    RunMode,
+    SignalDirection,
+    SignalTagType,
+    SignalType,
+    TradingMode,
+)
 from trapilot.LIB.exceptions import OperationalException, StrategyError
-from trapilot.LIB.exchange import (timeframe_to_minutes,
-                                   timeframe_to_next_date,
-                                   timeframe_to_seconds)
+from trapilot.LIB.exchange import (
+    timeframe_to_minutes,
+    timeframe_to_next_date,
+    timeframe_to_seconds,
+)
 from trapilot.LIB.misc import remove_entry_exit_signals
 from trapilot.LIB.persistence import Order, PairLocks, Trade
 from trapilot.LIB.strategy.hyper import HyperStrategyMixin
 from trapilot.LIB.strategy.informative_decorator import (
-    InformativeData, PopulateIndicators, _create_and_merge_informative_pair,
-    _format_pair_name)
+    InformativeData,
+    PopulateIndicators,
+    _create_and_merge_informative_pair,
+    _format_pair_name,
+)
 from trapilot.LIB.strategy.strategy_wrapper import strategy_safe_wrapper
 from trapilot.LIB.util import dt_now
 from trapilot.LIB.wallets import Wallets
@@ -163,10 +180,8 @@ class IStrategy(ABC, HyperStrategyMixin):
     def load_freqAI_model(self) -> None:
         if self.config.get("freqai", {}).get("enabled", False):
             # Import here to avoid importing this if freqAI is disabled
-            from trapilot.LIB.freqai.utils import \
-                download_all_data_for_training
-            from trapilot.LIB.resolvers.freqaimodel_resolver import \
-                FreqaiModelResolver
+            from trapilot.LIB.freqai.utils import download_all_data_for_training
+            from trapilot.LIB.resolvers.freqaimodel_resolver import FreqaiModelResolver
 
             self.freqai = FreqaiModelResolver.load_freqaimodel(self.config)
             self.freqai_info = self.config["freqai"]

@@ -115,14 +115,15 @@ class ApiServer(RPCHandler):
 
     def configure_app(self, app: FastAPI, config):
         from trapilot.LIB.rpc.api_server.api_auth import (
-            http_basic_or_jwt_token, router_login)
-        from trapilot.LIB.rpc.api_server.api_background_tasks import \
-            router as api_bg_tasks
-        from trapilot.LIB.rpc.api_server.api_backtest import \
-            router as api_backtest
+            http_basic_or_jwt_token,
+            router_login,
+        )
+        from trapilot.LIB.rpc.api_server.api_background_tasks import (
+            router as api_bg_tasks,
+        )
+        from trapilot.LIB.rpc.api_server.api_backtest import router as api_backtest
         from trapilot.LIB.rpc.api_server.api_v1 import router as api_v1
-        from trapilot.LIB.rpc.api_server.api_v1 import \
-            router_public as api_v1_public
+        from trapilot.LIB.rpc.api_server.api_v1 import router_public as api_v1_public
         from trapilot.LIB.rpc.api_server.api_ws import router as ws_router
         from trapilot.LIB.rpc.api_server.deps import is_webserver_mode
         from trapilot.LIB.rpc.api_server.web_ui import router_ui

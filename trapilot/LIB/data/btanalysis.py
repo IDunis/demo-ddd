@@ -14,8 +14,7 @@ import pandas as pd
 from trapilot.LIB.constants import LAST_BT_RESULT_FN, IntOrInf
 from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.misc import file_dump_json, json_load
-from trapilot.LIB.optimize.backtest_caching import \
-    get_backtest_metadata_filename
+from trapilot.LIB.optimize.backtest_caching import get_backtest_metadata_filename
 from trapilot.LIB.persistence import LocalTrade, Trade, init_db
 from trapilot.LIB.types import BacktestHistoryEntryType, BacktestResultType
 

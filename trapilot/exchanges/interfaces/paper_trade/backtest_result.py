@@ -20,8 +20,7 @@ import pandas as pd
 from pandas import DataFrame, Timestamp, to_datetime
 
 from trapilot.utils import info_print
-from trapilot.utils import \
-    time_interval_to_seconds as _time_interval_to_seconds
+from trapilot.utils import time_interval_to_seconds as _time_interval_to_seconds
 
 
 class BacktestResult:

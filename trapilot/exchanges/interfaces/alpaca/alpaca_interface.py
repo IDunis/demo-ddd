@@ -33,9 +33,11 @@ from trapilot.exchanges.orders.stop_loss import StopLossOrder
 from trapilot.exchanges.orders.take_profit import TakeProfitOrder
 from trapilot.utils import utils as utils
 from trapilot.utils.exceptions import APIException
-from trapilot.utils.time_builder import (build_minute,
-                                         number_interval_to_string,
-                                         time_interval_to_seconds)
+from trapilot.utils.time_builder import (
+    build_minute,
+    number_interval_to_string,
+    time_interval_to_seconds,
+)
 
 
 class AlpacaInterface(ExchangeInterface):
@@ -54,7 +56,7 @@ class AlpacaInterface(ExchangeInterface):
         except alpaca_trade_api.rest.APIError as e:
             raise APIException(
                 e.__str__() + ". Are you trying to use your normal exchange keys "
-                "while in sandbox mode? \nTry toggling the 'sandbox' setting "
+                "while in dry_run mode? \nTry toggling the 'dry_run' setting "
                 "in your user_data/keys.json or check if the keys were input correctly into your "
                 "user_data/keys.json."
             )

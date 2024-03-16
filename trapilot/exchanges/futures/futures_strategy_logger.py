@@ -19,8 +19,10 @@
 from abc import ABC
 
 from trapilot.enums import Side
-from trapilot.exchanges.interfaces.futures_exchange_interface import \
-    FuturesExchangeInterface
+from trapilot.exchanges.interfaces.futures_exchange_interface import (
+    FuturesExchangeInterface,
+)
+
 # TODO
 from trapilot.exchanges.orders.futures.futures_order import FuturesOrder
 

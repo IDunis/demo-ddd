@@ -8,8 +8,7 @@ from typing import Dict, List, Optional, Tuple
 import ccxt
 
 from trapilot.LIB.enums import CandleType, MarginMode, PriceType, TradingMode
-from trapilot.LIB.exceptions import (DDosProtection, OperationalException,
-                                     TemporaryError)
+from trapilot.LIB.exceptions import DDosProtection, OperationalException, TemporaryError
 from trapilot.LIB.exchange import Exchange
 from trapilot.LIB.exchange.common import retrier
 from trapilot.LIB.exchange.types import OHLCVResponse, Tickers

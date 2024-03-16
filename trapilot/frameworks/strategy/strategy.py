@@ -25,13 +25,10 @@ import warnings
 import trapilot
 from trapilot.exchanges.abc_base_exchange import ABCBaseExchange
 from trapilot.exchanges.exchange import Exchange
-from trapilot.exchanges.interfaces.abc_exchange_interface import \
-    ABCExchangeInterface
-from trapilot.exchanges.interfaces.paper_trade.backtest_result import \
-    BacktestResult
+from trapilot.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
+from trapilot.exchanges.interfaces.paper_trade.backtest_result import BacktestResult
 from trapilot.exchanges.strategy_logger import StrategyLogger
 from trapilot.frameworks.model.model import Model
-from trapilot.frameworks.strategy import StrategyState
 from trapilot.frameworks.strategy.strategy_base import EventType, StrategyBase
 from trapilot.utils.utils import info_print
 

@@ -14,8 +14,7 @@ from trapilot.LIB.constants import Config, ListPairsWithTimeframes
 from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.exchange import timeframe_to_minutes, timeframe_to_prev_date
 from trapilot.LIB.exchange.types import Tickers
-from trapilot.LIB.plugins.pairlist.IPairList import (IPairList,
-                                                     PairlistParameter)
+from trapilot.LIB.plugins.pairlist.IPairList import IPairList, PairlistParameter
 from trapilot.LIB.util import dt_now, format_ms_time
 
 logger = logging.getLogger(__name__)

@@ -10,8 +10,7 @@ from trapilot.LIB.constants import Config
 from trapilot.LIB.enums import RunMode
 from trapilot.LIB.exchange import timeframe_to_seconds
 from trapilot.LIB.exchange.types import Tickers
-from trapilot.LIB.plugins.pairlist.IPairList import (IPairList,
-                                                     PairlistParameter)
+from trapilot.LIB.plugins.pairlist.IPairList import IPairList, PairlistParameter
 from trapilot.LIB.util.periodic_cache import PeriodicCache
 
 logger = logging.getLogger(__name__)

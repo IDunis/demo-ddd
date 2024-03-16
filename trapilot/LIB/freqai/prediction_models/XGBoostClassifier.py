@@ -9,8 +9,7 @@ from pandas.api.types import is_integer_dtype
 from sklearn.preprocessing import LabelEncoder
 from xgboost import XGBClassifier
 
-from trapilot.LIB.freqai.base_models.BaseClassifierModel import \
-    BaseClassifierModel
+from trapilot.LIB.freqai.base_models.BaseClassifierModel import BaseClassifierModel
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
 
 logger = logging.getLogger(__name__)

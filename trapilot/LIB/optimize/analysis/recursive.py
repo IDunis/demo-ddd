@@ -9,7 +9,9 @@ from pandas import DataFrame
 
 from trapilot.LIB.exchange import timeframe_to_minutes
 from trapilot.LIB.loggers.set_log_levels import (
-    reduce_verbosity_for_bias_tester, restore_verbosity_for_bias_tester)
+    reduce_verbosity_for_bias_tester,
+    restore_verbosity_for_bias_tester,
+)
 from trapilot.LIB.optimize.backtesting import Backtesting
 from trapilot.LIB.optimize.base_analysis import BaseAnalysis, VarHolder
 

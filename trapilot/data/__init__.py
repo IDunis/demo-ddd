@@ -16,8 +16,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from trapilot.data.data_reader import (DataTypes, JsonEventReader, PriceReader,
-                                       TickReader)
+from trapilot.data.data_reader import (
+    DataTypes,
+    JsonEventReader,
+    PriceReader,
+    TickReader,
+)
 
 """
 Some datatype examples

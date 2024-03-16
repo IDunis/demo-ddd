@@ -9,31 +9,40 @@ Note: Be careful with file-scoped imports in these subfiles.
 from trapilot.LIB.commands.analyze_commands import start_analysis_entries_exits
 from trapilot.LIB.commands.arguments import Arguments
 from trapilot.LIB.commands.build_config_commands import start_new_config
-from trapilot.LIB.commands.data_commands import (start_convert_data,
-                                                 start_convert_trades,
-                                                 start_download_data,
-                                                 start_list_data)
+from trapilot.LIB.commands.data_commands import (
+    start_convert_data,
+    start_convert_trades,
+    start_download_data,
+    start_list_data,
+)
 from trapilot.LIB.commands.db_commands import start_convert_db
-from trapilot.LIB.commands.deploy_commands import (start_create_userdir,
-                                                   start_install_ui,
-                                                   start_new_strategy)
-from trapilot.LIB.commands.hyperopt_commands import (start_hyperopt_list,
-                                                     start_hyperopt_show)
-from trapilot.LIB.commands.list_commands import (start_list_exchanges,
-                                                 start_list_freqAI_models,
-                                                 start_list_markets,
-                                                 start_list_strategies,
-                                                 start_list_timeframes,
-                                                 start_show_trades)
-from trapilot.LIB.commands.optimize_commands import (start_backtesting,
-                                                     start_backtesting_show,
-                                                     start_edge,
-                                                     start_hyperopt,
-                                                     start_lookahead_analysis,
-                                                     start_recursive_analysis)
+from trapilot.LIB.commands.deploy_commands import (
+    start_create_userdir,
+    start_install_ui,
+    start_new_strategy,
+)
+from trapilot.LIB.commands.hyperopt_commands import (
+    start_hyperopt_list,
+    start_hyperopt_show,
+)
+from trapilot.LIB.commands.list_commands import (
+    start_list_exchanges,
+    start_list_freqAI_models,
+    start_list_markets,
+    start_list_strategies,
+    start_list_timeframes,
+    start_show_trades,
+)
+from trapilot.LIB.commands.optimize_commands import (
+    start_backtesting,
+    start_backtesting_show,
+    start_edge,
+    start_hyperopt,
+    start_lookahead_analysis,
+    start_recursive_analysis,
+)
 from trapilot.LIB.commands.pairlist_commands import start_test_pairlist
-from trapilot.LIB.commands.plot_commands import (start_plot_dataframe,
-                                                 start_plot_profit)
+from trapilot.LIB.commands.plot_commands import start_plot_dataframe, start_plot_profit
 from trapilot.LIB.commands.strategy_utils_commands import start_strategy_update
 from trapilot.LIB.commands.trade_commands import start_trading
 from trapilot.LIB.commands.webserver_commands import start_webserver

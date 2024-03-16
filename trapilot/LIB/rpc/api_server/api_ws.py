@@ -10,14 +10,15 @@ from trapilot.LIB.enums import RPCMessageType, RPCRequestType
 from trapilot.LIB.exceptions import FreqtradeException
 from trapilot.LIB.rpc.api_server.api_auth import validate_ws_token
 from trapilot.LIB.rpc.api_server.deps import get_message_stream, get_rpc
-from trapilot.LIB.rpc.api_server.ws.channel import (WebSocketChannel,
-                                                    create_channel)
+from trapilot.LIB.rpc.api_server.ws.channel import WebSocketChannel, create_channel
 from trapilot.LIB.rpc.api_server.ws.message_stream import MessageStream
-from trapilot.LIB.rpc.api_server.ws_schemas import (WSAnalyzedDFMessage,
-                                                    WSErrorMessage,
-                                                    WSMessageSchema,
-                                                    WSRequestSchema,
-                                                    WSWhitelistMessage)
+from trapilot.LIB.rpc.api_server.ws_schemas import (
+    WSAnalyzedDFMessage,
+    WSErrorMessage,
+    WSMessageSchema,
+    WSRequestSchema,
+    WSWhitelistMessage,
+)
 from trapilot.LIB.rpc.rpc import RPC
 
 logger = logging.getLogger(__name__)

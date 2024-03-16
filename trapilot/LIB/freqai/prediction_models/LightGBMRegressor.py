@@ -3,8 +3,7 @@ from typing import Any, Dict
 
 from lightgbm import LGBMRegressor
 
-from trapilot.LIB.freqai.base_models.BaseRegressionModel import \
-    BaseRegressionModel
+from trapilot.LIB.freqai.base_models.BaseRegressionModel import BaseRegressionModel
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
 
 logger = logging.getLogger(__name__)

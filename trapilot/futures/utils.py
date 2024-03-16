@@ -1,6 +1,7 @@
 from trapilot.enums import Side
-from trapilot.exchanges.interfaces.futures_exchange_interface import \
-    FuturesExchangeInterface
+from trapilot.exchanges.interfaces.futures_exchange_interface import (
+    FuturesExchangeInterface,
+)
 from trapilot.frameworks.strategy import FuturesStrategyState
 
 

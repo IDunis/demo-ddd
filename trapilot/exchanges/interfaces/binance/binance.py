@@ -31,22 +31,22 @@ class Binance(Exchange):
 
         # Load the auth from the keys file
         auth = AuthConstructor(
-            keys_path, portfolio_name, "binance", ["API_KEY", "API_SECRET", "sandbox"]
+            keys_path, portfolio_name, "binance", ["api_key", "api_secret", "dry_run"]
         )
 
-        sandbox = super().evaluate_sandbox(auth)
+        dry_run = super().evaluate_sandbox(auth)
 
-        if sandbox:
+        if dry_run:
             calls = Client(
-                api_key=auth.keys["API_KEY"],
-                api_secret=auth.keys["API_SECRET"],
+                api_key=auth.keys["api_key"],
+                api_secret=auth.keys["api_secret"],
                 tld=self.preferences["settings"]["binance"]["binance_tld"],
                 testnet=True,
             )
         else:
             calls = Client(
-                api_key=auth.keys["API_KEY"],
-                api_secret=auth.keys["API_SECRET"],
+                api_key=auth.keys["api_key"],
+                api_secret=auth.keys["api_secret"],
                 tld=self.preferences["settings"]["binance"]["binance_tld"],
             )
 

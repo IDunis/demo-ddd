@@ -53,7 +53,7 @@ class Exchange:
             k.replace("_", " ")
             .title()
             .replace("Api", "API"): k  # autogen key instructions
-            for k in key_info or ["API_KEY", "API_SECRET"]
+            for k in key_info or ["api_key", "api_secret"]
         }  # default to just key/secret
         self.python_class = python_class or name.replace("_", " ").title().replace(
             " ", ""
@@ -68,19 +68,19 @@ EXCHANGES = [
         "alpaca",
         ["MSFT", "GME", "AAPL"],
         lambda auth, tld: alpaca_trade_api.REST(
-            key_id=auth["API_KEY"],
-            secret_key=auth["API_SECRET"],
-            base_url=(alpaca_api.live_url, alpaca_api.paper_url)[auth["sandbox"]],
+            key_id=auth["api_key"],
+            secret_key=auth["api_secret"],
+            base_url=(alpaca_api.live_url, alpaca_api.paper_url)[auth["dry_run"]],
         ).get_account(),
     ),
     Exchange(
         "binance",
         ["BTC-USDT", "ETH-USDT", "SOL-USDT"],
         lambda auth, tld: BinanceClient(
-            api_key=auth["API_KEY"],
-            api_secret=auth["API_SECRET"],
+            api_key=auth["api_key"],
+            api_secret=auth["api_secret"],
             tld=tld,
-            testnet=auth["sandbox"],
+            testnet=auth["dry_run"],
         ).get_account(),
         tlds=["com", "us"],
         currency="USDT",
@@ -89,9 +89,9 @@ EXCHANGES = [
         "ssi",
         ["HPG"],
         lambda auth, tld: ssi_api.REST(
-            key_id=auth["API_KEY"],
-            secret_key=auth["API_SECRET"],
-            base_url=(ssi_api.live_url, ssi_api.paper_url)[auth["sandbox"]],
+            key_id=auth["api_key"],
+            secret_key=auth["api_secret"],
+            base_url=(ssi_api.live_url, ssi_api.paper_url)[auth["dry_run"]],
         ).get_account(),
     ),
 ]

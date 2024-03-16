@@ -4,9 +4,9 @@ This module contains the class to persist trades into SQLite
 
 import logging
 from dataclasses import dataclass
-from typing import ClassVar
+from typing import Any, ClassVar
 
-from sqlalchemy import Boolean, Float, Integer, String
+from sqlalchemy import Boolean, Float, Integer, ScalarResult, Select, String, select
 from sqlalchemy.orm import Mapped, mapped_column
 
 from trapilot.persistence.base import ModelBase, SessionType
@@ -32,6 +32,33 @@ class SettingKey(ModelBase):
     dry_run: Mapped[bool] = mapped_column(Boolean, default=True)
     api_key: Mapped[str] = mapped_column(String(255), nullable=True)
     api_secret: Mapped[str] = mapped_column(String(255), nullable=True)
+
+    def delete(self) -> None:
+        SettingKey.session.delete(self)
+        SettingKey.commit()
+
+    @staticmethod
+    def get_keys_query(filter=None) -> Select:
+        if filter is not None:
+            if not isinstance(filter, list):
+                filter = [filter]
+            query = select(SettingKey).filter(*filter)
+        else:
+            query = select(SettingKey)
+        return query
+
+    @staticmethod
+    def get_keys(filter=None) -> ScalarResult["SettingKey"]:
+        query = SettingKey.get_keys_query(filter)
+        return SettingKey.session.scalars(query)
+
+    @staticmethod
+    def commit():
+        SettingKey.session.commit()
+
+    @staticmethod
+    def rollback():
+        SettingKey.session.rollback()
 
 
 class SettingNotify(ModelBase):

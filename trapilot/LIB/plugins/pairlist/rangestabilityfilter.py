@@ -13,8 +13,7 @@ from trapilot.LIB.constants import Config, ListPairsWithTimeframes
 from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.exchange.types import Tickers
 from trapilot.LIB.misc import plural
-from trapilot.LIB.plugins.pairlist.IPairList import (IPairList,
-                                                     PairlistParameter)
+from trapilot.LIB.plugins.pairlist.IPairList import IPairList, PairlistParameter
 from trapilot.LIB.util import dt_floor_day, dt_now, dt_ts
 
 logger = logging.getLogger(__name__)

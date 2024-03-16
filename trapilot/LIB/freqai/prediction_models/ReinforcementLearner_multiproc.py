@@ -7,11 +7,11 @@ from sb3_contrib.common.maskable.utils import is_masking_supported
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor
 
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
-from trapilot.LIB.freqai.prediction_models.ReinforcementLearner import \
-    ReinforcementLearner
+from trapilot.LIB.freqai.prediction_models.ReinforcementLearner import (
+    ReinforcementLearner,
+)
 from trapilot.LIB.freqai.RL.BaseReinforcementLearningModel import make_env
-from trapilot.LIB.freqai.tensorboard.TensorboardCallback import \
-    TensorboardCallback
+from trapilot.LIB.freqai.tensorboard.TensorboardCallback import TensorboardCallback
 
 logger = logging.getLogger(__name__)
 

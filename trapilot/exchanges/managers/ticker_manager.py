@@ -21,10 +21,12 @@ import random
 import requests
 
 import trapilot.utils.utils
-from trapilot.exchanges.interfaces.alpaca.alpaca_websocket import \
-    Tickers as Alpaca_Ticker
-from trapilot.exchanges.interfaces.binance.binance_websocket import \
-    Tickers as Binance_Ticker
+from trapilot.exchanges.interfaces.alpaca.alpaca_websocket import (
+    Tickers as Alpaca_Ticker,
+)
+from trapilot.exchanges.interfaces.binance.binance_websocket import (
+    Tickers as Binance_Ticker,
+)
 from trapilot.exchanges.managers.websocket_manager import WebsocketManager
 
 

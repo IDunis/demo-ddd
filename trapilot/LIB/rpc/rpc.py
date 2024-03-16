@@ -19,23 +19,33 @@ from trapilot.LIB import __version__
 from trapilot.LIB.configuration.timerange import TimeRange
 from trapilot.LIB.constants import CANCEL_REASON, Config
 from trapilot.LIB.data.history import load_data
-from trapilot.LIB.data.metrics import (calculate_expectancy,
-                                       calculate_max_drawdown)
-from trapilot.LIB.enums import (CandleType, ExitCheckTuple, ExitType,
-                                MarketDirection, SignalDirection, State,
-                                TradingMode)
+from trapilot.LIB.data.metrics import calculate_expectancy, calculate_max_drawdown
+from trapilot.LIB.enums import (
+    CandleType,
+    ExitCheckTuple,
+    ExitType,
+    MarketDirection,
+    SignalDirection,
+    State,
+    TradingMode,
+)
 from trapilot.LIB.exceptions import ExchangeError, PricingError
 from trapilot.LIB.exchange import timeframe_to_minutes, timeframe_to_msecs
 from trapilot.LIB.exchange.types import Tickers
 from trapilot.LIB.loggers import bufferHandler
-from trapilot.LIB.persistence import (KeyStoreKeys, KeyValueStore, PairLocks,
-                                      Trade)
+from trapilot.LIB.persistence import KeyStoreKeys, KeyValueStore, PairLocks, Trade
 from trapilot.LIB.persistence.models import PairLock
 from trapilot.LIB.plugins.pairlist.pairlist_helpers import expand_pairlist
 from trapilot.LIB.rpc.fiat_convert import CryptoToFiatConverter
 from trapilot.LIB.rpc.rpc_types import RPCSendMsg
-from trapilot.LIB.util import (decimals_per_coin, dt_humanize, dt_now,
-                               dt_ts_def, format_date, shorten_date)
+from trapilot.LIB.util import (
+    decimals_per_coin,
+    dt_humanize,
+    dt_now,
+    dt_ts_def,
+    format_date,
+    shorten_date,
+)
 from trapilot.LIB.wallets import PositionWallet, Wallet
 
 logger = logging.getLogger(__name__)

@@ -15,16 +15,25 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import rapidjson
 from colorama import init as colorama_init
-from joblib import (Parallel, cpu_count, delayed, dump, load,
-                    wrap_non_picklable_objects)
+from joblib import Parallel, cpu_count, delayed, dump, load, wrap_non_picklable_objects
 from joblib.externals import cloudpickle
 from pandas import DataFrame
-from rich.progress import (BarColumn, MofNCompleteColumn, Progress,
-                           TaskProgressColumn, TextColumn, TimeElapsedColumn,
-                           TimeRemainingColumn)
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+)
 
-from trapilot.LIB.constants import (DATETIME_PRINT_FORMAT, FTHYPT_FILEVERSION,
-                                    LAST_BT_RESULT_FN, Config)
+from trapilot.LIB.constants import (
+    DATETIME_PRINT_FORMAT,
+    FTHYPT_FILEVERSION,
+    LAST_BT_RESULT_FN,
+    Config,
+)
 from trapilot.LIB.data.converter import trim_dataframes
 from trapilot.LIB.data.history import get_timerange
 from trapilot.LIB.data.metrics import calculate_market_change
@@ -32,12 +41,15 @@ from trapilot.LIB.enums import HyperoptState
 from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.misc import deep_merge_dicts, file_dump_json, plural
 from trapilot.LIB.optimize.backtesting import Backtesting
+
 # Import IHyperOpt and IHyperOptLoss to allow unpickling classes from these modules
 from trapilot.LIB.optimize.hyperopt_auto import HyperOptAuto
 from trapilot.LIB.optimize.hyperopt_loss_interface import IHyperOptLoss
-from trapilot.LIB.optimize.hyperopt_tools import (HyperoptStateContainer,
-                                                  HyperoptTools,
-                                                  hyperopt_serializer)
+from trapilot.LIB.optimize.hyperopt_tools import (
+    HyperoptStateContainer,
+    HyperoptTools,
+    hyperopt_serializer,
+)
 from trapilot.LIB.optimize.optimize_reports import generate_strategy_stats
 from trapilot.LIB.resolvers.hyperopt_resolver import HyperOptLossResolver
 
