@@ -11,12 +11,11 @@ from sqlalchemy.exc import NoSuchModuleError
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from trapilot.exceptions import OperationalException
 from trapilot.persistence.base import ModelBase
 from trapilot.persistence.key_value_store import _KeyValueStoreModel
-from trapilot.persistence.migrations import check_migrate
 from trapilot.persistence.pairlock import PairLock
-from trapilot.persistence.trade_model import Order, Trade, Configuration
+from trapilot.persistence.trade_model import Order, Trade
+from trapilot.persistence.settings import SettingBacktest, SettingKey, SettingNotify
 
 
 logger = logging.getLogger(__name__)
@@ -52,7 +51,7 @@ def init_db(db_url: str) -> None:
     kwargs: Dict[str, Any] = {}
 
     if db_url == 'sqlite:///':
-        raise OperationalException(
+        raise Exception(
             f'Bad db-url {db_url}. For in-memory database, please use `sqlite://`.')
     if db_url == 'sqlite://':
         kwargs.update({
@@ -67,7 +66,7 @@ def init_db(db_url: str) -> None:
     try:
         engine = create_engine(db_url, future=True, **kwargs)
     except NoSuchModuleError:
-        raise OperationalException(f"Given value for db_url: '{db_url}' "
+        raise Exception(f"Given value for db_url: '{db_url}' "
                                    f"is no valid database URL! (See {_SQL_DOCS_URL})")
 
     # https://docs.sqlalchemy.org/en/13/orm/contextual.html#thread-local-scope
@@ -77,9 +76,9 @@ def init_db(db_url: str) -> None:
         bind=engine, autoflush=False), scopefunc=get_request_or_thread_id)
     Order.session = Trade.session
     PairLock.session = Trade.session
-    Configuration.session = Trade.session
+    SettingBacktest.session = Trade.session
+    SettingKey.session = Trade.session
+    SettingNotify.session = Trade.session
     _KeyValueStoreModel.session = Trade.session
 
-    previous_tables = inspect(engine).get_table_names()
     ModelBase.metadata.create_all(engine)
-    check_migrate(engine, decl_base=ModelBase, previous_tables=previous_tables)

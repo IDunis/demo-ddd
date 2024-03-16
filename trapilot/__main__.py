@@ -1,13 +1,7 @@
-#!/usr/bin/env python3
-"""
-__main__.py for Trapilot
-To launch Trapilot as a module
+import trapilot.deployment.new_cli
 
-> python -m trapilot (with Python >= 3.9)
-"""
-
-from trapilot import main
-
+from trapilot.persistence.models import init_db
 
 if __name__ == '__main__':
-    main.main()
+    init_db("sqlite:///tradesv3.sqlite")
+    trapilot.deployment.new_cli.main()

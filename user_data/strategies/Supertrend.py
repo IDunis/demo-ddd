@@ -14,7 +14,7 @@ Supertrend strategy:
 
 import logging
 from numpy.lib import math
-from trapilot.strategy import IStrategy, IntParameter
+from trapilot.LIB.strategy import IStrategy, IntParameter
 from pandas import DataFrame
 import talib.abstract as ta
 import numpy as np

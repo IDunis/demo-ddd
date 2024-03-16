@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from sqlalchemy import inspect, select, text, update
 
-from trapilot.exceptions import OperationalException
+from trapilot.LIB.exceptions import OperationalException
 from trapilot.persistence.trade_model import Order, Trade
 
 
