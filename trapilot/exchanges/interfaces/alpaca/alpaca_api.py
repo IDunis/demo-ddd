@@ -30,7 +30,9 @@ def create_alpaca_client(auth: AuthConstructor, sandbox_mode=True):
     else:
         api_url = live_url
 
-    return alpaca_trade_api.REST(auth.keys['API_KEY'], auth.keys['API_SECRET'], api_url, 'v2', raw_data=True)
+    return alpaca_trade_api.REST(
+        auth.keys["API_KEY"], auth.keys["API_SECRET"], api_url, "v2", raw_data=True
+    )
 
 
 # class API:

@@ -12,21 +12,21 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import math
-
-import trapilot
 
 import datetime
-import json
-import sys
 import decimal
+import json
+import math
 import os
+import sys
 from datetime import datetime as dt
 from math import trunc as math_trunc
 from typing import Union
 
 import numpy as np
 import pandas as pd
+
+import trapilot
 
 # Copy of settings to compare defaults vs overrides
 default_general_settings = {
@@ -37,37 +37,22 @@ default_general_settings = {
         "auto_truncate": False,
         "global_shorting": False,
         "simulate_margin": True,
-
-        "binance": {
-            "cash": "USDT",
-            "binance_tld": "us"
-        },
-        "binance_futures": {
-            "cash": "USDT",
-            "margin_type": "USDT-M"
-        },
+        "binance": {"cash": "USDT", "binance_tld": "us"},
+        "binance_futures": {"cash": "USDT", "margin_type": "USDT-M"},
         "alpaca": {
             "websocket_stream": "iex",
             "cash": "USD",
             "enable_shorting": True,
-            "use_yfinance": False
+            "use_yfinance": False,
         },
-        "ssi": {
-            "cash": "VND"
-        },
-        "keyless": {
-            "cash": "USD"
-        },
-        "paper": {
-            "price_source": "api"
-        }
+        "ssi": {"cash": "VND"},
+        "keyless": {"cash": "USD"},
+        "paper": {"price_source": "api"},
     }
 }
 
 default_backtest_settings = {
-    "price_data": {
-        "assets": []
-    },
+    "price_data": {"assets": []},
     "settings": {
         "use_price": "close",
         "smooth_price": False,
@@ -81,8 +66,8 @@ default_backtest_settings = {
         "quote_account_value_in": "USD",
         "ignore_user_exception": True,
         "risk_free_return_rate": 0.0,
-        "benchmark_symbol": None
-    }
+        "benchmark_symbol": None,
+    },
 }
 
 default_notify_settings = {
@@ -91,38 +76,39 @@ default_notify_settings = {
         "smtp_server": "smtp.website.com",
         "sender_email": "namdwb@gmail.com",
         "receiver_email": "namdwb@gmail.com",
-        "password": "my_password"
+        "password": "my_password",
     },
-    "text": {
-        "phone_number": "1234567683",
-        "provider": "verizon"
-    }
+    "text": {"phone_number": "1234567683", "provider": "verizon"},
 }
 
 default_deploy_settings = {
     "main_script": "./tradebot.py",
-    "python_version": '3.10',
+    "python_version": "3.10",
     "requirements": "./requirements.txt",
     "working_directory": ".",
-    "ignore_files": ['price_caches', '.git', '.idea', '.vscode'],
-    "backtest_args": {
-        'to': '1y'
-    },
-    "screener": {
-        "schedule": "30 14 * * 1-5"  # Set this default stock-like schedule
-    }
+    "ignore_files": ["price_caches", ".git", ".idea", ".vscode"],
+    "backtest_args": {"to": "1y"},
+    "screener": {"schedule": "30 14 * * 1-5"},  # Set this default stock-like schedule
 }
 
 
 def load_json_file(override_path=None):
-    f = open(override_path, )
+    f = open(
+        override_path,
+    )
     json_file = json.load(f)
     f.close()
     return json_file
 
 
 class __BlanklySettings:
-    def __init__(self, default_path: str, default_settings: dict, not_found_err: str, allow_nonexistent: bool = False):
+    def __init__(
+        self,
+        default_path: str,
+        default_settings: dict,
+        not_found_err: str,
+        allow_nonexistent: bool = False,
+    ):
         """
         Create a class that can manage caching for loading and writing to user preferences with a low overhead.
         This can dramatically accelerate instantiation of new interfaces or other objects
@@ -146,16 +132,26 @@ class __BlanklySettings:
                 if k in user_settings:
                     self.__compare_dicts(v, user_settings[k])
                 else:
-                    warning_string = "\"" + str(k) + "\" not specified in preferences, defaulting to: \"" + str(v) + \
-                                     "\""
+                    warning_string = (
+                        '"'
+                        + str(k)
+                        + '" not specified in preferences, defaulting to: "'
+                        + str(v)
+                        + '"'
+                    )
                     info_print(warning_string)
                     user_settings[k] = v
             else:
                 if k in user_settings:
                     continue
                 else:
-                    warning_string = "\"" + str(k) + "\" not specified in preferences, defaulting to: \"" + str(v) + \
-                                     "\""
+                    warning_string = (
+                        '"'
+                        + str(k)
+                        + '" not specified in preferences, defaulting to: "'
+                        + str(v)
+                        + '"'
+                    )
                     info_print(warning_string)
                     user_settings[k] = v
         return user_settings
@@ -194,30 +190,49 @@ class __BlanklySettings:
         f.write(json.dumps(json_information, indent=2))
 
 
-general_settings = __BlanklySettings('./user_data/settings.json', default_general_settings,
-                                     "Make sure a user_data/settings.json file is placed in the same folder as the project "
-                                     "working directory!")
+general_settings = __BlanklySettings(
+    "./user_data/settings.json",
+    default_general_settings,
+    "Make sure a user_data/settings.json file is placed in the same folder as the project "
+    "working directory!",
+)
 
-backtest_settings = __BlanklySettings('./user_data/backtest.json', default_backtest_settings,
-                                      "To perform a backtest, make sure a user_data/backtest.json file is placed in the same "
-                                      "folder as the project working directory!")
+backtest_settings = __BlanklySettings(
+    "./user_data/backtest.json",
+    default_backtest_settings,
+    "To perform a backtest, make sure a user_data/backtest.json file is placed in the same "
+    "folder as the project working directory!",
+)
 
-notify_settings = __BlanklySettings('./user_data/notify.json', default_notify_settings,
-                                    "To send emails locally, make sure a user_data/notify.json file is placed in the same folder "
-                                    "as the project working directory. This is not necessary when deployed live on "
-                                    "trapilot cloud.")
+notify_settings = __BlanklySettings(
+    "./user_data/notify.json",
+    default_notify_settings,
+    "To send emails locally, make sure a user_data/notify.json file is placed in the same folder "
+    "as the project working directory. This is not necessary when deployed live on "
+    "trapilot cloud.",
+)
 
-deployment_settings = __BlanklySettings('./user_data/trapilot.json', default_deploy_settings,
-                                        "Make sure a user_data/trapilot.json file is placed in the same folder as the project "
-                                        "working directory!", allow_nonexistent=True)
+deployment_settings = __BlanklySettings(
+    "./user_data/trapilot.json",
+    default_deploy_settings,
+    "Make sure a user_data/trapilot.json file is placed in the same folder as the project "
+    "working directory!",
+    allow_nonexistent=True,
+)
 
 
 def load_user_preferences(override_path=None, override_allow_nonexistent=False) -> dict:
-    return general_settings.load(override_path, override_allow_nonexistent=override_allow_nonexistent)
+    return general_settings.load(
+        override_path, override_allow_nonexistent=override_allow_nonexistent
+    )
 
 
-def load_backtest_preferences(override_path=None, override_allow_nonexistent=False) -> dict:
-    return backtest_settings.load(override_path, override_allow_nonexistent=override_allow_nonexistent)
+def load_backtest_preferences(
+    override_path=None, override_allow_nonexistent=False
+) -> dict:
+    return backtest_settings.load(
+        override_path, override_allow_nonexistent=override_allow_nonexistent
+    )
 
 
 def load_deployment_settings() -> dict:
@@ -244,6 +259,7 @@ def pretty_print_json(json_object, actually_print=True):
 
 def epoch_from_iso8601(iso8601: str) -> float:
     import dateutil.parser as dp
+
     return dp.parse(iso8601).timestamp()
 
 
@@ -254,11 +270,15 @@ def convert_input_to_epoch(value: Union[str, dt]) -> float:
         return value.timestamp()
     elif isinstance(value, float):
         return value
-    raise ValueError("Incorrect value input given, expected string or value but got: {}".format(type(value)))
+    raise ValueError(
+        "Incorrect value input given, expected string or value but got: {}".format(
+            type(value)
+        )
+    )
 
 
 def iso8601_from_epoch(epoch) -> str:
-    return dt.utcfromtimestamp(epoch).isoformat() + 'Z'
+    return dt.utcfromtimestamp(epoch).isoformat() + "Z"
 
 
 # Removed due to sklearn dependency
@@ -316,11 +336,35 @@ def to_trapilot_symbol(symbol, exchange, quote_guess=None) -> str:
             return symbol + "-" + quote_guess
         else:
             # Try your best to try to parse anyway
-            quotes = ['BNB', 'BTC', 'TRX', 'XRP', 'ETH', 'USDT', 'USD', 'BUSD', 'AUD', 'BRL', 'EUR', 'GBP', 'RUB',
-                      'TRY', 'TUSD', 'USDC', 'PAX', 'BIDR', 'DAI', 'IDRT', 'UAH', 'NGN', 'VAI', 'BVND']
+            quotes = [
+                "BNB",
+                "BTC",
+                "TRX",
+                "XRP",
+                "ETH",
+                "USDT",
+                "USD",
+                "BUSD",
+                "AUD",
+                "BRL",
+                "EUR",
+                "GBP",
+                "RUB",
+                "TRY",
+                "TUSD",
+                "USDC",
+                "PAX",
+                "BIDR",
+                "DAI",
+                "IDRT",
+                "UAH",
+                "NGN",
+                "VAI",
+                "BVND",
+            ]
             for i in quotes:
                 if __check_ending(symbol, i):
-                    return to_trapilot_symbol(symbol, 'binance', quote_guess=i)
+                    return to_trapilot_symbol(symbol, "binance", quote_guess=i)
             raise LookupError("Unable to parse binance coin id of: " + str(symbol))
 
     if exchange == "coinbase_pro":
@@ -339,27 +383,27 @@ def __check_ending(full_string, checked_ending) -> bool:
 
 def to_exchange_symbol(trapilot_symbol, exchange):
     if exchange == "binance":
-        return trapilot_symbol.replace('-', '')
+        return trapilot_symbol.replace("-", "")
     if exchange == "alpaca":
         return get_base_asset(trapilot_symbol)
     if exchange == "ssi":
-        return trapilot_symbol.replace('-', '')
+        return trapilot_symbol.replace("-", "")
     return trapilot_symbol
 
 
 def get_base_asset(symbol):
     # Gets the BTC of the BTC-USD
-    return symbol.split('-')[0]
+    return symbol.split("-")[0]
 
 
 def get_quote_asset(symbol):
     # Gets the USD of the BTC-USD
-    split = symbol.split('-')
+    split = symbol.split("-")
     if len(split) > 1:
         return split[1]
     else:
         # This could go wrong
-        return 'USD'
+        return "USD"
 
 
 def rename_to(keys_array, renaming_dictionary):
@@ -399,9 +443,9 @@ def isolate_specific(needed, compare_dictionary):
     # Create a row vector for the keys
     column = [column[0] for column in needed]  # ex: ['currency', 'available', 'hold']
     # Create an area to hold the specific data
-    if 'exchange_specific' in compare_dictionary:
-        exchange_specific = compare_dictionary['exchange_specific']
-        del compare_dictionary['exchange_specific']
+    if "exchange_specific" in compare_dictionary:
+        exchange_specific = compare_dictionary["exchange_specific"]
+        del compare_dictionary["exchange_specific"]
     else:
         exchange_specific = {}
 
@@ -493,8 +537,15 @@ def compare_dictionaries(dict1, dict2, force_exchange_specific=True) -> bool:
             # Now are they the same type
             if not isinstance(dict2[key], type(value)):
                 # Issue detected
-                print("Type of key " + str(dict1[key]) + " in dict1 is " + str(type(dict1[key])) +
-                      ", but is " + str(type(dict2[key])) + f" in dict2. The name of the key is {key}.")
+                print(
+                    "Type of key "
+                    + str(dict1[key])
+                    + " in dict1 is "
+                    + str(type(dict1[key]))
+                    + ", but is "
+                    + str(type(dict2[key]))
+                    + f" in dict2. The name of the key is {key}."
+                )
                 return False
             else:
                 # If it's a dictionary, go inside of it
@@ -502,7 +553,9 @@ def compare_dictionaries(dict1, dict2, force_exchange_specific=True) -> bool:
                     print("comparing:")
                     print(value)
                     print(dict2[key])
-                    if not compare_dictionaries(value, dict2[key], force_exchange_specific=False):
+                    if not compare_dictionaries(
+                        value, dict2[key], force_exchange_specific=False
+                    ):
                         return False
 
                 valid_keys.append(key)
@@ -551,8 +604,9 @@ def update_progress(progress):
         progress = 1
         status = "Done...\r\n"
     block = int(round(bar_length * progress))
-    text = "\rProgress: [{0}] {1}% {2}".format("#" * block + "-" * (bar_length - block), round(progress * 100, 2),
-                                               status)
+    text = "\rProgress: [{0}] {1}% {2}".format(
+        "#" * block + "-" * (bar_length - block), round(progress * 100, 2), status
+    )
     sys.stdout.write(text)
     sys.stdout.flush()
 
@@ -563,24 +617,30 @@ def split_df(df, n):
 
 def get_ohlcv(candles, n, from_zero: bool):
     if len(candles) < n:
-        raise ValueError("Not enough candles provided, required at least {} candles, "
-                         "but only received {}".format(n, len(candles)))
+        raise ValueError(
+            "Not enough candles provided, required at least {} candles, "
+            "but only received {}".format(n, len(candles))
+        )
     new_candles = pd.DataFrame()
     df = split_df(candles, n)
-    new_candles['high'] = df['high'].max().reset_index(drop=True)
-    new_candles['low'] = df['low'].min().reset_index(drop=True)
-    new_candles['volume'] = df['volume'].sum().reset_index(drop=True)
-    new_candles['volume'] = new_candles['volume'].apply(lambda x: float(x))
+    new_candles["high"] = df["high"].max().reset_index(drop=True)
+    new_candles["low"] = df["low"].min().reset_index(drop=True)
+    new_candles["volume"] = df["volume"].sum().reset_index(drop=True)
+    new_candles["volume"] = new_candles["volume"].apply(lambda x: float(x))
     if from_zero:
-        new_candles['close'] = candles['close'].iloc[0::n].reset_index(drop=True)
-        new_candles['open'] = candles['open'].iloc[0::n].reset_index(drop=True)
-        new_candles['time'] = candles['time'].iloc[0::n].reset_index(drop=True).astype('int64')
-        new_candles['time'] = new_candles['time'].apply(lambda x: np.int64(x))
+        new_candles["close"] = candles["close"].iloc[0::n].reset_index(drop=True)
+        new_candles["open"] = candles["open"].iloc[0::n].reset_index(drop=True)
+        new_candles["time"] = (
+            candles["time"].iloc[0::n].reset_index(drop=True).astype("int64")
+        )
+        new_candles["time"] = new_candles["time"].apply(lambda x: np.int64(x))
     else:
-        new_candles['close'] = candles['close'].iloc[::n].reset_index(drop=True)
-        new_candles['open'] = candles['open'].iloc[::n].reset_index(drop=True)
-        new_candles['time'] = candles.index.to_series().iloc[::n].reset_index(drop=True)
-        new_candles['time'] = new_candles['time'].apply(lambda x: np.int64(x.timestamp()))
+        new_candles["close"] = candles["close"].iloc[::n].reset_index(drop=True)
+        new_candles["open"] = candles["open"].iloc[::n].reset_index(drop=True)
+        new_candles["time"] = candles.index.to_series().iloc[::n].reset_index(drop=True)
+        new_candles["time"] = new_candles["time"].apply(
+            lambda x: np.int64(x.timestamp())
+        )
     return new_candles
 
 
@@ -599,12 +659,12 @@ def aggregate_candles(history: pd.DataFrame, aggregation_size: int):
         frame: dict = i[1].to_dict()
         try:
             tick = {
-                'time': list(frame['time'].values())[0],
-                'open': list(frame['open'].values())[0],
-                'high': max(frame['high'].values()),
-                'low': min(frame['low'].values()),
-                'close': list(frame['close'].values())[-1],
-                'volume': sum(frame['volume'].values()),
+                "time": list(frame["time"].values())[0],
+                "open": list(frame["open"].values())[0],
+                "high": max(frame["high"].values()),
+                "low": min(frame["low"].values()),
+                "close": list(frame["close"].values())[-1],
+                "volume": sum(frame["volume"].values()),
             }
         except IndexError:
             continue
@@ -621,23 +681,23 @@ def get_ohlcv_from_list(tick_list: list, last_price: float):
         last_price (float): The last price in case there isn't any valid data
     """
     out = {
-        'open': last_price,
-        'high': last_price,
-        'low': last_price,
-        'close': last_price,
-        'volume': 0
+        "open": last_price,
+        "high": last_price,
+        "low": last_price,
+        "close": last_price,
+        "volume": 0,
     }
     if len(tick_list) > 0:
-        out['open'] = tick_list[0]['price']
-        out['close'] = tick_list[-1]['price']
+        out["open"] = tick_list[0]["price"]
+        out["close"] = tick_list[-1]["price"]
 
     for i in tick_list:
-        out['volume'] = out['volume'] + i['size']
+        out["volume"] = out["volume"] + i["size"]
 
-        if i['price'] > out['high']:
-            out['high'] = i['price']
-        elif i['price'] < out['low']:
-            out['low'] = i['price']
+        if i["price"] > out["high"]:
+            out["high"] = i["price"]
+        elif i["price"] < out["low"]:
+            out["low"] = i["price"]
 
     return out
 
@@ -672,7 +732,7 @@ def format_with_new_line(original_string, *components):
     for i in components:
         original_string += str(i)
 
-    original_string += '\n'
+    original_string += "\n"
 
     return original_string
 
@@ -684,7 +744,7 @@ def trunc(number: float, decimals: int) -> float:
         number (float): Number to truncate
         decimals (int): Number of decimals to keep: trunc(9.9999999, 2) == 9.99
     """
-    stepper = 10.0 ** decimals
+    stepper = 10.0**decimals
     return math_trunc(stepper * number) / stepper
 
 
@@ -694,7 +754,7 @@ def info_print(message):
     Args:
         message: The message to print. INFO: will be prepended
     """
-    print('INFO: ' + str(message), file=sys.stderr)
+    print("INFO: " + str(message), file=sys.stderr)
 
 
 class Email:
@@ -703,7 +763,9 @@ class Email:
     Alternatively a user_data/notify.json can be created which automatically integrates with trapilot.reporter.email()
     """
 
-    def __init__(self, smtp_server: str, sender_email: str, password: str, port: int = 465):
+    def __init__(
+        self, smtp_server: str, sender_email: str, password: str, port: int = 465
+    ):
         """
         Create the email wrapper:
         Args:
@@ -724,8 +786,14 @@ class Email:
             receiver_email (str): The email that the message is sent to
             message (str): The body of the message
         """
-        trapilot.reporter.email(email_str=message, smtp_server=self.__server, sender_email=self.__sender_email,
-                               receiver_email=receiver_email, password=self.__password, port=self.__port)
+        trapilot.reporter.email(
+            email_str=message,
+            smtp_server=self.__server,
+            sender_email=self.__sender_email,
+            receiver_email=receiver_email,
+            password=self.__password,
+            port=self.__port,
+        )
 
 
 def count_decimals(number: float) -> int:
@@ -740,11 +808,11 @@ def check_backtesting() -> bool:
     Tests if the environment is configured for backtesting. Primarily used for platform deployments but is
     applicable elsewhere
     """
-    backtesting = os.getenv('BACKTESTING')
+    backtesting = os.getenv("BACKTESTING")
 
     # Could be undefined
     if backtesting is not None:
-        return backtesting == '1'
+        return backtesting == "1"
     else:
         return False
 
@@ -771,7 +839,9 @@ def order_protection(func):
 
     def wrapper(*args, **kwargs):
         if trapilot._backtesting:
-            raise Exception("Blocked attempt at live order inside backtesting environment")
+            raise Exception(
+                "Blocked attempt at live order inside backtesting environment"
+            )
         return func(*args, **kwargs)
 
     return wrapper
@@ -781,15 +851,12 @@ def add_all_products(nonzero_products: dict, all_products: list):
     base_symbols = []
     quote_symbols = []
     for i in all_products:
-        base_symbols.append(get_base_asset(i['symbol']))
-        quote_symbols.append(get_quote_asset(i['symbol']))
+        base_symbols.append(get_base_asset(i["symbol"]))
+        quote_symbols.append(get_quote_asset(i["symbol"]))
 
-    for i in (base_symbols + quote_symbols):
+    for i in base_symbols + quote_symbols:
         if i not in nonzero_products:
-            nonzero_products[i] = {
-                'available': 0.0,
-                'hold': 0.0
-            }
+            nonzero_products[i] = {"available": 0.0, "hold": 0.0}
 
     return nonzero_products
 
@@ -807,8 +874,8 @@ def precision_to_increment(precision: int) -> float:
 
 
 def trim_df_time_column(df, epoch_start: [int, float], epoch_stop: [int, float]):
-    df = df[df['time'] >= epoch_start]
-    df = df[df['time'] <= epoch_stop]
+    df = df[df["time"] >= epoch_start]
+    df = df[df["time"] <= epoch_stop]
 
     return df
 
@@ -820,8 +887,9 @@ def aggregate_prices_by_resolution(price_dict, symbol_, resolution_, data_) -> d
     if resolution_ not in price_dict[symbol_]:
         price_dict[symbol_][resolution_] = data_
     else:
-        price_dict[symbol_][resolution_] = pd.concat([price_dict[symbol_][resolution_],
-                                                      data_])
+        price_dict[symbol_][resolution_] = pd.concat(
+            [price_dict[symbol_][resolution_], data_]
+        )
     return price_dict
 
 
@@ -830,7 +898,9 @@ def extract_price_by_resolution(prices, symbol, epoch_start, epoch_stop, resolut
         if resolution in prices[symbol]:
             price_set = prices[symbol][resolution]
         else:
-            raise LookupError(f"The resolution {resolution} not found or downloaded for {symbol}.")
+            raise LookupError(
+                f"The resolution {resolution} not found or downloaded for {symbol}."
+            )
     else:
         raise LookupError(f"Prices for this symbol ({symbol}) not found")
 
@@ -838,12 +908,7 @@ def extract_price_by_resolution(prices, symbol, epoch_start, epoch_stop, resolut
 
 
 def build_order_info(price, side, size, symbol, type_) -> dict:
-    order = {
-        'size': size,
-        'side': side,
-        'symbol': symbol,
-        'type': type_
-    }
+    order = {"size": size, "side": side, "symbol": symbol, "type": type_}
     if price:
-        order['price'] = price
+        order["price"] = price
     return order

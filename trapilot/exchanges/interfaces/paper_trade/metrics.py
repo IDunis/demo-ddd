@@ -39,66 +39,84 @@ def periods_per_year(period: int) -> float:
 
 
 def cagr(backtest_data):
-    account_values = backtest_data['resampled_account_value']
-    years = (account_values['time'].iloc[-1] - account_values['time'].iloc[0]) / build_year()
-    return round(metrics.cagr(account_values['value'].iloc[0], account_values['value'].iloc[-1], years), 2) * 100
+    account_values = backtest_data["resampled_account_value"]
+    years = (
+        account_values["time"].iloc[-1] - account_values["time"].iloc[0]
+    ) / build_year()
+    return (
+        round(
+            metrics.cagr(
+                account_values["value"].iloc[0], account_values["value"].iloc[-1], years
+            ),
+            2,
+        )
+        * 100
+    )
 
 
 def cum_returns(backtest_data):
-    account_values = backtest_data['resampled_account_value']
-    return round(metrics.cum_returns(account_values['value'][0], account_values['value'].iloc[-1]), 2) * 100
+    account_values = backtest_data["resampled_account_value"]
+    return (
+        round(
+            metrics.cum_returns(
+                account_values["value"][0], account_values["value"].iloc[-1]
+            ),
+            2,
+        )
+        * 100
+    )
 
 
 def sortino(backtest_data, trading_period=86400, risk_free_rate=0):
-    returns = backtest_data['returns']['value']
+    returns = backtest_data["returns"]["value"]
     ppy = periods_per_year(trading_period)
     return round(metrics.sortino(returns, ppy, risk_free_rate), 2)
 
 
 def sharpe(backtest_data, trading_period=86400, risk_free_rate=0):
-    returns = backtest_data['returns']['value']
+    returns = backtest_data["returns"]["value"]
     ppy = periods_per_year(trading_period)
     return round(metrics.sharpe(returns, ppy, risk_free_rate), 2)
 
 
 def calmar(backtest_data, trading_period=86400):
-    returns = backtest_data['returns']['value']
+    returns = backtest_data["returns"]["value"]
     ppy = periods_per_year(trading_period)
     return round(metrics.calmar(returns, ppy), 2)
 
 
 def volatility(backtest_data, trading_period=86400):
-    returns = backtest_data['returns']['value']
+    returns = backtest_data["returns"]["value"]
     ppy = periods_per_year(trading_period)
     return round(metrics.volatility(returns, ppy), 2)
 
 
 def variance(backtest_data, trading_period=86400):
-    returns = backtest_data['returns']['value']
+    returns = backtest_data["returns"]["value"]
     ppy = periods_per_year(trading_period)
     return round(100.0 * metrics.variance(returns, ppy), 2)
 
 
 def beta(backtest_data, trading_period=86400):
     # Drop the first index because it is NaN
-    returns = backtest_data['returns']['value'][1:]
-    benchmark = backtest_data['benchmark_returns']['value'][1:]
+    returns = backtest_data["returns"]["value"][1:]
+    benchmark = backtest_data["benchmark_returns"]["value"][1:]
     ppy = periods_per_year(trading_period)
     return round(100.0 * metrics.beta(returns, benchmark, ppy), 2)
 
 
 def var(backtest_data):
-    returns = backtest_data['returns']['value']
-    account_values = backtest_data['resampled_account_value']
-    return round(metrics.var(account_values['value'][0], returns, 0.95), 2)
+    returns = backtest_data["returns"]["value"]
+    account_values = backtest_data["resampled_account_value"]
+    return round(metrics.var(account_values["value"][0], returns, 0.95), 2)
 
 
 def cvar(backtest_data):
-    returns = backtest_data['returns']['value']
-    account_values = backtest_data['resampled_account_value']
-    return round(metrics.cvar(account_values['value'][0], returns, 0.95), 2)
+    returns = backtest_data["returns"]["value"]
+    account_values = backtest_data["resampled_account_value"]
+    return round(metrics.cvar(account_values["value"][0], returns, 0.95), 2)
 
 
 def max_drawdown(backtest_data):
-    values = backtest_data['returns']['value']
+    values = backtest_data["returns"]["value"]
     return abs(round(metrics.max_drawdown(values), 2)) * 100

@@ -14,7 +14,6 @@
 #         close_position(data.symbol)
 
 
-
 # Check outstanding limit order
 # def initialize(state):
 #    state.run_once = False
@@ -40,7 +39,6 @@
 #          if temp_order.is_filled():
 #             print(f"Check order with id. The order {temp_order.id} was filled")
 #             state.order_id = None
-
 
 
 # Buy Example
@@ -75,7 +73,6 @@
 #        state.sell_order = order_trailing_iftouched_amount(data.symbol, amount=amount, trailing_percent=0.05, stop_price=stop_price)
 
 
-
 # Buy Example
 # stop_price = data.close[-1]*1.01 # buy traling needs to be place above current market price
 # state.buy_order = order_trailing_iftouched_value("BTCUSDT", value=500, trailing_percent=0.02, stop_price=stop_price)
@@ -83,7 +80,6 @@
 # Sell Example
 # stop_price = data.close[-1]*0.98 # sell traling order needs to be place below current market price
 # state.sell_order = order_trailing_iftouched_value("BTCUSDT", value=-500, trailing_percent=
-
 
 
 # # send a market order for 0.05 BTC
@@ -103,7 +99,6 @@
 # print(iftouchedLimit.type)
 
 
-
 # # send a market order for 200 USDT
 # market_order = order_value(symbol="BTCUSDT", value=200)
 # print(market_order.type)
@@ -121,10 +116,8 @@
 # print(iftouchedLimit.type)
 
 
-
 # # sends a limit order for 20% of the porfolio value
 # order_target(symbol="BTCUSDT", target_percent=0.2, limit_price=7800.00)
-
 
 
 # ''' Rebalance portfolio allocation with market orders '''
@@ -141,14 +134,12 @@
 #         log(f"porfolio is balanced {weight}", severity=2)
 
 
-
 # @schedule(interval="5m",symbol="BTCUSDT")
 # def handler(state,data):
 #     with OrderScope.sequential(fail_on_error=False, wait_for_entire_fill=False):
 #         order_1 = order_market_value("BTCUSDT",100,8000)
 #         order_2 = order_market_value("BTCUSDT",100,9000)
 #         order_3 = order_market_value("BTCUSDT",100,9000)
-
 
 
 # @schedule(interval="5m",symbol="BTCUSDT")
@@ -158,13 +149,11 @@
 #         order_2 = order_market_value("BTCUSDT",100)
 
 
-
 # @schedule(interval="5m",symbol=["BTCUSDT","ETHUSDT"])
 # def handler(state,data):
 #     with OrderScope.sequential(fail_on_error=True, wait_for_entire_fill=False):
 #         order_1 = order_limit_amount("BTCUSDT",0.5, 4000)
 #         order_2 = order_market_value("ETHUSDT",500)
-
 
 
 # # We're entering the scope, orders in OCO mode will not be submitted immediatly
@@ -178,7 +167,6 @@
 # print(order_2.status) # OrderStatus.Pending
 
 
-
 # @schedule(interval="5m",symbol="BTCUSDT")
 # def handler(state,data):
 #     with OrderScope.one_cancels_others():
@@ -186,12 +174,9 @@
 #         sell_order = order_iftouched_market_amount("BTCUSDT",-0.5,9000)
 
 
-
 # btc = query_balance("BTC")
 # eth = query_balance("ETH")
 # print( btc.free + eth.free )
-
-
 
 
 # btc = query_balance_free("BTC")
@@ -201,17 +186,14 @@
 # print( float(btc) * 2.0 )
 
 
-
 # btc_locked = query_balance_locked("BTC")
 # if btc_locked > 0:
 #     print("Bot has open orders")
 
 
-
 # all_balances = query_balances()
 # for balance in all_balances:
 #     print(balance.free)
-
 
 
 # # this order will buy BTC

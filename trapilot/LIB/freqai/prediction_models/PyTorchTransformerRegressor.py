@@ -5,12 +5,15 @@ import numpy.typing as npt
 import pandas as pd
 import torch
 
-from trapilot.LIB.freqai.base_models.BasePyTorchRegressor import BasePyTorchRegressor
+from trapilot.LIB.freqai.base_models.BasePyTorchRegressor import \
+    BasePyTorchRegressor
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
-from trapilot.LIB.freqai.torch.PyTorchDataConvertor import (DefaultPyTorchDataConvertor,
-                                                         PyTorchDataConvertor)
-from trapilot.LIB.freqai.torch.PyTorchModelTrainer import PyTorchTransformerTrainer
-from trapilot.LIB.freqai.torch.PyTorchTransformerModel import PyTorchTransformerModel
+from trapilot.LIB.freqai.torch.PyTorchDataConvertor import (
+    DefaultPyTorchDataConvertor, PyTorchDataConvertor)
+from trapilot.LIB.freqai.torch.PyTorchModelTrainer import \
+    PyTorchTransformerTrainer
+from trapilot.LIB.freqai.torch.PyTorchTransformerModel import \
+    PyTorchTransformerModel
 
 
 class PyTorchTransformerRegressor(BasePyTorchRegressor):
@@ -57,9 +60,9 @@ class PyTorchTransformerRegressor(BasePyTorchRegressor):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         config = self.freqai_info.get("model_training_parameters", {})
-        self.learning_rate: float = config.get("learning_rate",  3e-4)
-        self.model_kwargs: Dict[str, Any] = config.get("model_kwargs",  {})
-        self.trainer_kwargs: Dict[str, Any] = config.get("trainer_kwargs",  {})
+        self.learning_rate: float = config.get("learning_rate", 3e-4)
+        self.model_kwargs: Dict[str, Any] = config.get("model_kwargs", {})
+        self.trainer_kwargs: Dict[str, Any] = config.get("trainer_kwargs", {})
 
     def fit(self, data_dictionary: Dict, dk: FreqaiDataKitchen, **kwargs) -> Any:
         """
@@ -75,7 +78,7 @@ class PyTorchTransformerRegressor(BasePyTorchRegressor):
             input_dim=n_features,
             output_dim=n_labels,
             time_window=self.window_size,
-            **self.model_kwargs
+            **self.model_kwargs,
         )
         model.to(self.device)
         optimizer = torch.optim.AdamW(model.parameters(), lr=self.learning_rate)
@@ -113,12 +116,14 @@ class PyTorchTransformerRegressor(BasePyTorchRegressor):
             unfiltered_df, dk.training_features_list, training_filter=False
         )
 
-        dk.data_dictionary["prediction_features"], outliers, _ = dk.feature_pipeline.transform(
-            dk.data_dictionary["prediction_features"], outlier_check=True)
+        dk.data_dictionary["prediction_features"], outliers, _ = (
+            dk.feature_pipeline.transform(
+                dk.data_dictionary["prediction_features"], outlier_check=True
+            )
+        )
 
         x = self.data_convertor.convert_x(
-            dk.data_dictionary["prediction_features"],
-            device=self.device
+            dk.data_dictionary["prediction_features"], device=self.device
         )
         # if user is asking for multiple predictions, slide the window
         # along the tensor
@@ -129,7 +134,7 @@ class PyTorchTransformerRegressor(BasePyTorchRegressor):
         if x.shape[1] > self.window_size:
             ws = self.window_size
             for i in range(0, x.shape[1] - ws):
-                xb = x[:, i:i + ws, :].to(self.device)
+                xb = x[:, i : i + ws, :].to(self.device)
                 y = self.model.model(xb)
                 yb = torch.cat((yb, y), dim=1)
         else:
@@ -146,7 +151,9 @@ class PyTorchTransformerRegressor(BasePyTorchRegressor):
         dk.do_predict = outliers
 
         if x.shape[1] > 1:
-            zeros_df = pd.DataFrame(np.zeros((x.shape[1] - len(pred_df), len(pred_df.columns))),
-                                    columns=pred_df.columns)
+            zeros_df = pd.DataFrame(
+                np.zeros((x.shape[1] - len(pred_df), len(pred_df.columns))),
+                columns=pred_df.columns,
+            )
             pred_df = pd.concat([zeros_df, pred_df], axis=0, ignore_index=True)
         return (pred_df, dk.do_predict)

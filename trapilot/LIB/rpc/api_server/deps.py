@@ -33,7 +33,7 @@ async def get_rpc() -> Optional[AsyncIterator[RPC]]:
             _request_id_ctx_var.reset(ctx_token)
 
     else:
-        raise RPCException('Bot is not in the correct state')
+        raise RPCException("Bot is not in the correct state")
 
 
 def get_config() -> Dict[str, Any]:
@@ -41,7 +41,7 @@ def get_config() -> Dict[str, Any]:
 
 
 def get_api_config() -> Dict[str, Any]:
-    return ApiServer._config['api_server']
+    return ApiServer._config["api_server"]
 
 
 def _generate_exchange_key(config: Config) -> str:
@@ -55,8 +55,10 @@ def get_exchange(config=Depends(get_config)):
     exchange_key = _generate_exchange_key(config)
     if not (exchange := ApiBG.exchanges.get(exchange_key)):
         from trapilot.LIB.resolvers import ExchangeResolver
+
         exchange = ExchangeResolver.load_exchange(
-            config, validate=False, load_leverage_tiers=False)
+            config, validate=False, load_leverage_tiers=False
+        )
         ApiBG.exchanges[exchange_key] = exchange
     return exchange
 
@@ -66,7 +68,6 @@ def get_message_stream():
 
 
 def is_webserver_mode(config=Depends(get_config)):
-    if config['runmode'] != RunMode.WEBSERVER:
-        raise HTTPException(status_code=503,
-                            detail='Bot is not in the correct state.')
+    if config["runmode"] != RunMode.WEBSERVER:
+        raise HTTPException(status_code=503, detail="Bot is not in the correct state.")
     return None

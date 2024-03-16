@@ -12,8 +12,10 @@ class PeriodicCache(TTLCache):
     def __init__(self, maxsize, ttl, getsizeof=None):
         def local_timer():
             ts = datetime.now(timezone.utc).timestamp()
-            offset = (ts % ttl)
+            offset = ts % ttl
             return ts - offset
 
         # Init with smlight offset
-        super().__init__(maxsize=maxsize, ttl=ttl - 1e-5, timer=local_timer, getsizeof=getsizeof)
+        super().__init__(
+            maxsize=maxsize, ttl=ttl - 1e-5, timer=local_timer, getsizeof=getsizeof
+        )

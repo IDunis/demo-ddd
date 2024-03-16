@@ -1,12 +1,12 @@
 import os
-import tempfile
 import sys
+import tempfile
 import zipfile
 from typing import List
 
 
 def get_python_version():
-    return '.'.join(str(i) for i in sys.version_info[:2])
+    return ".".join(str(i) for i in sys.version_info[:2])
 
 
 def zip_dir(path, ignore_files):
@@ -18,8 +18,8 @@ def zip_dir(path, ignore_files):
     # with tempfile.TemporaryDirectory() as dist_directory:
     source = os.path.abspath(path)
 
-    model_path = os.path.join(dist_directory, 'model.zip')
-    zip_ = zipfile.ZipFile(model_path, 'w', zipfile.ZIP_DEFLATED)
+    model_path = os.path.join(dist_directory, "model.zip")
+    zip_ = zipfile.ZipFile(model_path, "w", zipfile.ZIP_DEFLATED)
     zipdir(source, zip_, ignore_files)
     zip_.close()
 
@@ -45,12 +45,13 @@ def zipdir(path, ziph, ignore_files: list):
             # (Modification) Skip everything that is in the trapilot_dist folder
             filepath = os.path.join(root, file)
 
-            if not (os.path.abspath(filepath) in filtered_ignore_files) and not (root in filtered_ignore_files):
+            if not (os.path.abspath(filepath) in filtered_ignore_files) and not (
+                root in filtered_ignore_files
+            ):
                 # This takes of the first part of the relative path and replaces it with /model/
-                relpath = os.path.relpath(filepath,
-                                          os.path.join(path, '..'))
+                relpath = os.path.relpath(filepath, os.path.join(path, ".."))
                 relpath = os.path.normpath(relpath).split(os.sep)
-                relpath[0] = os.sep + 'model'
+                relpath[0] = os.sep + "model"
                 relpath = os.path.join(*relpath)
 
                 ziph.write(filepath, relpath)

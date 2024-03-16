@@ -15,9 +15,12 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from trapilot.exchanges.interfaces.futures_exchange_interface import FuturesExchangeInterface
-from trapilot.utils.utils import AttributeDict, get_base_asset, get_quote_asset, pretty_print_json
+
+from trapilot.exchanges.interfaces.futures_exchange_interface import \
+    FuturesExchangeInterface
 from trapilot.frameworks.strategy.futures_strategy import FuturesStrategy
+from trapilot.utils.utils import (AttributeDict, get_base_asset,
+                                  get_quote_asset, pretty_print_json)
 
 
 class FuturesStrategyState:
@@ -29,11 +32,13 @@ class FuturesStrategyState:
     base_asset: str
     quote_asset: str
 
-    def __init__(self,
-                 strategy,
-                 variables: AttributeDict,
-                 symbol,
-                 resolution: [int, float] = None):
+    def __init__(
+        self,
+        strategy,
+        variables: AttributeDict,
+        symbol,
+        resolution: [int, float] = None,
+    ):
         self.strategy = strategy
         self.variables = variables
         self.resolution = resolution

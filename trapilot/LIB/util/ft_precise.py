@@ -2,6 +2,7 @@
 Slim wrapper around ccxt's Precise (string math)
 To have imports from trapilot - and support float initializers
 """
+
 from ccxt import Precise
 
 

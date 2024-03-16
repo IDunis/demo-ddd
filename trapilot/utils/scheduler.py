@@ -15,6 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import threading
 import time
 import traceback
@@ -22,15 +23,18 @@ import typing
 from datetime import datetime as dt
 
 from trapilot.utils.time_builder import time_interval_to_seconds
-from trapilot.utils.utils import ceil_date
-from trapilot.utils.utils import info_print
+from trapilot.utils.utils import ceil_date, info_print
 
 
 class Scheduler:
-    def __init__(self, function: typing.Callable,
-                 interval: typing.Union[str, float],
-                 initially_stopped: bool = False,
-                 synced: bool = False, **kwargs):
+    def __init__(
+        self,
+        function: typing.Callable,
+        interval: typing.Union[str, float],
+        initially_stopped: bool = False,
+        synced: bool = False,
+        **kwargs
+    ):
         """
         Wrapper for functions that run at a set interval
         Args:
@@ -77,11 +81,15 @@ class Scheduler:
             force: Override multi-thread protection and create more threads of the scheduler callback
         """
         if self.__thread is None or force:
-            self.__thread = threading.Thread(target=self.__threading_wait,
-                                             args=(self.__callback, self.__interval, self.__kwargs))
+            self.__thread = threading.Thread(
+                target=self.__threading_wait,
+                args=(self.__callback, self.__interval, self.__kwargs),
+            )
             self.__thread.start()
         else:
-            info_print("Scheduler already started and force not enabled...skipping start.")
+            info_print(
+                "Scheduler already started and force not enabled...skipping start."
+            )
 
     def get_interval(self):
         """
@@ -119,7 +127,7 @@ class Scheduler:
             base_time = ceil_date(dt.now(), seconds=interval).timestamp()
             offset = base_time - time.time()
             time.sleep(offset)
-            kwargs['bar_time'] = base_time
+            kwargs["bar_time"] = base_time
         while True:
             if self.__stop:
                 break
@@ -130,7 +138,7 @@ class Scheduler:
                 traceback.print_exc()
             base_time += interval
             if self.synced:
-                kwargs['bar_time'] += interval
+                kwargs["bar_time"] += interval
 
             # The downside of this is that it keeps the thread running while waiting to stop
             # It's dependent on delay if its more efficient to just check more

@@ -6,7 +6,6 @@ import torch
 from trapilot.LIB.freqai.freqai_interface import IFreqaiModel
 from trapilot.LIB.freqai.torch.PyTorchDataConvertor import PyTorchDataConvertor
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -21,7 +20,7 @@ class BasePyTorchModel(IFreqaiModel, ABC):
         super().__init__(config=kwargs["config"])
         self.dd.model_type = "pytorch"
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        test_size = self.freqai_info.get('data_split_parameters', {}).get('test_size')
+        test_size = self.freqai_info.get("data_split_parameters", {}).get("test_size")
         self.splits = ["train", "test"] if test_size != 0 else ["train"]
         self.window_size = self.freqai_info.get("conv_width", 1)
 

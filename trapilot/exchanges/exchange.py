@@ -15,15 +15,19 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import abc
 import time
 
 import trapilot
 from trapilot.exchanges.abc_exchange import ABCExchange
 from trapilot.exchanges.auth.utils import write_auth_cache
-from trapilot.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
-from trapilot.exchanges.interfaces.alpaca.alpaca_interface import AlpacaInterface
-from trapilot.exchanges.interfaces.binance.binance_interface import BinanceInterface
+from trapilot.exchanges.interfaces.abc_exchange_interface import \
+    ABCExchangeInterface
+from trapilot.exchanges.interfaces.alpaca.alpaca_interface import \
+    AlpacaInterface
+from trapilot.exchanges.interfaces.binance.binance_interface import \
+    BinanceInterface
 from trapilot.exchanges.interfaces.ssi.ssi_interface import SsiInterface
 
 
@@ -49,14 +53,16 @@ class Exchange(ABCExchange, abc.ABC):
         """
         This will try to maintain compatibility with older versions if they fail to pivot to the new version immediately
         """
-        if 'sandbox' not in auth.keys:
+        if "sandbox" not in auth.keys:
             try:
-                return self.preferences['settings']['use_sandbox']
+                return self.preferences["settings"]["use_sandbox"]
             except KeyError:
-                raise KeyError("No sandbox setting found in either user_data/settings.json or user_data/keys.json. Please use the example"
-                               " above this error to modify your user_data/keys.json.")
+                raise KeyError(
+                    "No sandbox setting found in either user_data/settings.json or user_data/keys.json. Please use the example"
+                    " above this error to modify your user_data/keys.json."
+                )
         else:
-            return auth.keys['sandbox']
+            return auth.keys["sandbox"]
 
     def construct_interface_and_cache(self, calls):
         """
@@ -105,10 +111,12 @@ class Exchange(ABCExchange, abc.ABC):
             for coin_iterator in self.models:
                 # Start all models
                 if not self.models[coin_iterator]["model"].is_running():
-                    self.models[coin_iterator]["model"].run(self.models[coin_iterator]["args"])
+                    self.models[coin_iterator]["model"].run(
+                        self.models[coin_iterator]["args"]
+                    )
                     # There is some delay. Optimally the bots should be started in a different thread so this doesn't
                     # block the main
-                    time.sleep(.1)
+                    time.sleep(0.1)
                 else:
                     print("Ignoring the model on " + coin_iterator)
 
@@ -140,10 +148,7 @@ class Exchange(ABCExchange, abc.ABC):
         """
         state = self.get_asset_state(symbol)
 
-        return {
-            "account": state,
-            "model": self.get_model_state(symbol)
-        }
+        return {"account": state, "model": self.get_model_state(symbol)}
 
     def write_value(self, symbol, key, value):
         """
@@ -167,12 +172,14 @@ class Exchange(ABCExchange, abc.ABC):
             args: Args to pass into the model when it is run. This can be any datatype, the object is passed
         """
         added_model = model
-        self.models[symbol] = {
-            "model": added_model,
-            "args": args
-        }
-        model.setup(self.__type, symbol, self.preferences, self.get_full_state(symbol),
-                    self.interface)
+        self.models[symbol] = {"model": added_model, "args": args}
+        model.setup(
+            self.__type,
+            symbol,
+            self.preferences,
+            self.get_full_state(symbol),
+            self.interface,
+        )
 
     @abc.abstractmethod
     def get_asset_state(self, symbol):

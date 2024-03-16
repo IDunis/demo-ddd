@@ -20,12 +20,19 @@ import abc
 from functools import lru_cache
 
 import trapilot.utils.utils as utils
-from trapilot.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
+from trapilot.exchanges.interfaces.abc_exchange_interface import \
+    ABCExchangeInterface
 
 
 # TODO: need to add a cancel all orders function
 class ExchangeInterface(ABCExchangeInterface, abc.ABC):
-    def __init__(self, exchange_name, authenticated_api, preferences_path=None, valid_resolutions=None):
+    def __init__(
+        self,
+        exchange_name,
+        authenticated_api,
+        preferences_path=None,
+        valid_resolutions=None,
+    ):
         self.exchange_name = exchange_name
         self.calls = authenticated_api
         self.valid_resolutions = valid_resolutions
@@ -37,32 +44,26 @@ class ExchangeInterface(ABCExchangeInterface, abc.ABC):
         self.available_currencies = {}
 
         self.needed = {
-            '__init_exchange__': [
-                ['maker_fee_rate', float],
-                ['taker_fee_rate', float]
-            ],
-            'get_products': [
+            "__init_exchange__": [["maker_fee_rate", float], ["taker_fee_rate", float]],
+            "get_products": [
                 ["symbol", str],
                 ["base_asset", str],
                 ["quote_asset", str],
                 ["base_min_size", float],
                 ["base_max_size", float],
-                ["base_increment", float]
+                ["base_increment", float],
             ],
-            'get_account': [
-                ["available", float],
-                ["hold", float]
-            ],
-            'market_order': [
+            "get_account": [["available", float], ["hold", float]],
+            "market_order": [
                 ["symbol", str],
                 ["id", str],
                 ["created_at", float],
                 ["size", float],
                 ["status", str],
                 ["type", str],
-                ["side", str]
+                ["side", str],
             ],
-            'limit_order': [
+            "limit_order": [
                 ["symbol", str],
                 ["id", str],
                 ["created_at", float],
@@ -71,9 +72,9 @@ class ExchangeInterface(ABCExchangeInterface, abc.ABC):
                 ["status", str],
                 ["time_in_force", str],
                 ["type", str],
-                ["side", str]
+                ["side", str],
             ],
-            'take_profit': [
+            "take_profit": [
                 ["symbol", str],
                 ["id", str],
                 ["created_at", float],
@@ -83,9 +84,9 @@ class ExchangeInterface(ABCExchangeInterface, abc.ABC):
                 ["status", str],
                 ["time_in_force", str],
                 ["type", str],
-                ["side", str]
+                ["side", str],
             ],
-            'stop_loss': [
+            "stop_loss": [
                 ["symbol", str],
                 ["id", str],
                 ["created_at", float],
@@ -95,9 +96,9 @@ class ExchangeInterface(ABCExchangeInterface, abc.ABC):
                 ["status", str],
                 ["time_in_force", str],
                 ["type", str],
-                ["side", str]
+                ["side", str],
             ],
-            'stop_limit': [
+            "stop_limit": [
                 ["symbol", str],
                 ["id", str],
                 ["created_at", float],
@@ -108,11 +109,9 @@ class ExchangeInterface(ABCExchangeInterface, abc.ABC):
                 ["status", str],
                 ["time_in_force", str],
                 ["type", str],
-                ["side", str]
+                ["side", str],
             ],
-            'cancel_order': [
-                ['order_id', str]
-            ],
+            "cancel_order": [["order_id", str]],
             # 'get_open_orders': [  # Key specificity changes based on order type
             #     ["id", str],
             #     ["price", float],
@@ -132,21 +131,18 @@ class ExchangeInterface(ABCExchangeInterface, abc.ABC):
             #     ["status", str],
             #     ["funds", float]
             # ],
-            'get_fees': [
-                ['maker_fee_rate', float],
-                ['taker_fee_rate', float]
-            ],
-            'get_order_filter': [
+            "get_fees": [["maker_fee_rate", float], ["taker_fee_rate", float]],
+            "get_order_filter": [
                 ["symbol", str],
                 ["base_asset", str],
                 ["quote_asset", str],
                 ["max_orders", int],
                 ["limit_order", dict],
-                ["market_order", dict]
-            ]
+                ["market_order", dict],
+            ],
         }
 
-        if self.user_preferences['settings']['test_connectivity_on_auth']:
+        if self.user_preferences["settings"]["test_connectivity_on_auth"]:
             self.init_exchange()
 
     @abc.abstractmethod
@@ -183,8 +179,8 @@ class ExchangeInterface(ABCExchangeInterface, abc.ABC):
 
     @property
     def cash(self):
-        using_setting = self.user_preferences['settings'][self.exchange_name]['cash']
-        return self.get_account(using_setting)['available']
+        using_setting = self.user_preferences["settings"][self.exchange_name]["cash"]
+        return self.get_account(using_setting)["available"]
 
     def backtesting_time(self):
         """
@@ -200,15 +196,21 @@ class ExchangeInterface(ABCExchangeInterface, abc.ABC):
                 found_multiple = multiple
                 break
         if found_multiple < 0:
-            raise ValueError("This exchange currently does not support this specific resolution, try making it a "
-                             "multiple of 1 minute, 1 hour or 1 day")
+            raise ValueError(
+                "This exchange currently does not support this specific resolution, try making it a "
+                "multiple of 1 minute, 1 hour or 1 day"
+            )
 
         row_divisor = resolution_seconds / found_multiple
         row_divisor = int(row_divisor)
 
         if row_divisor > 100:
-            raise Warning("The resolution you requested is an extremely high of the base resolutions supported and may "
-                          "slow down the performance of your model: {} * {}".format(found_multiple, row_divisor))
+            raise Warning(
+                "The resolution you requested is an extremely high of the base resolutions supported and may "
+                "slow down the performance of your model: {} * {}".format(
+                    found_multiple, row_divisor
+                )
+            )
 
         return found_multiple, row_divisor
 
@@ -230,11 +232,11 @@ class ExchangeInterface(ABCExchangeInterface, abc.ABC):
     def choose_order_specificity(self, order_type):
         # This lower should not be necessary if everything is truly homogeneous
         order_type = order_type.lower()
-        if order_type == 'stop':
-            return self.needed['stop_loss']
-        elif order_type == 'take_profit':
-            return self.needed['take_profit']
-        return self.needed[f'{order_type}_order']
+        if order_type == "stop":
+            return self.needed["stop_loss"]
+        elif order_type == "take_profit":
+            return self.needed["take_profit"]
+        return self.needed[f"{order_type}_order"]
 
     """
     Order lifecycle should be:
@@ -246,27 +248,27 @@ class ExchangeInterface(ABCExchangeInterface, abc.ABC):
         if exchange == "binance":
             if status == "new":
                 return "open"
-        elif exchange == 'alpaca':
-            if status == 'accepted':
-                return 'accepted'
-            if status == 'new':
-                return 'new'
-        elif exchange == 'ssi':
-            if status == 'accepted':
-                return 'accepted'
-            if status == 'new':
-                return 'new'
+        elif exchange == "alpaca":
+            if status == "accepted":
+                return "accepted"
+            if status == "new":
+                return "new"
+        elif exchange == "ssi":
+            if status == "accepted":
+                return "accepted"
+            if status == "new":
+                return "new"
 
         return status
 
     @property
     def should_auto_trunc(self):
-        return self.user_preferences['settings'].get('auto_truncate', False)
+        return self.user_preferences["settings"].get("auto_truncate", False)
 
     @lru_cache(None)
     def get_asset_precision(self, asset):
         try:
-            product = next(p for p in self.get_products() if p['symbol'] == asset)
-            return utils.increment_to_precision(product['base_increment'])
+            product = next(p for p in self.get_products() if p["symbol"] == asset)
+            return utils.increment_to_precision(product["base_increment"])
         except (KeyError, StopIteration):
             return 8  # reasonable default for symbols that don't exist

@@ -15,10 +15,13 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 from dataclasses import dataclass, field
 
-from trapilot.enums import OrderStatus, OrderType, Side, PositionMode, ContractType, TimeInForce
-from trapilot.exchanges.interfaces.abc_base_exchange_interface import ABCBaseExchangeInterface
+from trapilot.enums import (ContractType, OrderStatus, OrderType, PositionMode,
+                            Side, TimeInForce)
+from trapilot.exchanges.interfaces.abc_base_exchange_interface import \
+    ABCBaseExchangeInterface
 
 
 @dataclass

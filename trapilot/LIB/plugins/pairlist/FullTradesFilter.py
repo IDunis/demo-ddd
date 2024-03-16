@@ -1,6 +1,7 @@
 """
 Full trade slots pair list filter
 """
+
 import logging
 from typing import Any, Dict, List
 
@@ -9,16 +10,22 @@ from trapilot.LIB.exchange.types import Tickers
 from trapilot.LIB.persistence import Trade
 from trapilot.LIB.plugins.pairlist.IPairList import IPairList
 
-
 logger = logging.getLogger(__name__)
 
 
 class FullTradesFilter(IPairList):
 
-    def __init__(self, exchange, pairlistmanager,
-                 config: Config, pairlistconfig: Dict[str, Any],
-                 pairlist_pos: int) -> None:
-        super().__init__(exchange, pairlistmanager, config, pairlistconfig, pairlist_pos)
+    def __init__(
+        self,
+        exchange,
+        pairlistmanager,
+        config: Config,
+        pairlistconfig: Dict[str, Any],
+        pairlist_pos: int,
+    ) -> None:
+        super().__init__(
+            exchange, pairlistmanager, config, pairlistconfig, pairlist_pos
+        )
 
     @property
     def needstickers(self) -> bool:
@@ -49,7 +56,7 @@ class FullTradesFilter(IPairList):
         """
         # Get the number of open trades and max open trades config
         num_open = Trade.get_open_trade_count()
-        max_trades = self._config['max_open_trades']
+        max_trades = self._config["max_open_trades"]
 
         if (num_open >= max_trades) and (max_trades > 0):
             return []

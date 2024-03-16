@@ -1,4 +1,5 @@
 """ Binance exchange subclass """
+
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
@@ -7,12 +8,12 @@ from typing import Dict, List, Optional, Tuple
 import ccxt
 
 from trapilot.LIB.enums import CandleType, MarginMode, PriceType, TradingMode
-from trapilot.LIB.exceptions import DDosProtection, OperationalException, TemporaryError
+from trapilot.LIB.exceptions import (DDosProtection, OperationalException,
+                                     TemporaryError)
 from trapilot.LIB.exchange import Exchange
 from trapilot.LIB.exchange.common import retrier
 from trapilot.LIB.exchange.types import OHLCVResponse, Tickers
 from trapilot.LIB.misc import deep_merge_dicts, json_load
-
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ class Binance(Exchange):
         "tickers_have_price": False,
         "floor_leverage": True,
         "stop_price_type_field": "workingType",
-        "order_props_in_contracts": ['amount', 'cost', 'filled', 'remaining'],
+        "order_props_in_contracts": ["amount", "cost", "filled", "remaining"],
         "stop_price_type_value_mapping": {
             PriceType.LAST: "CONTRACT_PRICE",
             PriceType.MARK: "MARK_PRICE",
@@ -50,7 +51,9 @@ class Binance(Exchange):
         (TradingMode.FUTURES, MarginMode.ISOLATED)
     ]
 
-    def get_tickers(self, symbols: Optional[List[str]] = None, cached: bool = False) -> Tickers:
+    def get_tickers(
+        self, symbols: Optional[List[str]] = None, cached: bool = False
+    ) -> Tickers:
         tickers = super().get_tickers(symbols=symbols, cached=cached)
         if self.trading_mode == TradingMode.FUTURES:
             # Binance's future result has no bid/ask values.
@@ -67,36 +70,44 @@ class Binance(Exchange):
         Must be overridden in child methods if required.
         """
         try:
-            if self.trading_mode == TradingMode.FUTURES and not self._config['dry_run']:
+            if self.trading_mode == TradingMode.FUTURES and not self._config["dry_run"]:
                 position_side = self._api.fapiPrivateGetPositionSideDual()
-                self._log_exchange_response('position_side_setting', position_side)
+                self._log_exchange_response("position_side_setting", position_side)
                 assets_margin = self._api.fapiPrivateGetMultiAssetsMargin()
-                self._log_exchange_response('multi_asset_margin', assets_margin)
+                self._log_exchange_response("multi_asset_margin", assets_margin)
                 msg = ""
-                if position_side.get('dualSidePosition') is True:
+                if position_side.get("dualSidePosition") is True:
                     msg += (
                         "\nHedge Mode is not supported by trapilot. "
-                        "Please change 'Position Mode' on your binance futures account.")
-                if assets_margin.get('multiAssetsMargin') is True:
-                    msg += ("\nMulti-Asset Mode is not supported by trapilot. "
-                            "Please change 'Asset Mode' on your binance futures account.")
+                        "Please change 'Position Mode' on your binance futures account."
+                    )
+                if assets_margin.get("multiAssetsMargin") is True:
+                    msg += (
+                        "\nMulti-Asset Mode is not supported by trapilot. "
+                        "Please change 'Asset Mode' on your binance futures account."
+                    )
                 if msg:
                     raise OperationalException(msg)
         except ccxt.DDoSProtection as e:
             raise DDosProtection(e) from e
         except (ccxt.NetworkError, ccxt.ExchangeError) as e:
             raise TemporaryError(
-                f'Error in additional_exchange_init due to {e.__class__.__name__}. Message: {e}'
-                ) from e
+                f"Error in additional_exchange_init due to {e.__class__.__name__}. Message: {e}"
+            ) from e
 
         except ccxt.BaseError as e:
             raise OperationalException(e) from e
 
-    async def _async_get_historic_ohlcv(self, pair: str, timeframe: str,
-                                        since_ms: int, candle_type: CandleType,
-                                        is_new_pair: bool = False, raise_: bool = False,
-                                        until_ms: Optional[int] = None
-                                        ) -> OHLCVResponse:
+    async def _async_get_historic_ohlcv(
+        self,
+        pair: str,
+        timeframe: str,
+        since_ms: int,
+        candle_type: CandleType,
+        is_new_pair: bool = False,
+        raise_: bool = False,
+        until_ms: Optional[int] = None,
+    ) -> OHLCVResponse:
         """
         Overwrite to introduce "fast new pair" functionality by detecting the pair's listing date
         Does not work for other exchanges, which don't return the earliest data when called with "0"
@@ -109,7 +120,8 @@ class Binance(Exchange):
                 since_ms = x[3][0][0]
                 logger.info(
                     f"Candle-data for {pair} available starting with "
-                    f"{datetime.fromtimestamp(since_ms // 1000, tz=timezone.utc).isoformat()}.")
+                    f"{datetime.fromtimestamp(since_ms // 1000, tz=timezone.utc).isoformat()}."
+                )
 
         return await super()._async_get_historic_ohlcv(
             pair=pair,
@@ -135,7 +147,7 @@ class Binance(Exchange):
     def dry_run_liquidation_price(
         self,
         pair: str,
-        open_rate: float,   # Entry price of position
+        open_rate: float,  # Entry price of position
         is_short: bool,
         amount: float,
         stake_amount: float,
@@ -171,13 +183,17 @@ class Binance(Exchange):
         """
 
         side_1 = -1 if is_short else 1
-        cross_vars = upnl_ex_1 - mm_ex_1 if self.margin_mode == MarginMode.CROSS else 0.0
+        cross_vars = (
+            upnl_ex_1 - mm_ex_1 if self.margin_mode == MarginMode.CROSS else 0.0
+        )
 
         # mm_ratio: Binance's formula specifies maintenance margin rate which is mm_ratio * 100%
         # maintenance_amt: (CUM) Maintenance Amount of position
-        mm_ratio, maintenance_amt = self.get_maintenance_ratio_and_amt(pair, stake_amount)
+        mm_ratio, maintenance_amt = self.get_maintenance_ratio_and_amt(
+            pair, stake_amount
+        )
 
-        if (maintenance_amt is None):
+        if maintenance_amt is None:
             raise OperationalException(
                 "Parameter maintenance_amt is required by Binance.liquidation_price"
                 f"for {self.trading_mode.value}"
@@ -185,23 +201,20 @@ class Binance(Exchange):
 
         if self.trading_mode == TradingMode.FUTURES:
             return (
-                (
-                    (wallet_balance + cross_vars + maintenance_amt) -
-                    (side_1 * amount * open_rate)
-                ) / (
-                    (amount * mm_ratio) - (side_1 * amount)
-                )
-            )
+                (wallet_balance + cross_vars + maintenance_amt)
+                - (side_1 * amount * open_rate)
+            ) / ((amount * mm_ratio) - (side_1 * amount))
         else:
             raise OperationalException(
-                "Trapilot only supports isolated futures for leverage trading")
+                "Trapilot only supports isolated futures for leverage trading"
+            )
 
     @retrier
     def load_leverage_tiers(self) -> Dict[str, List[Dict]]:
         if self.trading_mode == TradingMode.FUTURES:
-            if self._config['dry_run']:
+            if self._config["dry_run"]:
                 leverage_tiers_path = (
-                    Path(__file__).parent / 'binance_leverage_tiers.json'
+                    Path(__file__).parent / "binance_leverage_tiers.json"
                 )
                 with leverage_tiers_path.open() as json_file:
                     return json_load(json_file)
@@ -211,8 +224,10 @@ class Binance(Exchange):
                 except ccxt.DDoSProtection as e:
                     raise DDosProtection(e) from e
                 except (ccxt.NetworkError, ccxt.ExchangeError) as e:
-                    raise TemporaryError(f'Could not fetch leverage amounts due to'
-                                         f'{e.__class__.__name__}. Message: {e}') from e
+                    raise TemporaryError(
+                        f"Could not fetch leverage amounts due to"
+                        f"{e.__class__.__name__}. Message: {e}"
+                    ) from e
                 except ccxt.BaseError as e:
                     raise OperationalException(e) from e
         else:

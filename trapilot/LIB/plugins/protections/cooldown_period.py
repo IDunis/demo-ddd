@@ -1,4 +1,3 @@
-
 import logging
 from datetime import datetime, timedelta
 from typing import Optional
@@ -6,7 +5,6 @@ from typing import Optional
 from trapilot.LIB.constants import LongShort
 from trapilot.LIB.persistence import Trade
 from trapilot.LIB.plugins.protections import IProtection, ProtectionReturn
-
 
 logger = logging.getLogger(__name__)
 
@@ -20,15 +18,17 @@ class CooldownPeriod(IProtection):
         """
         LockReason to use
         """
-        return (f'Cooldown period for {self.stop_duration_str}.')
+        return f"Cooldown period for {self.stop_duration_str}."
 
     def short_desc(self) -> str:
         """
         Short method description - used for startup-messages
         """
-        return (f"{self.name} - Cooldown period of {self.stop_duration_str}.")
+        return f"{self.name} - Cooldown period of {self.stop_duration_str}."
 
-    def _cooldown_period(self, pair: str, date_now: datetime) -> Optional[ProtectionReturn]:
+    def _cooldown_period(
+        self, pair: str, date_now: datetime
+    ) -> Optional[ProtectionReturn]:
         """
         Get last trade for this pair
         """
@@ -39,12 +39,16 @@ class CooldownPeriod(IProtection):
         #     Trade.pair == pair,
         # ]
         # trade = Trade.get_trades(filters).first()
-        trades = Trade.get_trades_proxy(pair=pair, is_open=False, close_date=look_back_until)
+        trades = Trade.get_trades_proxy(
+            pair=pair, is_open=False, close_date=look_back_until
+        )
         if trades:
             # Get latest trade
             # Ignore type error as we know we only get closed trades.
             trade = sorted(trades, key=lambda t: t.close_date)[-1]  # type: ignore
-            self.log_once(f"Cooldown for {pair} for {self.stop_duration_str}.", logger.info)
+            self.log_once(
+                f"Cooldown for {pair} for {self.stop_duration_str}.", logger.info
+            )
             until = self.calculate_lock_end([trade], self._stop_duration)
 
             return ProtectionReturn(
@@ -55,7 +59,9 @@ class CooldownPeriod(IProtection):
 
         return None
 
-    def global_stop(self, date_now: datetime, side: LongShort) -> Optional[ProtectionReturn]:
+    def global_stop(
+        self, date_now: datetime, side: LongShort
+    ) -> Optional[ProtectionReturn]:
         """
         Stops trading (position entering) for all pairs
         This must evaluate to true for the whole period of the "cooldown period".
@@ -66,7 +72,8 @@ class CooldownPeriod(IProtection):
         return None
 
     def stop_per_pair(
-            self, pair: str, date_now: datetime, side: LongShort) -> Optional[ProtectionReturn]:
+        self, pair: str, date_now: datetime, side: LongShort
+    ) -> Optional[ProtectionReturn]:
         """
         Stops trading (position entering) for this pair
         This must evaluate to true for the whole period of the "cooldown period".

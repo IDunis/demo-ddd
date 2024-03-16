@@ -16,25 +16,26 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+import enum
 import threading
 import typing
-import enum
-
 
 import trapilot
 from trapilot.exchanges.abc_base_exchange import ABCBaseExchange
-from trapilot.exchanges.interfaces.abc_base_exchange_interface import ABCBaseExchangeInterface
-from trapilot.exchanges.interfaces.paper_trade.backtest_result import BacktestResult
+from trapilot.exchanges.interfaces.abc_base_exchange_interface import \
+    ABCBaseExchangeInterface
+from trapilot.exchanges.interfaces.paper_trade.backtest_result import \
+    BacktestResult
 from trapilot.frameworks.strategy.strategy_state import StrategyState
 from trapilot.utils.time_builder import time_interval_to_seconds
 from trapilot.utils.utils import AttributeDict
 
 
 class EventType(enum.Enum):
-    price_event = 'price_event'
-    bar_event = 'bar_event'
-    scheduled_event = 'scheduled_event'
-    arbitrage_event = 'arbitrage_event'
+    price_event = "price_event"
+    bar_event = "bar_event"
+    scheduled_event = "scheduled_event"
+    arbitrage_event = "arbitrage_event"
     orderbook_event = "orderbook_event"
 
 
@@ -42,7 +43,9 @@ class StrategyBase:
     __exchange: ABCBaseExchange
     interface: ABCBaseExchangeInterface
 
-    def __init__(self, exchange: ABCBaseExchange, interface: ABCBaseExchangeInterface, model):
+    def __init__(
+        self, exchange: ABCBaseExchange, interface: ABCBaseExchangeInterface, model
+    ):
         """
         Create a new strategy object. A strategy can be used to run your code live while be backtestable and modular
          across exchanges.
@@ -60,8 +63,10 @@ class StrategyBase:
         self.__exchange = exchange
         self.interface = interface
 
-        self.ticker_manager = trapilot.TickerManager(self.__exchange.get_type(), '')
-        self.orderbook_manager = trapilot.OrderbookManager(self.__exchange.get_type(), '')
+        self.ticker_manager = trapilot.TickerManager(self.__exchange.get_type(), "")
+        self.orderbook_manager = trapilot.OrderbookManager(
+            self.__exchange.get_type(), ""
+        )
 
         # Attempt to report the strategy
         trapilot.reporter.export_strategy(self)
@@ -80,9 +85,16 @@ class StrategyBase:
         self.ticker_websockets = []
         self.model = model
 
-    def add_price_event(self, callback: typing.Callable, symbol: str, resolution: typing.Union[str, float],
-                        init: typing.Callable = None, teardown: typing.Callable = None, synced: bool = False,
-                        variables: dict = None):
+    def add_price_event(
+        self,
+        callback: typing.Callable,
+        symbol: str,
+        resolution: typing.Union[str, float],
+        init: typing.Callable = None,
+        teardown: typing.Callable = None,
+        synced: bool = False,
+        variables: dict = None,
+    ):
         """
         Add Price Event. This will provide you with an updated price every time the callback is run
         Args:
@@ -96,12 +108,26 @@ class StrategyBase:
             synced: Sync the function to
             variables: A dictionary to initialize the state's internal values
         """
-        self.__custom_price_event(callback=callback, symbol=symbol, resolution=resolution, init=init, synced=synced,
-                                  teardown=teardown, variables=variables, type_=EventType.price_event)
+        self.__custom_price_event(
+            callback=callback,
+            symbol=symbol,
+            resolution=resolution,
+            init=init,
+            synced=synced,
+            teardown=teardown,
+            variables=variables,
+            type_=EventType.price_event,
+        )
 
-    def add_scheduled_event(self, callback: typing.Callable, resolution: typing.Union[str, float],
-                            init: typing.Callable = None, teardown: typing.Callable = None,
-                            synced: bool = False, variables: dict = None):
+    def add_scheduled_event(
+        self,
+        callback: typing.Callable,
+        resolution: typing.Union[str, float],
+        init: typing.Callable = None,
+        teardown: typing.Callable = None,
+        synced: bool = False,
+        variables: dict = None,
+    ):
         """
         Add a scheduled event. This will call the callback at the rate defined in the resolution
 
@@ -115,12 +141,27 @@ class StrategyBase:
             synced: Sync the function to
             variables: A dictionary to initialize the state's internal values
         """
-        self.__custom_price_event(callback=callback, symbol=None, resolution=resolution, init=init, synced=synced,
-                                  teardown=teardown, variables=variables, type_=EventType.scheduled_event)
+        self.__custom_price_event(
+            callback=callback,
+            symbol=None,
+            resolution=resolution,
+            init=init,
+            synced=synced,
+            teardown=teardown,
+            variables=variables,
+            type_=EventType.scheduled_event,
+        )
 
-    def add_arbitrage_event(self, callback: typing.Callable, symbols: list, resolution: typing.Union[str, float],
-                            init: typing.Callable = None, teardown: typing.Callable = None, synced: bool = False,
-                            variables: dict = None):
+    def add_arbitrage_event(
+        self,
+        callback: typing.Callable,
+        symbols: list,
+        resolution: typing.Union[str, float],
+        init: typing.Callable = None,
+        teardown: typing.Callable = None,
+        synced: bool = False,
+        variables: dict = None,
+    ):
         """
         Add Price Event. This will provide you with an updated price every time the callback is run
         Args:
@@ -134,11 +175,26 @@ class StrategyBase:
             synced: Sync the function to
             variables: A dictionary to initialize the state's internal values
         """
-        self.__custom_price_event(callback=callback, symbol=symbols, resolution=resolution, init=init, synced=synced,
-                                  teardown=teardown, variables=variables, type_=EventType.arbitrage_event)
+        self.__custom_price_event(
+            callback=callback,
+            symbol=symbols,
+            resolution=resolution,
+            init=init,
+            synced=synced,
+            teardown=teardown,
+            variables=variables,
+            type_=EventType.arbitrage_event,
+        )
 
-    def add_bar_event(self, callback: typing.Callable, symbol: str, resolution: typing.Union[str, float],
-                      init: typing.Callable = None, teardown: typing.Callable = None, variables: dict = None):
+    def add_bar_event(
+        self,
+        callback: typing.Callable,
+        symbol: str,
+        resolution: typing.Union[str, float],
+        init: typing.Callable = None,
+        teardown: typing.Callable = None,
+        variables: dict = None,
+    ):
         """
         The bar event sends a dictionary of {open, high, low, close, volume} which has occurred in the interval.
         Args:
@@ -151,17 +207,28 @@ class StrategyBase:
                 positions, writing or cleaning up data or anything else useful
             variables: A dictionary to initialize the state's internal values
         """
-        self.__custom_price_event(type_=EventType.bar_event, synced=True, callback=callback, symbol=symbol,
-                                  resolution=resolution, init=init, teardown=teardown, variables=variables)
+        self.__custom_price_event(
+            type_=EventType.bar_event,
+            synced=True,
+            callback=callback,
+            symbol=symbol,
+            resolution=resolution,
+            init=init,
+            teardown=teardown,
+            variables=variables,
+        )
 
-    def __custom_price_event(self,
-                             type_: EventType,
-                             callback: typing.Callable = None,
-                             symbol: [str, list] = None,
-                             resolution: typing.Union[str, float] = None,
-                             init: typing.Callable = None,
-                             synced: bool = False,
-                             teardown: typing.Callable = None, variables: dict = None):
+    def __custom_price_event(
+        self,
+        type_: EventType,
+        callback: typing.Callable = None,
+        symbol: [str, list] = None,
+        resolution: typing.Union[str, float] = None,
+        init: typing.Callable = None,
+        synced: bool = False,
+        teardown: typing.Callable = None,
+        variables: dict = None,
+    ):
         """
         Add Price Event
         Args:
@@ -186,17 +253,20 @@ class StrategyBase:
 
         # Use the API
         self.schedulers.append(
-            trapilot.Scheduler(self.model.rest_event, resolution,
-                              initially_stopped=True,
-                              synced=synced,
-                              callback=callback,
-                              resolution=resolution,
-                              variables=variables_,
-                              state=state,
-                              type=type_,
-                              init=init,
-                              teardown=teardown,
-                              symbol=symbol)
+            trapilot.Scheduler(
+                self.model.rest_event,
+                resolution,
+                initially_stopped=True,
+                synced=synced,
+                callback=callback,
+                resolution=resolution,
+                variables=variables_,
+                state=state,
+                type=type_,
+                init=init,
+                teardown=teardown,
+                symbol=symbol,
+            )
         )
 
         # Export a new symbol to the backend
@@ -209,14 +279,20 @@ class StrategyBase:
 
     @staticmethod
     def __websocket_callback(tick, **kwargs):
-        user_callback = kwargs['user_callback']
-        user_symbol = kwargs['user_symbol']
-        user_state = kwargs['state']
+        user_callback = kwargs["user_callback"]
+        user_symbol = kwargs["user_symbol"]
+        user_state = kwargs["state"]
 
         user_callback(tick, user_symbol, user_state)
 
-    def add_tick_event(self, callback: callable, symbol: str, init: callable = None, teardown: callable = None,
-                       variables: dict = None):
+    def add_tick_event(
+        self,
+        callback: callable,
+        symbol: str,
+        init: callable = None,
+        teardown: callable = None,
+        variables: dict = None,
+    ):
         """
         Add a tick event - This will call the callback everytime the exchange provides a change in the price due to a
          trade occurring
@@ -234,19 +310,30 @@ class StrategyBase:
 
         state = StrategyState(self, AttributeDict(variables), symbol=symbol)
 
-        self.ticker_manager.create_ticker(self.__websocket_callback, initially_stopped=True,
-                                          # This actually sets the symbol
-                                          override_symbol=symbol,
-                                          # This is passed on to the user as info about the symbol (as just a kwarg)
-                                          user_symbol=symbol,
-                                          user_callback=callback,
-                                          variables=variables,
-                                          state=state)
+        self.ticker_manager.create_ticker(
+            self.__websocket_callback,
+            initially_stopped=True,
+            # This actually sets the symbol
+            override_symbol=symbol,
+            # This is passed on to the user as info about the symbol (as just a kwarg)
+            user_symbol=symbol,
+            user_callback=callback,
+            variables=variables,
+            state=state,
+        )
 
-        self.ticker_websockets.append([symbol, self.__exchange.get_type(), init, state, teardown])
+        self.ticker_websockets.append(
+            [symbol, self.__exchange.get_type(), init, state, teardown]
+        )
 
-    def add_orderbook_event(self, callback: callable, symbol: str, init: typing.Callable = None,
-                            teardown: typing.Callable = None, variables: dict = None):
+    def add_orderbook_event(
+        self,
+        callback: callable,
+        symbol: str,
+        init: typing.Callable = None,
+        teardown: typing.Callable = None,
+        variables: dict = None,
+    ):
         """
         Add Orderbook Event - This will call the given callback everytime the exchange provides a change in the
          orderbook
@@ -266,16 +353,21 @@ class StrategyBase:
         state = StrategyState(self, AttributeDict(variables), symbol=symbol)
 
         # since it's less than 10 sec, we will just use the websocket feed - exchanges don't like fast calls
-        self.orderbook_manager.create_orderbook(self.__websocket_callback, initially_stopped=True,
-                                                # This is the one that actually sets the symbol
-                                                override_symbol=symbol,
-                                                # This is passed as a kwarg
-                                                user_symbol=symbol,
-                                                user_callback=callback,
-                                                variables=variables,
-                                                state=state)
+        self.orderbook_manager.create_orderbook(
+            self.__websocket_callback,
+            initially_stopped=True,
+            # This is the one that actually sets the symbol
+            override_symbol=symbol,
+            # This is passed as a kwarg
+            user_symbol=symbol,
+            user_callback=callback,
+            variables=variables,
+            state=state,
+        )
 
-        self.orderbook_websockets.append([symbol, self.__exchange.get_type(), init, state, teardown])
+        self.orderbook_websockets.append(
+            [symbol, self.__exchange.get_type(), init, state, teardown]
+        )
 
     def start(self):
         """
@@ -291,12 +383,13 @@ class StrategyBase:
     def time(self) -> float:
         raise NotImplementedError
 
-    def backtest(self,
-                 to: str = None,
-                 initial_values: dict = None,
-                 start_date: typing.Union[str, float, int] = None,
-                 end_date: typing.Union[str, float, int] = None,
-                 settings_path: str = None,
-                 **kwargs
-                 ) -> BacktestResult:
+    def backtest(
+        self,
+        to: str = None,
+        initial_values: dict = None,
+        start_date: typing.Union[str, float, int] = None,
+        end_date: typing.Union[str, float, int] = None,
+        settings_path: str = None,
+        **kwargs
+    ) -> BacktestResult:
         raise NotImplementedError

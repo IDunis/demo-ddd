@@ -15,6 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import time
 
 import pandas as pd
@@ -36,20 +37,40 @@ class BinanceInterface(ExchangeInterface):
         self._asset_precision = {}
         # Initialize this as None so that it can be filled & cached when needed
         self.__available_currencies = None
-        super().__init__(exchange_name, authenticated_api, valid_resolutions=[60, 180, 300, 900, 1800, 3600, 7200,
-                                                                              14400, 21600, 28800, 43200, 86400, 259200,
-                                                                              604800, 2592000])
+        super().__init__(
+            exchange_name,
+            authenticated_api,
+            valid_resolutions=[
+                60,
+                180,
+                300,
+                900,
+                1800,
+                3600,
+                7200,
+                14400,
+                21600,
+                28800,
+                43200,
+                86400,
+                259200,
+                604800,
+                2592000,
+            ],
+        )
 
     def init_exchange(self):
         try:
             self.calls.get_account()
         except Exception as e:
-            raise exceptions.APIException(f"Debugging info: {e} - {e.response} - {e.message}\n"
-                                          "Invalid API Key, IP, or permissions for action - are you trying "
-                                          "to use your normal exchange keys while in sandbox mode? "
-                                          "\nTry toggling the \'sandbox\' setting in your user_data/keys.json, check "
-                                          "if the keys were input correctly into your user_data/keys.json or ensure you have set "
-                                          "the correct binance_tld in user_data/settings.json.\n")
+            raise exceptions.APIException(
+                f"Debugging info: {e} - {e.response} - {e.message}\n"
+                "Invalid API Key, IP, or permissions for action - are you trying "
+                "to use your normal exchange keys while in sandbox mode? "
+                "\nTry toggling the 'sandbox' setting in your user_data/keys.json, check "
+                "if the keys were input correctly into your user_data/keys.json or ensure you have set "
+                "the correct binance_tld in user_data/settings.json.\n"
+            )
 
         symbols = self.calls.get_exchange_info()["symbols"]
         assets = []
@@ -66,7 +87,7 @@ class BinanceInterface(ExchangeInterface):
         self.__available_currencies = filtered_base_assets
 
     def get_products(self):
-        needed = self.needed['get_products']
+        needed = self.needed["get_products"]
         """
         This is a section of the symbols array
         [
@@ -134,7 +155,9 @@ class BinanceInterface(ExchangeInterface):
         products = self.calls.get_exchange_info()["symbols"]
         for i in range(len(products)):
             # Rename needed
-            products[i]["symbol"] = products[i]["baseAsset"] + "-" + products[i]["quoteAsset"]
+            products[i]["symbol"] = (
+                products[i]["baseAsset"] + "-" + products[i]["quoteAsset"]
+            )
             products[i]["base_asset"] = products[i].pop("baseAsset")
             products[i]["quote_asset"] = products[i].pop("quoteAsset")
             filters = products[i]["filters"]
@@ -211,16 +234,15 @@ class BinanceInterface(ExchangeInterface):
                     # If it was in the accounts return we can just isolate & parse
                     if accounts[i]["asset"] == symbol:
                         accounts = utils.rename_to(renames, accounts[i])
-                        return utils.AttributeDict({
-                            'available': float(accounts['available']),
-                            'hold': float(accounts['hold'])
-                        })
+                        return utils.AttributeDict(
+                            {
+                                "available": float(accounts["available"]),
+                                "hold": float(accounts["hold"]),
+                            }
+                        )
                 # If not just return a default 0 value. This is safe because we already checked if the symbol
                 #  was valid
-                return utils.AttributeDict({
-                    "available": 0.0,
-                    "hold": 0.0
-                })
+                return utils.AttributeDict({"available": 0.0, "hold": 0.0})
             else:
                 raise LookupError("Symbol was not found")
 
@@ -228,7 +250,7 @@ class BinanceInterface(ExchangeInterface):
         # We can fill it to a balance of zero later
         owned_assets = []
         for i in accounts:
-            owned_assets.append(i['asset'])
+            owned_assets.append(i["asset"])
         # Create an empty list for return
         parsed_dictionary = {}
         # Iterate through
@@ -237,36 +259,42 @@ class BinanceInterface(ExchangeInterface):
             found = False
             for val in accounts:
                 # If the current available asset matches one from binance
-                if val['asset'] == i:
+                if val["asset"] == i:
                     # Do the normal thing above and append
                     mutated = utils.rename_to(renames, val)
-                    parsed_dictionary[mutated['symbol']] = utils.AttributeDict({
-                        'available': float(mutated['available']),
-                        'hold': float(mutated['hold'])
-                    })
+                    parsed_dictionary[mutated["symbol"]] = utils.AttributeDict(
+                        {
+                            "available": float(mutated["available"]),
+                            "hold": float(mutated["hold"]),
+                        }
+                    )
                     found = True
             # If it wasn't found just default here
             if not found:
-                parsed_dictionary[i] = utils.AttributeDict({
-                    'available': 0.0,
-                    'hold': 0.0
-                })
+                parsed_dictionary[i] = utils.AttributeDict(
+                    {"available": 0.0, "hold": 0.0}
+                )
         return utils.AttributeDict(parsed_dictionary)
 
     def _fix_response(self, needed, response):
-        response['side'] = response['side'].lower()
-        response['type'] = response['type'].lower()
-        response['status'] = super().homogenize_order_status('binance', response['status'].lower())
-        response['symbol'] = utils.to_blankly_symbol(response['symbol'], 'binance')
-        if 'transactTime' in response:
+        response["side"] = response["side"].lower()
+        response["type"] = response["type"].lower()
+        response["status"] = super().homogenize_order_status(
+            "binance", response["status"].lower()
+        )
+        response["symbol"] = utils.to_blankly_symbol(response["symbol"], "binance")
+        if "transactTime" in response:
             response["transactTime"] /= 1000
-        response = utils.rename_to([
-            ["orderId", "id"],
-            ["transactTime", "created_at"],
-            ["origQty", "size"],
-            ["timeInForce", "time_in_force"],
-            ["cummulativeQuoteQty", "funds"]
-        ], response)
+        response = utils.rename_to(
+            [
+                ["orderId", "id"],
+                ["transactTime", "created_at"],
+                ["origQty", "size"],
+                ["timeInForce", "time_in_force"],
+                ["cummulativeQuoteQty", "funds"],
+            ],
+            response,
+        )
         response = utils.isolate_specific(needed, response)
         return response
 
@@ -279,7 +307,7 @@ class BinanceInterface(ExchangeInterface):
             side: buy/sell
             size: desired amount of base asset to use
         """
-        needed = self.needed['market_order']
+        needed = self.needed["market_order"]
         """
         Response RESULT:
 
@@ -327,16 +355,13 @@ class BinanceInterface(ExchangeInterface):
         """
         if self.should_auto_trunc:
             size = utils.trunc(size, self.get_asset_precision(symbol))
-        order = {
-            'size': size,
-            'side': side,
-            'symbol': symbol,
-            'type': 'market'
-        }
+        order = {"size": size, "side": side, "symbol": symbol, "type": "market"}
         modified_symbol = utils.to_exchange_symbol(symbol, "binance")
         # The interface here will be the query of order status from this object, because orders are dynamic
         # creatures
-        response = self.calls.order_market(symbol=modified_symbol, side=side, quantity=size)
+        response = self.calls.order_market(
+            symbol=modified_symbol, side=side, quantity=size
+        )
         response = self._fix_response(needed, response)
         return MarketOrder(order, response, self)
 
@@ -350,7 +375,7 @@ class BinanceInterface(ExchangeInterface):
             price: price to set limit order
             size: amount of currency (like BTC) for the limit to be valued
         """
-        needed = self.needed['limit_order']
+        needed = self.needed["limit_order"]
         """Send in a new limit order
 
         Any order with an icebergQty MUST have timeInForce set to GTC.
@@ -386,14 +411,16 @@ class BinanceInterface(ExchangeInterface):
         if self.should_auto_trunc:
             size = utils.trunc(size, self.get_asset_precision(symbol))
         order = {
-            'size': size,
-            'side': side,
-            'price': price,
-            'symbol': symbol,
-            'type': 'limit'
+            "size": size,
+            "side": side,
+            "price": price,
+            "symbol": symbol,
+            "type": "limit",
         }
-        modified_symbol = utils.to_exchange_symbol(symbol, 'binance')
-        response = self.calls.order_limit(symbol=modified_symbol, side=side, price=price, quantity=size)
+        modified_symbol = utils.to_exchange_symbol(symbol, "binance")
+        response = self.calls.order_limit(
+            symbol=modified_symbol, side=side, price=price, quantity=size
+        )
         response = self._fix_response(needed, response)
         return LimitOrder(order, response, self)
 
@@ -406,7 +433,7 @@ class BinanceInterface(ExchangeInterface):
             price: price to sell at
             size: amount of currency (like BTC)
         """
-        needed = self.needed['take_profit']
+        needed = self.needed["take_profit"]
         """Send in a new take-profit order
 
         Any order with an icebergQty MUST have timeInForce set to GTC.
@@ -439,17 +466,22 @@ class BinanceInterface(ExchangeInterface):
         BinanceOrderUnknownSymbolException, BinanceOrderInactiveSymbolException
 
         """
-        side = 'sell'
+        side = "sell"
         order = {
-            'size': size,
-            'side': side,
-            'price': price,
-            'symbol': symbol,
-            'type': 'take_profit'
+            "size": size,
+            "side": side,
+            "price": price,
+            "symbol": symbol,
+            "type": "take_profit",
         }
-        modified_symbol = utils.to_exchange_symbol(symbol, 'binance')
-        response = self.calls.create_order(symbol=modified_symbol, side=side, stopPrice=price, quantity=size,
-                                           type='TAKE_PROFIT')
+        modified_symbol = utils.to_exchange_symbol(symbol, "binance")
+        response = self.calls.create_order(
+            symbol=modified_symbol,
+            side=side,
+            stopPrice=price,
+            quantity=size,
+            type="TAKE_PROFIT",
+        )
         response = self._fix_response(needed, response)
         return TakeProfitOrder(order, response, self)
 
@@ -462,7 +494,7 @@ class BinanceInterface(ExchangeInterface):
             price: price to sell at
             size: amount of currency (like BTC)
         """
-        needed = self.needed['stop_loss']
+        needed = self.needed["stop_loss"]
         """Send in a new stop-loss order
 
         Any order with an icebergQty MUST have timeInForce set to GTC.
@@ -495,17 +527,22 @@ class BinanceInterface(ExchangeInterface):
         BinanceOrderUnknownSymbolException, BinanceOrderInactiveSymbolException
 
         """
-        side = 'sell'
+        side = "sell"
         order = {
-            'size': size,
-            'side': side,
-            'price': price,
-            'symbol': symbol,
-            'type': 'stop_loss'
+            "size": size,
+            "side": side,
+            "price": price,
+            "symbol": symbol,
+            "type": "stop_loss",
         }
-        modified_symbol = utils.to_exchange_symbol(symbol, 'binance')
-        response = self.calls.create_order(symbol=modified_symbol, side=side, stopPrice=price, quantity=size,
-                                           type='STOP_LOSS')
+        modified_symbol = utils.to_exchange_symbol(symbol, "binance")
+        response = self.calls.create_order(
+            symbol=modified_symbol,
+            side=side,
+            stopPrice=price,
+            quantity=size,
+            type="STOP_LOSS",
+        )
         response = self._fix_response(needed, response)
         return StopLossOrder(order, response, self)
 
@@ -537,11 +574,9 @@ class BinanceInterface(ExchangeInterface):
         :raises: BinanceRequestException, BinanceAPIException
 
         """
-        needed = self.needed['cancel_order']
-        renames = [
-            ["orderId", "order_id"]
-        ]
-        modified_symbol = utils.to_exchange_symbol(symbol, 'binance')
+        needed = self.needed["cancel_order"]
+        renames = [["orderId", "order_id"]]
+        modified_symbol = utils.to_exchange_symbol(symbol, "binance")
         response = self.calls.cancel_order(symbol=modified_symbol, orderId=order_id)
         response = utils.rename_to(renames, response)
         return utils.isolate_specific(needed, response)
@@ -579,7 +614,7 @@ class BinanceInterface(ExchangeInterface):
             ["origQty", "size"],
             ["cummulativeQuoteQty", "funds"],
             ["time", "created_at"],
-            ["timeInForce", "time_in_force"]
+            ["timeInForce", "time_in_force"],
         ]
 
         if symbol is not None:
@@ -590,13 +625,17 @@ class BinanceInterface(ExchangeInterface):
 
         for i in range(len(orders)):
             orders[i] = utils.rename_to(renames, orders[i])
-            orders[i]['type'] = orders[i]['type'].lower()
-            orders[i]['side'] = orders[i]['side'].lower()
-            orders[i]['status'] = super().homogenize_order_status('binance', orders[i]['status'].lower())
-            orders[i]['created_at'] = orders[i]['created_at'] / 1000
-            needed = self.choose_order_specificity(orders[i]['type'])
+            orders[i]["type"] = orders[i]["type"].lower()
+            orders[i]["side"] = orders[i]["side"].lower()
+            orders[i]["status"] = super().homogenize_order_status(
+                "binance", orders[i]["status"].lower()
+            )
+            orders[i]["created_at"] = orders[i]["created_at"] / 1000
+            needed = self.choose_order_specificity(orders[i]["type"])
             orders[i] = utils.isolate_specific(needed, orders[i])
-            orders[i]['symbol'] = utils.to_blankly_symbol(orders[i]['symbol'], 'binance', quote_guess=None)
+            orders[i]["symbol"] = utils.to_blankly_symbol(
+                orders[i]["symbol"], "binance", quote_guess=None
+            )
 
         return orders
 
@@ -623,19 +662,21 @@ class BinanceInterface(ExchangeInterface):
             ["origQty", "size"],
             ["cummulativeQuoteQty", "funds"],
             ["time", "created_at"],
-            ["timeInForce", "time_in_force"]
+            ["timeInForce", "time_in_force"],
         ]
 
-        symbol = utils.to_exchange_symbol(symbol, 'binance')
+        symbol = utils.to_exchange_symbol(symbol, "binance")
         response = self.calls.get_order(symbol=symbol, orderId=order_id)
 
         response = utils.rename_to(renames, response)
-        response['type'] = response['type'].lower()
-        response['side'] = response['side'].lower()
-        response['status'] = super().homogenize_order_status('binance', response['status'].lower())
-        response['created_at'] = response['created_at'] / 1000
-        response['symbol'] = utils.to_blankly_symbol(response['symbol'], 'binance')
-        needed = self.choose_order_specificity(response['type'])
+        response["type"] = response["type"].lower()
+        response["side"] = response["side"].lower()
+        response["status"] = super().homogenize_order_status(
+            "binance", response["status"].lower()
+        )
+        response["created_at"] = response["created_at"] / 1000
+        response["symbol"] = utils.to_blankly_symbol(response["symbol"], "binance")
+        needed = self.choose_order_specificity(response["type"])
         response = utils.isolate_specific(needed, response)
 
         return response
@@ -646,7 +687,7 @@ class BinanceInterface(ExchangeInterface):
     """
 
     def get_fees(self, symbol) -> dict:
-        needed = self.needed['get_fees']
+        needed = self.needed["get_fees"]
         """
         {
             "makerCommission": 15,
@@ -673,10 +714,10 @@ class BinanceInterface(ExchangeInterface):
         # TODO: make sure this supports with binance Coin (BNB) discount
         account = self.calls.get_account()
         # Get rid of the stuff we really don't need this time
-        account.pop('balances')
+        account.pop("balances")
         # Rename makers and takers
-        account['maker_fee_rate'] = account.pop('makerCommission') / 10000
-        account['taker_fee_rate'] = account.pop('takerCommission') / 10000
+        account["maker_fee_rate"] = account.pop("makerCommission") / 10000
+        account["taker_fee_rate"] = account.pop("takerCommission") / 10000
         # Isolate
         return utils.isolate_specific(needed, account)
 
@@ -699,10 +740,14 @@ class BinanceInterface(ExchangeInterface):
         Returns:
             Dataframe with *at least* 'time (epoch)', 'low', 'high', 'open', 'close', 'volume' as columns.
         """
-        return self._binance_get_product_history(self.calls, symbol, epoch_start, epoch_stop, resolution)
+        return self._binance_get_product_history(
+            self.calls, symbol, epoch_start, epoch_stop, resolution
+        )
 
     @staticmethod
-    def _binance_get_product_history(calls, symbol, epoch_start, epoch_stop, resolution):
+    def _binance_get_product_history(
+        calls, symbol, epoch_start, epoch_stop, resolution
+    ):
         resolution = trapilot.time_builder.time_interval_to_seconds(resolution)
 
         # epoch_start, epoch_stop = super().get_product_history(symbol, epoch_start, epoch_stop, resolution)
@@ -712,12 +757,33 @@ class BinanceInterface(ExchangeInterface):
         epoch_start = int(epoch_start)
         epoch_stop = int(epoch_stop)
 
-        accepted_grans = [60, 180, 300, 900, 1800, 3600, 7200, 14400,
-                          21600, 28800, 43200, 86400, 259200, 604800, 2592000]
+        accepted_grans = [
+            60,
+            180,
+            300,
+            900,
+            1800,
+            3600,
+            7200,
+            14400,
+            21600,
+            28800,
+            43200,
+            86400,
+            259200,
+            604800,
+            2592000,
+        ]
         if resolution not in accepted_grans:
-            utils.info_print("Granularity is not an accepted granularity...rounding to nearest valid value.")
-            resolution = accepted_grans[min(range(len(accepted_grans)),
-                                            key=lambda i: abs(accepted_grans[i] - resolution))]
+            utils.info_print(
+                "Granularity is not an accepted granularity...rounding to nearest valid value."
+            )
+            resolution = accepted_grans[
+                min(
+                    range(len(accepted_grans)),
+                    key=lambda i: abs(accepted_grans[i] - resolution),
+                )
+            ]
         lookup_dict = {
             60: "1m",
             180: "3m",
@@ -733,7 +799,7 @@ class BinanceInterface(ExchangeInterface):
             86400: "1d",
             259200: "3d",
             604800: "1w",
-            2592000: "1M"
+            2592000: "1M",
         }
         gran_string = lookup_dict[resolution]
 
@@ -744,52 +810,78 @@ class BinanceInterface(ExchangeInterface):
         history = []
 
         # Convert coin id to binance coin
-        symbol = utils.to_exchange_symbol(symbol, 'binance')
+        symbol = utils.to_exchange_symbol(symbol, "binance")
         while need > 1000:
             # Close is always 300 points ahead
             window_close = int(window_open + 1000 * resolution)
-            history = history + calls.get_klines(symbol=symbol, startTime=window_open * 1000,
-                                                 endTime=window_close * 1000, interval=gran_string,
-                                                 limit=1000)
+            history = history + calls.get_klines(
+                symbol=symbol,
+                startTime=window_open * 1000,
+                endTime=window_close * 1000,
+                interval=gran_string,
+                limit=1000,
+            )
 
             window_open = window_close
             need -= 1000
-            time.sleep(.2)
+            time.sleep(0.2)
             utils.update_progress((initial_need - need) / initial_need)
 
         # Fill the remainder
-        history_block = history + calls.get_klines(symbol=symbol, startTime=window_open * 1000,
-                                                   endTime=epoch_stop * 1000, interval=gran_string,
-                                                   limit=1000)
+        history_block = history + calls.get_klines(
+            symbol=symbol,
+            startTime=window_open * 1000,
+            endTime=epoch_stop * 1000,
+            interval=gran_string,
+            limit=1000,
+        )
 
-        data_frame = pd.DataFrame(history_block, columns=['time', 'open', 'high', 'low', 'close', 'volume',
-                                                          'close time', 'quote asset volume', 'number of trades',
-                                                          'taker buy base asset volume',
-                                                          'taker buy quote asset volume', 'ignore'], dtype=None)
+        data_frame = pd.DataFrame(
+            history_block,
+            columns=[
+                "time",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "close time",
+                "quote asset volume",
+                "number of trades",
+                "taker buy base asset volume",
+                "taker buy quote asset volume",
+                "ignore",
+            ],
+            dtype=None,
+        )
         # Clear the ignore column, why is that there binance?
-        del data_frame['ignore']
+        del data_frame["ignore"]
 
         # Want them in this order: ['time (epoch)', 'low', 'high', 'open', 'close', 'volume']
 
         # Time is so big it has to be cast separately for windows
-        data_frame['time'] = data_frame['time'].div(1000).astype(int)
+        data_frame["time"] = data_frame["time"].div(1000).astype(int)
 
         # Cast dataframe
-        data_frame = data_frame.astype({
-            'open': float,
-            'high': float,
-            'low': float,
-            'close': float,
-            'volume': float,
-            'close time': int,
-            'quote asset volume': float,
-            'number of trades': int,
-            'taker buy base asset volume': float,
-            'taker buy quote asset volume': float
-        })
+        data_frame = data_frame.astype(
+            {
+                "open": float,
+                "high": float,
+                "low": float,
+                "close": float,
+                "volume": float,
+                "close time": int,
+                "quote asset volume": float,
+                "number of trades": int,
+                "taker buy base asset volume": float,
+                "taker buy quote asset volume": float,
+            }
+        )
 
         # Convert time to seconds
-        return data_frame.reindex(columns=['time', 'low', 'high', 'open', 'close', 'volume'])
+        return data_frame.reindex(
+            columns=["time", "low", "high", "open", "close", "volume"]
+        )
 
     """
     Coinbase Pro: Get Currencies
@@ -965,46 +1057,47 @@ class BinanceInterface(ExchangeInterface):
         },
         """
         us_filter_mapping = {
-            'PRICE_FILTER': 0,
-            'PERCENT_PRICE': 1,
-            'LOT_SIZE': 2,
-            'MIN_NOTIONAL': 3,
-            'ICEBERG_PARTS': 4,
-            'MARKET_LOT_SIZE': 5,
-            'TRAILING_DELTA': 6,
-            'MAX_NUM_ORDERS': 7,
-            'MAX_NUM_ALGO_ORDERS': 8
+            "PRICE_FILTER": 0,
+            "PERCENT_PRICE": 1,
+            "LOT_SIZE": 2,
+            "MIN_NOTIONAL": 3,
+            "ICEBERG_PARTS": 4,
+            "MARKET_LOT_SIZE": 5,
+            "TRAILING_DELTA": 6,
+            "MAX_NUM_ORDERS": 7,
+            "MAX_NUM_ALGO_ORDERS": 8,
         }
 
         international_filter_mapping = {
-            'PRICE_FILTER': 0,
-            'LOT_SIZE': 1,
-            'ICEBERG_PARTS': 2,
-            'MARKET_LOT_SIZE': 3,
-            'TRAILING_DELTA': 4,
-            'PERCENT_PRICE_BY_SIDE': 5,
-            'NOTIONAL': 6,
-            'MAX_NUM_ORDERS': 7,
-            'MAX_NUM_ALGO_ORDERS': 8
+            "PRICE_FILTER": 0,
+            "LOT_SIZE": 1,
+            "ICEBERG_PARTS": 2,
+            "MARKET_LOT_SIZE": 3,
+            "TRAILING_DELTA": 4,
+            "PERCENT_PRICE_BY_SIDE": 5,
+            "NOTIONAL": 6,
+            "MAX_NUM_ORDERS": 7,
+            "MAX_NUM_ALGO_ORDERS": 8,
         }
 
         def is_international_exchange(asset_dict: dict) -> bool:
             """
             Given the dictionary for the asset, tell if it is an international exchange
             """
-            filters_ = asset_dict['filters']
+            filters_ = asset_dict["filters"]
 
-            return filters_[1]['filterType'] == 'LOT_SIZE'
+            return filters_[1]["filterType"] == "LOT_SIZE"
 
-        converted_symbol = utils.to_exchange_symbol(symbol, 'binance')
+        converted_symbol = utils.to_exchange_symbol(symbol, "binance")
         current_price = None
         symbol_data = self.calls.get_exchange_info()["symbols"]
         for i in symbol_data:
             if i["symbol"] == converted_symbol:
                 symbol_data = i
-                current_price = float(self.calls.get_avg_price(symbol=converted_symbol)['price'])
+                current_price = float(
+                    self.calls.get_avg_price(symbol=converted_symbol)["price"]
+                )
                 break
-
 
         if current_price is None:
             raise LookupError("Specified market not found")
@@ -1016,37 +1109,51 @@ class BinanceInterface(ExchangeInterface):
             filter_mapping = us_filter_mapping
 
         filters = symbol_data["filters"]
-        hard_min_price = float(filters[filter_mapping['PRICE_FILTER']]["minPrice"])
-        hard_max_price = float(filters[filter_mapping['PRICE_FILTER']]["maxPrice"])
-        quote_increment = float(filters[filter_mapping['PRICE_FILTER']]["tickSize"])
+        hard_min_price = float(filters[filter_mapping["PRICE_FILTER"]]["minPrice"])
+        hard_max_price = float(filters[filter_mapping["PRICE_FILTER"]]["maxPrice"])
+        quote_increment = float(filters[filter_mapping["PRICE_FILTER"]]["tickSize"])
 
         # This is the only one where the keys are different
         if using_international_exchange:
             # TODO technically this multiplier is different for buy and sell sides, this should be reflected in the
             #  backtesting engine
-            multiplier_up = float(filters[filter_mapping['PERCENT_PRICE_BY_SIDE']]["bidMultiplierUp"])
-            multiplier_down = float(filters[filter_mapping['PERCENT_PRICE_BY_SIDE']]["bidMultiplierDown"])
+            multiplier_up = float(
+                filters[filter_mapping["PERCENT_PRICE_BY_SIDE"]]["bidMultiplierUp"]
+            )
+            multiplier_down = float(
+                filters[filter_mapping["PERCENT_PRICE_BY_SIDE"]]["bidMultiplierDown"]
+            )
         else:
-            multiplier_up = float(filters[filter_mapping['PERCENT_PRICE']]["multiplierUp"])
-            multiplier_down = float(filters[filter_mapping['PERCENT_PRICE']]["multiplierDown"])
+            multiplier_up = float(
+                filters[filter_mapping["PERCENT_PRICE"]]["multiplierUp"]
+            )
+            multiplier_down = float(
+                filters[filter_mapping["PERCENT_PRICE"]]["multiplierDown"]
+            )
 
         percent_min_price = multiplier_down * current_price
         percent_max_price = multiplier_up * current_price
 
-        min_quantity = float(filters[filter_mapping['LOT_SIZE']]["minQty"])
-        max_quantity = float(filters[filter_mapping['LOT_SIZE']]["maxQty"])
-        base_increment = float(filters[filter_mapping['LOT_SIZE']]["stepSize"])
+        min_quantity = float(filters[filter_mapping["LOT_SIZE"]]["minQty"])
+        max_quantity = float(filters[filter_mapping["LOT_SIZE"]]["maxQty"])
+        base_increment = float(filters[filter_mapping["LOT_SIZE"]]["stepSize"])
 
         if using_international_exchange:
-            min_market_notational = float(filters[filter_mapping['NOTIONAL']]['minNotional'])
-            max_market_notational = float(filters[filter_mapping['NOTIONAL']]['maxNotional'])
+            min_market_notational = float(
+                filters[filter_mapping["NOTIONAL"]]["minNotional"]
+            )
+            max_market_notational = float(
+                filters[filter_mapping["NOTIONAL"]]["maxNotional"]
+            )
         else:
-            min_market_notational = float(filters[filter_mapping['MIN_NOTIONAL']]['minNotional'])
+            min_market_notational = float(
+                filters[filter_mapping["MIN_NOTIONAL"]]["minNotional"]
+            )
             max_market_notational = 92233720368.547752  # For some reason equal to the first *11 digits* of 2^63 then
-                                                        # it gets weird past the decimal
+            # it gets weird past the decimal
 
         # Must test both nowadays
-        max_orders = int(filters[filter_mapping['MAX_NUM_ORDERS']]["maxNumOrders"])
+        max_orders = int(filters[filter_mapping["MAX_NUM_ORDERS"]]["maxNumOrders"])
 
         if percent_min_price < hard_min_price:
             min_price = hard_min_price
@@ -1067,19 +1174,15 @@ class BinanceInterface(ExchangeInterface):
                 "base_min_size": min_quantity,  # Minimum size to buy
                 "base_max_size": max_quantity,  # Maximum size to buy
                 "base_increment": base_increment,  # Specifies the minimum increment for the base_asset.
-
                 "price_increment": quote_increment,
-
                 "min_price": min_price,
                 "max_price": max_price,
             },
-            'market_order': {
+            "market_order": {
                 "fractionable": True,
-
                 "base_min_size": min_quantity,  # Minimum size to buy
                 "base_max_size": max_quantity,  # Maximum size to buy
                 "base_increment": base_increment,  # Specifies the minimum increment for the base_asset.
-
                 "quote_increment": quote_increment,  # Specifies the min order price as well as the price increment.
                 "buy": {
                     "min_funds": min_market_notational,
@@ -1091,9 +1194,9 @@ class BinanceInterface(ExchangeInterface):
                 },
             },
             "exchange_specific": {
-                'limit_multiplier_up': multiplier_up,
-                'limit_multiplier_down': multiplier_down
-            }
+                "limit_multiplier_up": multiplier_up,
+                "limit_multiplier_down": multiplier_down,
+            },
         }
 
     def get_price(self, symbol) -> float:
@@ -1102,4 +1205,4 @@ class BinanceInterface(ExchangeInterface):
         """
         symbol = utils.to_exchange_symbol(symbol, "binance")
         response = self.calls.get_symbol_ticker(symbol=symbol)
-        return float(response['price'])
+        return float(response["price"])

@@ -16,8 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from trapilot.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface as Interface
-from trapilot.utils.utils import AttributeDict, get_base_asset, get_quote_asset, format_with_new_line, pretty_print_json
+from trapilot.exchanges.interfaces.abc_exchange_interface import \
+    ABCExchangeInterface as Interface
+from trapilot.utils.utils import (AttributeDict, format_with_new_line,
+                                  get_base_asset, get_quote_asset,
+                                  pretty_print_json)
 
 
 class StrategyState:
@@ -26,7 +29,14 @@ class StrategyState:
     resolution: int
 
     """Strategy State"""
-    def __init__(self, strategy, variables: AttributeDict, symbol, resolution: [int, float] = None):
+
+    def __init__(
+        self,
+        strategy,
+        variables: AttributeDict,
+        symbol,
+        resolution: [int, float] = None,
+    ):
         self.strategy = strategy
         self.variables = variables
         self.resolution = resolution
@@ -41,12 +51,12 @@ class StrategyState:
 
     @staticmethod
     def append_bar(history_reference, new_bar: dict):
-        history_reference['open'].append(new_bar['open'])
-        history_reference['high'].append(new_bar['high'])
-        history_reference['low'].append(new_bar['low'])
-        history_reference['close'].append(new_bar['close'])
-        history_reference['volume'].append(new_bar['volume'])
-        history_reference['time'].append(new_bar['time'])
+        history_reference["open"].append(new_bar["open"])
+        history_reference["high"].append(new_bar["high"])
+        history_reference["low"].append(new_bar["low"])
+        history_reference["close"].append(new_bar["close"])
+        history_reference["volume"].append(new_bar["volume"])
+        history_reference["time"].append(new_bar["time"])
 
     @property
     def interface(self) -> Interface:
@@ -73,6 +83,8 @@ class StrategyState:
 
         output = format_with_new_line(output, "Variables: ")
 
-        output = format_with_new_line(output, pretty_print_json(self.variables, actually_print=False))
+        output = format_with_new_line(
+            output, pretty_print_json(self.variables, actually_print=False)
+        )
 
         return output

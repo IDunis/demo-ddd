@@ -2,7 +2,6 @@ import logging
 import signal
 from typing import Any, Dict
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -26,8 +25,8 @@ def start_trading(args: Dict[str, Any]) -> int:
     except Exception as e:
         logger.error(str(e))
         logger.exception("Fatal exception!")
-    except (KeyboardInterrupt):
-        logger.info('SIGINT received, aborting ...')
+    except KeyboardInterrupt:
+        logger.info("SIGINT received, aborting ...")
     finally:
         if worker:
             logger.info("worker found ... calling exit")

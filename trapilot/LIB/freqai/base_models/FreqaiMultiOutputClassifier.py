@@ -67,8 +67,9 @@ class FreqaiMultiOutputClassifier(MultiOutputClassifier):
         for estimator in self.estimators_:
             self.classes_.extend(estimator.classes_)
         if len(set(self.classes_)) != len(self.classes_):
-            raise OperationalException(f"Class labels must be unique across targets: "
-                                       f"{self.classes_}")
+            raise OperationalException(
+                f"Class labels must be unique across targets: " f"{self.classes_}"
+            )
 
         if hasattr(self.estimators_[0], "n_features_in_"):
             self.n_features_in_ = self.estimators_[0].n_features_in_

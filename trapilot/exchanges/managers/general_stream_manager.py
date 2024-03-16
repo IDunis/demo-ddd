@@ -15,13 +15,16 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import random
 
 import requests
 
 import trapilot.utils.utils
-from trapilot.exchanges.interfaces.alpaca.alpaca_websocket import Tickers as Alpaca_Websocket
-from trapilot.exchanges.interfaces.binance.binance_websocket import Tickers as Binance_Websocket
+from trapilot.exchanges.interfaces.alpaca.alpaca_websocket import \
+    Tickers as Alpaca_Websocket
+from trapilot.exchanges.interfaces.binance.binance_websocket import \
+    Tickers as Binance_Websocket
 from trapilot.exchanges.managers.websocket_manager import WebsocketManager
 
 
@@ -34,7 +37,9 @@ class GeneralManager(WebsocketManager):
 
         super().__init__(self.__websockets, default_symbol, default_exchange)
 
-    def create_general_connection(self, callback, channel, log=None, override_symbol=None, override_exchange=None):
+    def create_general_connection(
+        self, callback, channel, log=None, override_symbol=None, override_exchange=None
+    ):
         """
         Create a channel on any given stream on any exchange. This is not stored in the manager object, only returned.
         """
@@ -56,14 +61,20 @@ class GeneralManager(WebsocketManager):
         if asset_id_cache not in self.__websockets[channel][exchange_cache].keys():
             self.__websockets[channel][exchange_cache][asset_id_cache] = {}
 
-        use_sandbox = self.preferences['settings']['use_sandbox_websockets']
+        use_sandbox = self.preferences["settings"]["use_sandbox_websockets"]
 
         if exchange_cache == "binance":
             # Lower this to subscribe
-            asset_id_cache = trapilot.utils.to_exchange_symbol(asset_id_cache, "binance").lower()
+            asset_id_cache = trapilot.utils.to_exchange_symbol(
+                asset_id_cache, "binance"
+            ).lower()
             if use_sandbox:
-                websocket = Binance_Websocket(asset_id_cache, channel, log,
-                                              WEBSOCKET_URL="wss://testnet.binance.vision/ws")
+                websocket = Binance_Websocket(
+                    asset_id_cache,
+                    channel,
+                    log,
+                    WEBSOCKET_URL="wss://testnet.binance.vision/ws",
+                )
             else:
                 websocket = Binance_Websocket(asset_id_cache, channel, log)
             websocket.append_callback(callback)
@@ -75,16 +86,27 @@ class GeneralManager(WebsocketManager):
             return websocket
 
         elif exchange_cache == "alpaca":
-            stream = self.preferences['settings']['alpaca']['websocket_stream']
+            stream = self.preferences["settings"]["alpaca"]["websocket_stream"]
 
             asset_id_cache = trapilot.utils.to_exchange_symbol(asset_id_cache, "alpaca")
             if use_sandbox:
-                websocket = Alpaca_Websocket(asset_id_cache, channel, log,
-                                             websocket_url=
-                                             "wss://stream.data.sandbox.alpaca.markets/{}/".format(stream))
+                websocket = Alpaca_Websocket(
+                    asset_id_cache,
+                    channel,
+                    log,
+                    websocket_url="wss://stream.data.sandbox.alpaca.markets/{}/".format(
+                        stream
+                    ),
+                )
             else:
-                websocket = Alpaca_Websocket(asset_id_cache, channel, log,
-                                             websocket_url="wss://stream.data.alpaca.markets/v2/{}/".format(stream))
+                websocket = Alpaca_Websocket(
+                    asset_id_cache,
+                    channel,
+                    log,
+                    websocket_url="wss://stream.data.alpaca.markets/v2/{}/".format(
+                        stream
+                    ),
+                )
             websocket.append_callback(callback)
 
             self.__websockets[channel][exchange_cache][asset_id_cache] = websocket
@@ -95,7 +117,9 @@ class GeneralManager(WebsocketManager):
     Create overriden method signatures
     """
 
-    def append_callback(self, callback_object, channel, override_symbol=None, override_exchange=None):
+    def append_callback(
+        self, callback_object, channel, override_symbol=None, override_exchange=None
+    ):
         self.websockets = self.__websockets[channel]
         super().append_callback(callback_object, override_symbol, override_exchange)
 
@@ -103,7 +127,9 @@ class GeneralManager(WebsocketManager):
         self.websockets = self.__websockets[channel]
         return super().is_websocket_open(override_symbol, override_exchange)
 
-    def get_most_recent_time(self, channel, override_symbol=None, override_exchange=None):
+    def get_most_recent_time(
+        self, channel, override_symbol=None, override_exchange=None
+    ):
         self.websockets = self.__websockets[channel]
         return super().get_most_recent_time(override_symbol, override_exchange)
 
@@ -127,6 +153,8 @@ class GeneralManager(WebsocketManager):
         self.websockets = self.__websockets[channel]
         return super().restart_ticker(override_symbol, override_exchange)
 
-    def get_most_recent_tick(self, channel, override_symbol=None, override_exchange=None):
+    def get_most_recent_tick(
+        self, channel, override_symbol=None, override_exchange=None
+    ):
         self.websockets = self.__websockets[channel]
         return super().get_most_recent_tick(override_symbol, override_exchange)

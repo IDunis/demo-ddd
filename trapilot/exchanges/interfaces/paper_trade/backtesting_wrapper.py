@@ -15,16 +15,14 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import time
 
 
 class BacktestingWrapper:
     def __init__(self):
         self.backtesting = False
-        self.frame = {
-            'prices': {},
-            'time': 0
-        }
+        self.frame = {"prices": {}, "time": 0}
 
         # Use this in the inits
         self.initial_time = None
@@ -35,10 +33,10 @@ class BacktestingWrapper:
         self.backtesting = status
 
     def receive_time(self, new_time):
-        self.frame['time'] = new_time
+        self.frame["time"] = new_time
 
     def receive_price(self, asset_id, new_price):
-        self.frame['prices'][asset_id] = new_price
+        self.frame["prices"][asset_id] = new_price
 
     def receive_price_cache(self, prices: dict):
         self.full_prices = prices
@@ -49,12 +47,14 @@ class BacktestingWrapper:
 
     def get_backtesting_price(self, asset_id):
         try:
-            return self.frame['prices'][asset_id]
+            return self.frame["prices"][asset_id]
         except KeyError:
-            raise KeyError(f"Price not found in recent frame. Have prices for {asset_id} been downloaded?")
+            raise KeyError(
+                f"Price not found in recent frame. Have prices for {asset_id} been downloaded?"
+            )
 
     def time(self):
         if self.backtesting:
-            return self.frame['time']
+            return self.frame["time"]
         else:
             return time.time()

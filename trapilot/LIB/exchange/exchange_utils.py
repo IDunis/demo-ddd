@@ -1,26 +1,29 @@
 """
 Exchange support utils
 """
+
 from datetime import datetime, timedelta, timezone
 from math import ceil, floor
 from typing import Any, Dict, List, Optional, Tuple
 
 import ccxt
-from ccxt import (DECIMAL_PLACES, ROUND, ROUND_DOWN, ROUND_UP, SIGNIFICANT_DIGITS, TICK_SIZE,
-                  TRUNCATE, decimal_to_precision)
+from ccxt import (DECIMAL_PLACES, ROUND, ROUND_DOWN, ROUND_UP,
+                  SIGNIFICANT_DIGITS, TICK_SIZE, TRUNCATE,
+                  decimal_to_precision)
 
-from trapilot.LIB.exchange.common import (BAD_EXCHANGES, EXCHANGE_HAS_OPTIONAL, EXCHANGE_HAS_REQUIRED,
-                                       SUPPORTED_EXCHANGES)
+from trapilot.LIB.exchange.common import (BAD_EXCHANGES, EXCHANGE_HAS_OPTIONAL,
+                                          EXCHANGE_HAS_REQUIRED,
+                                          SUPPORTED_EXCHANGES)
 from trapilot.LIB.types import ValidExchangesType
 from trapilot.LIB.util import FtPrecise
 from trapilot.LIB.util.datetime_helpers import dt_from_ts, dt_ts
-
 
 CcxtModuleType = Any
 
 
 def is_exchange_known_ccxt(
-        exchange_name: str, ccxt_module: Optional[CcxtModuleType] = None) -> bool:
+    exchange_name: str, ccxt_module: Optional[CcxtModuleType] = None
+) -> bool:
     return exchange_name in ccxt_exchanges(ccxt_module)
 
 
@@ -46,13 +49,13 @@ def validate_exchange(exchange: str) -> Tuple[bool, str]:
     """
     ex_mod = getattr(ccxt, exchange.lower())()
     result = True
-    reason = ''
+    reason = ""
     if not ex_mod or not ex_mod.has:
-        return False, ''
+        return False, ""
     missing = [
-        k for k, v in EXCHANGE_HAS_REQUIRED.items()
-        if ex_mod.has.get(k) is not True
-        and not (all(ex_mod.has.get(x) for x in v))
+        k
+        for k, v in EXCHANGE_HAS_REQUIRED.items()
+        if ex_mod.has.get(k) is not True and not (all(ex_mod.has.get(x) for x in v))
     ]
     if missing:
         result = False
@@ -62,7 +65,7 @@ def validate_exchange(exchange: str) -> Tuple[bool, str]:
 
     if exchange.lower() in BAD_EXCHANGES:
         result = False
-        reason = BAD_EXCHANGES.get(exchange.lower(), '')
+        reason = BAD_EXCHANGES.get(exchange.lower(), "")
 
     if missing_opt:
         reason += f"{'. ' if reason else ''}missing opt: {', '.join(missing_opt)}. "
@@ -71,23 +74,26 @@ def validate_exchange(exchange: str) -> Tuple[bool, str]:
 
 
 def _build_exchange_list_entry(
-        exchange_name: str, exchangeClasses: Dict[str, Any]) -> ValidExchangesType:
+    exchange_name: str, exchangeClasses: Dict[str, Any]
+) -> ValidExchangesType:
     valid, comment = validate_exchange(exchange_name)
     result: ValidExchangesType = {
-        'name': exchange_name,
-        'valid': valid,
-        'supported': exchange_name.lower() in SUPPORTED_EXCHANGES,
-        'comment': comment,
-        'trade_modes': [{'trading_mode': 'spot', 'margin_mode': ''}],
+        "name": exchange_name,
+        "valid": valid,
+        "supported": exchange_name.lower() in SUPPORTED_EXCHANGES,
+        "comment": comment,
+        "trade_modes": [{"trading_mode": "spot", "margin_mode": ""}],
     }
     if resolved := exchangeClasses.get(exchange_name.lower()):
-        supported_modes = [{'trading_mode': 'spot', 'margin_mode': ''}] + [
-            {'trading_mode': tm.value, 'margin_mode': mm.value}
-            for tm, mm in resolved['class']._supported_trading_mode_margin_pairs
+        supported_modes = [{"trading_mode": "spot", "margin_mode": ""}] + [
+            {"trading_mode": tm.value, "margin_mode": mm.value}
+            for tm, mm in resolved["class"]._supported_trading_mode_margin_pairs
         ]
-        result.update({
-            'trade_modes': supported_modes,
-        })
+        result.update(
+            {
+                "trade_modes": supported_modes,
+            }
+        )
 
     return result
 
@@ -99,7 +105,9 @@ def list_available_exchanges(all_exchanges: bool) -> List[ValidExchangesType]:
     exchanges = ccxt_exchanges() if all_exchanges else available_exchanges()
     from trapilot.LIB.resolvers.exchange_resolver import ExchangeResolver
 
-    subclassed = {e['name'].lower(): e for e in ExchangeResolver.search_all_objects({}, False)}
+    subclassed = {
+        e["name"].lower(): e for e in ExchangeResolver.search_all_objects({}, False)
+    }
 
     exchanges_valid: List[ValidExchangesType] = [
         _build_exchange_list_entry(e, subclassed) for e in exchanges
@@ -137,16 +145,16 @@ def timeframe_to_resample_freq(timeframe: str) -> str:
     form ('1m', '5m', '1h', '1d', '1w', etc.) to the resample frequency
     used by pandas ('1T', '5T', '1H', '1D', '1W', etc.)
     """
-    if timeframe == '1y':
-        return '1YS'
+    if timeframe == "1y":
+        return "1YS"
     timeframe_seconds = timeframe_to_seconds(timeframe)
     timeframe_minutes = timeframe_seconds // 60
-    resample_interval = f'{timeframe_seconds}s'
+    resample_interval = f"{timeframe_seconds}s"
     if 10000 < timeframe_minutes < 43200:
-        resample_interval = '1W-MON'
+        resample_interval = "1W-MON"
     elif timeframe_minutes >= 43200 and timeframe_minutes < 525600:
         # Monthly candles need special treatment to stick to the 1st of the month
-        resample_interval = f'{timeframe}S'
+        resample_interval = f"{timeframe}S"
     elif timeframe_minutes > 43200:
         resample_interval = timeframe
     return resample_interval
@@ -163,7 +171,9 @@ def timeframe_to_prev_date(timeframe: str, date: Optional[datetime] = None) -> d
     if not date:
         date = datetime.now(timezone.utc)
 
-    new_timestamp = ccxt.Exchange.round_timeframe(timeframe, dt_ts(date), ROUND_DOWN) // 1000
+    new_timestamp = (
+        ccxt.Exchange.round_timeframe(timeframe, dt_ts(date), ROUND_DOWN) // 1000
+    )
     return dt_from_ts(new_timestamp)
 
 
@@ -176,12 +186,15 @@ def timeframe_to_next_date(timeframe: str, date: Optional[datetime] = None) -> d
     """
     if not date:
         date = datetime.now(timezone.utc)
-    new_timestamp = ccxt.Exchange.round_timeframe(timeframe, dt_ts(date), ROUND_UP) // 1000
+    new_timestamp = (
+        ccxt.Exchange.round_timeframe(timeframe, dt_ts(date), ROUND_UP) // 1000
+    )
     return dt_from_ts(new_timestamp)
 
 
 def date_minus_candles(
-        timeframe: str, candle_count: int, date: Optional[datetime] = None) -> datetime:
+    timeframe: str, candle_count: int, date: Optional[datetime] = None
+) -> datetime:
     """
     subtract X candles from a date.
     :param timeframe: timeframe in string format (e.g. "5m")
@@ -193,7 +206,9 @@ def date_minus_candles(
         date = datetime.now(timezone.utc)
 
     tf_min = timeframe_to_minutes(timeframe)
-    new_date = timeframe_to_prev_date(timeframe, date) - timedelta(minutes=tf_min * candle_count)
+    new_date = timeframe_to_prev_date(timeframe, date) - timedelta(
+        minutes=tf_min * candle_count
+    )
     return new_date
 
 
@@ -205,7 +220,7 @@ def market_is_active(market: Dict) -> bool:
     # true then it's true. If it's undefined, then it's most likely true, but not 100% )"
     # See https://github.com/ccxt/ccxt/issues/4874,
     # https://github.com/ccxt/ccxt/issues/4075#issuecomment-434760520
-    return market.get('active', True) is not False
+    return market.get("active", True) is not False
 
 
 def amount_to_contracts(amount: float, contract_size: Optional[float]) -> float:
@@ -235,8 +250,9 @@ def contracts_to_amount(num_contracts: float, contract_size: Optional[float]) ->
         return num_contracts
 
 
-def amount_to_precision(amount: float, amount_precision: Optional[float],
-                        precisionMode: Optional[int]) -> float:
+def amount_to_precision(
+    amount: float, amount_precision: Optional[float], precisionMode: Optional[int]
+) -> float:
     """
     Returns the amount to buy or sell to a precision the Exchange accepts
     Re-implementation of ccxt internal methods - ensuring we can test the result is correct
@@ -249,19 +265,28 @@ def amount_to_precision(amount: float, amount_precision: Optional[float],
     :return: truncated amount
     """
     if amount_precision is not None and precisionMode is not None:
-        precision = int(amount_precision) if precisionMode != TICK_SIZE else amount_precision
+        precision = (
+            int(amount_precision) if precisionMode != TICK_SIZE else amount_precision
+        )
         # precision must be an int for non-ticksize inputs.
-        amount = float(decimal_to_precision(amount, rounding_mode=TRUNCATE,
-                                            precision=precision,
-                                            counting_mode=precisionMode,
-                                            ))
+        amount = float(
+            decimal_to_precision(
+                amount,
+                rounding_mode=TRUNCATE,
+                precision=precision,
+                counting_mode=precisionMode,
+            )
+        )
 
     return amount
 
 
 def amount_to_contract_precision(
-        amount, amount_precision: Optional[float], precisionMode: Optional[int],
-        contract_size: Optional[float]) -> float:
+    amount,
+    amount_precision: Optional[float],
+    precisionMode: Optional[int],
+    contract_size: Optional[float],
+) -> float:
     """
     Returns the amount to buy or sell to a precision the Exchange accepts
     including calculation to and from contracts.
@@ -294,23 +319,28 @@ def __price_to_precision_significant_digits(
     from decimal import ROUND_DOWN as dec_ROUND_DOWN
     from decimal import ROUND_UP as dec_ROUND_UP
     from decimal import Decimal
+
     dec = Decimal(str(price))
-    string = f'{dec:f}'
+    string = f"{dec:f}"
     precision = round(price_precision)
 
     q = precision - dec.adjusted() - 1
-    sigfig = Decimal('10') ** -q
+    sigfig = Decimal("10") ** -q
     if q < 0:
         string_to_precision = string[:precision]
         # string_to_precision is '' when we have zero precision
-        below = sigfig * Decimal(string_to_precision if string_to_precision else '0')
+        below = sigfig * Decimal(string_to_precision if string_to_precision else "0")
         above = below + sigfig
         res = above if rounding_mode == ROUND_UP else below
-        precise = f'{res:f}'
+        precise = f"{res:f}"
     else:
-        precise = '{:f}'.format(dec.quantize(
-            sigfig,
-            rounding=dec_ROUND_DOWN if rounding_mode == ROUND_DOWN else dec_ROUND_UP)
+        precise = "{:f}".format(
+            dec.quantize(
+                sigfig,
+                rounding=(
+                    dec_ROUND_DOWN if rounding_mode == ROUND_DOWN else dec_ROUND_UP
+                ),
+            )
         )
     return float(precise)
 
@@ -340,10 +370,14 @@ def price_to_precision(
     if price_precision is not None and precisionMode is not None:
         if rounding_mode not in (ROUND_UP, ROUND_DOWN):
             # Use CCXT code where possible.
-            return float(decimal_to_precision(price, rounding_mode=rounding_mode,
-                                              precision=price_precision,
-                                              counting_mode=precisionMode
-                                              ))
+            return float(
+                decimal_to_precision(
+                    price,
+                    rounding_mode=rounding_mode,
+                    precision=price_precision,
+                    counting_mode=precisionMode,
+                )
+            )
 
         if precisionMode == TICK_SIZE:
             precision = FtPrecise(price_precision)

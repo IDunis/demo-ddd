@@ -15,6 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import trapilot
 from trapilot.utils.utils import pretty_print_json
 
@@ -64,17 +65,23 @@ class Order:
         return_string = self.add_new_line(return_string, "General Order Parameters: ")
 
         return_string = self.add_new_line(return_string, "Response: ")
-        return_string = self.add_new_line(return_string, pretty_print_json(self.get_response(), actually_print=False))
+        return_string = self.add_new_line(
+            return_string, pretty_print_json(self.get_response(), actually_print=False)
+        )
 
         return_string = self.add_new_line(return_string, "Full Status: ")
-        return_string = self.add_new_line(return_string, pretty_print_json(self.get_status(full=True),
-                                                                           actually_print=False))
+        return_string = self.add_new_line(
+            return_string,
+            pretty_print_json(self.get_status(full=True), actually_print=False),
+        )
 
         return_string = self.add_new_line(return_string, "ID: ", self.get_id())
 
         return_string = self.add_new_line(return_string, "Symbol: ", self.get_symbol())
 
-        return_string = self.add_new_line(return_string, "Purchase Time: ", self.get_purchase_time())
+        return_string = self.add_new_line(
+            return_string, "Purchase Time: ", self.get_purchase_time()
+        )
 
         return_string = self.add_new_line(return_string, "Type: ", self.get_type())
 
@@ -120,7 +127,11 @@ class Order:
         if full:
             return self.interface.get_order(self.__order["symbol"], self.get_id())
         else:
-            return {"status": self.interface.get_order(self.__order["symbol"], self.get_id())["status"]}
+            return {
+                "status": self.interface.get_order(
+                    self.__order["symbol"], self.get_id()
+                )["status"]
+            }
 
     def get_type(self) -> str:
         """

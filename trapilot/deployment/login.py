@@ -24,17 +24,18 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Optional
 
 from trapilot.deployment.api import API
-from trapilot.deployment.ui import print_work, print_failure, print_success, show_spinner
+from trapilot.deployment.ui import (print_failure, print_success, print_work,
+                                    show_spinner)
 
-SUCCESS_URL = 'https://firebasestorage.googleapis.com/v0/b/trapilot-6ada5.appspot.com/o/login_success.html?alt=media&token=41d734e2-0a88-44c4-b1dd-7e081fd019e7'
-FAILURE_URL = 'https://firebasestorage.googleapis.com/v0/b/trapilot-6ada5.appspot.com/o/login_failure.html?alt=media&token=b2d9f6dc-aa54-4da2-aa6f-1f75a4025634'
+SUCCESS_URL = "https://firebasestorage.googleapis.com/v0/b/trapilot-6ada5.appspot.com/o/login_success.html?alt=media&token=41d734e2-0a88-44c4-b1dd-7e081fd019e7"
+FAILURE_URL = "https://firebasestorage.googleapis.com/v0/b/trapilot-6ada5.appspot.com/o/login_failure.html?alt=media&token=b2d9f6dc-aa54-4da2-aa6f-1f75a4025634"
 
 
 def write_token(token):
     token_file = get_token_file()
     token_file.parent.mkdir(parents=True, exist_ok=True)
-    with open(token_file, 'w') as file:
-        json.dump({'token': token}, file)
+    with open(token_file, "w") as file:
+        json.dump({"token": token}, file)
 
 
 def poll_login() -> Optional[API]:
@@ -44,17 +45,17 @@ def poll_login() -> Optional[API]:
     class TokenListener(BaseHTTPRequestHandler):
         def do_GET(self):
             try:
-                token.append(urllib.parse.parse_qs(self.path[2:])['token'][0])
+                token.append(urllib.parse.parse_qs(self.path[2:])["token"][0])
                 self.send_response_only(302)
-                self.send_header('Location', SUCCESS_URL)
+                self.send_header("Location", SUCCESS_URL)
                 self.end_headers()
             except Exception:
                 token.append(False)
                 self.send_response(302)
-                self.send_header('Location', FAILURE_URL)  # send them back lmao
+                self.send_header("Location", FAILURE_URL)  # send them back lmao
                 self.end_headers()
 
-    server = HTTPServer(('', 9082), TokenListener)
+    server = HTTPServer(("", 9082), TokenListener)
 
     while not token:
         server.handle_request()
@@ -70,14 +71,14 @@ def get_token() -> Optional[str]:
     token_file = get_token_file()
     if token_file.exists():
         # file exists, parse it or error out
-        with open(token_file, 'r') as file:
+        with open(token_file, "r") as file:
             data = json.load(file)
-        return data['token']
+        return data["token"]
     return None
 
 
 def get_token_file() -> pathlib.Path:
-    return get_datadir() / 'trapilot' / 'auth.json'
+    return get_datadir() / "trapilot" / "auth.json"
 
 
 # https://stackoverflow.com/a/61901696

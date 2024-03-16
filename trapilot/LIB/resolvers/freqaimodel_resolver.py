@@ -11,7 +11,6 @@ from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.freqai.freqai_interface import IFreqaiModel
 from trapilot.LIB.resolvers import IResolver
 
-
 logger = logging.getLogger(__name__)
 
 

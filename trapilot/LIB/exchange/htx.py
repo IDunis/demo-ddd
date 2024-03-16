@@ -1,10 +1,10 @@
 """ HTX exchange subclass """
+
 import logging
 from typing import Dict
 
 from trapilot.LIB.constants import BuySell
 from trapilot.LIB.exchange import Exchange
-
 
 logger = logging.getLogger(__name__)
 
@@ -25,11 +25,15 @@ class Htx(Exchange):
         "l2_limit_range_required": False,
     }
 
-    def _get_stop_params(self, side: BuySell, ordertype: str, stop_price: float) -> Dict:
+    def _get_stop_params(
+        self, side: BuySell, ordertype: str, stop_price: float
+    ) -> Dict:
 
         params = self._params.copy()
-        params.update({
-            "stopPrice": stop_price,
-            "operator": "lte",
-        })
+        params.update(
+            {
+                "stopPrice": stop_price,
+                "operator": "lte",
+            }
+        )
         return params

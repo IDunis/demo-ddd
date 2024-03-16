@@ -1,9 +1,10 @@
-from enum import Enum
 from decimal import Decimal
-from typing import Optional, Union, List
+from enum import Enum
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
+
 
 class TralityData:
     def __init__(self):
@@ -38,7 +39,9 @@ class TralityData:
         self.hlc: Optional[Union[float, str]] = None
         self.ohlc: Optional[Union[float, str]] = None
 
-    def select(self, key: str) -> Optional[Union[str, int, float, List[str], List[int], List[float]]]:
+    def select(
+        self, key: str
+    ) -> Optional[Union[str, int, float, List[str], List[int], List[float]]]:
         if hasattr(self, key):
             return getattr(self, key)
         else:
@@ -48,15 +51,27 @@ class TralityData:
         return getattr(self, f"{key}_last", None)
 
     def to_numpy(self) -> Optional[list]:
-        data = [getattr(self, attr) for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")]
+        data = [
+            getattr(self, attr)
+            for attr in dir(self)
+            if not callable(getattr(self, attr)) and not attr.startswith("__")
+        ]
         return np.array(data)
 
     def to_pandas(self) -> Optional[object]:
-        data = {attr: [getattr(self, attr)] for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")}
+        data = {
+            attr: [getattr(self, attr)]
+            for attr in dir(self)
+            if not callable(getattr(self, attr)) and not attr.startswith("__")
+        }
         return pd.DataFrame(data)
 
     def serialize(self) -> Optional[dict]:
-        data = {attr: getattr(self, attr) for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")}
+        data = {
+            attr: getattr(self, attr)
+            for attr in dir(self)
+            if not callable(getattr(self, attr)) and not attr.startswith("__")
+        }
         return data
 
     def is_valid(self) -> bool:
@@ -80,9 +95,11 @@ class OrderStatus(Enum):
     ForeignFilled = 11
     Unknown = 999
 
+
 class OrderSide(Enum):
     Buy = 0
     Sell = 1
+
 
 class TralityOrder:
     def __init__(self):
@@ -134,11 +151,13 @@ class Balance:
         self.free: float = 0.0
         self.locked: float = 0.0
 
+
 class MarginBalance(Balance):
     def __init__(self):
         super().__init__()
         self.borrowed: float = 0.0
         self.interest: float = 0.0
+
 
 class TralityPosition:
     def __init__(self):
@@ -169,10 +188,12 @@ class TralityPosition:
         self.worst_trade_pnl: float = 0.0
         self.best_trade_pnl: float = 0.0
 
+
 class PositionStatus(Enum):
     Open = 1
     Dust = 2
     Closed = 3
+
 
 class OffsetTrade:
     def __init__(self):
@@ -185,7 +206,6 @@ class OffsetTrade:
         self.trade_quantity: float = 0.0
         self.trade_value: float = 0.0
         self.relative_trade_size: float = 0.0
-
 
 
 class TralityPortfolio:
@@ -214,20 +234,25 @@ class TralityPortfolio:
         self.worst_trade_return: float = 0.0
         self.best_trade_return: float = 0.0
 
+
 class OrderMarginSideEffect(Enum):
     NoSideEffect = 1
     Borrow = 2
     Repay = 3
     AutoDetermine = 4
+
+
 class LoanStatus(Enum):
     Pending = 1
     Failed = 2
     Confirmed = 3
 
+
 class RepaymentStatus(Enum):
     Pending = 1
     Failed = 2
     Confirmed = 3
+
 
 class Loan:
     def __init__(self, id, asset, principal, time, status):
@@ -236,6 +261,7 @@ class Loan:
         self.principal = principal
         self.time = time
         self.status = status
+
 
 class Repayment:
     def __init__(self, id, asset, principal, time, status):
@@ -272,166 +298,315 @@ class Limit:
 
 def order_market_amount(symbol: str, amount: float) -> TralityOrder:
     return TralityOrder()
+
+
 def order_market_value(symbol: str, amount: float) -> TralityOrder:
     return TralityOrder()
+
+
 def order_market_target(symbol: str, target_percent: float) -> TralityOrder:
     return TralityOrder()
 
+
 def order_limit_amount(symbol: str, amount: float, limit_price: float) -> TralityOrder:
     return TralityOrder()
+
+
 def order_limit_value(symbol: str, value: float, limit_price: float) -> TralityOrder:
     return TralityOrder()
-def order_limit_target(symbol: str, target_percent: float, limit_price: float) -> TralityOrder:
+
+
+def order_limit_target(
+    symbol: str, target_percent: float, limit_price: float
+) -> TralityOrder:
     return TralityOrder()
 
-def order_iftouched_market_amount(symbol: str, amount: float, stop_price: float) -> TralityOrder:
-    return TralityOrder()
-def order_iftouched_market_value(symbol: str, value: float, stop_price: float) -> TralityOrder:
+
+def order_iftouched_market_amount(
+    symbol: str, amount: float, stop_price: float
+) -> TralityOrder:
     return TralityOrder()
 
-def order_iftouched_limit_amount(symbol: str, amount: float, stop_price: float, limit_price: float) -> TralityOrder:
-    return TralityOrder()
-def order_iftouched_limit_value(symbol: str, value: float, stop_price: float, limit_price: float) -> TralityOrder:
+
+def order_iftouched_market_value(
+    symbol: str, value: float, stop_price: float
+) -> TralityOrder:
     return TralityOrder()
 
-def order_take_profit(symbol: str, amount: float, stop_percent: float, subtract_fees: bool = False) -> TralityOrder:
-    return TralityOrder()
-def order_stop_loss(symbol: str, amount: float, stop_percent: float, subtract_fees: bool = False) -> TralityOrder:
+
+def order_iftouched_limit_amount(
+    symbol: str, amount: float, stop_price: float, limit_price: float
+) -> TralityOrder:
     return TralityOrder()
 
-def order_trailing_iftouched_amount(symbol: str, amount: float, trailing_percent: float, stop_price: float) -> TralityOrder:
-    return TralityOrder()
-def order_trailing_iftouched_value(symbol: str, value: float, trailing_percent: float, stop_price: float) -> TralityOrder:
+
+def order_iftouched_limit_value(
+    symbol: str, value: float, stop_price: float, limit_price: float
+) -> TralityOrder:
     return TralityOrder()
 
-def order_amount(symbol: str, amount: float, stop_price: float, limit_price: float) -> TralityOrder:
+
+def order_take_profit(
+    symbol: str, amount: float, stop_percent: float, subtract_fees: bool = False
+) -> TralityOrder:
     return TralityOrder()
-def order_value(symbol: str, value: float, stop_price: float, limit_price: float) -> TralityOrder:
+
+
+def order_stop_loss(
+    symbol: str, amount: float, stop_percent: float, subtract_fees: bool = False
+) -> TralityOrder:
     return TralityOrder()
-def order_target(symbol: str, target_percent: float, limit_price: float) -> TralityOrder:
+
+
+def order_trailing_iftouched_amount(
+    symbol: str, amount: float, trailing_percent: float, stop_price: float
+) -> TralityOrder:
     return TralityOrder()
+
+
+def order_trailing_iftouched_value(
+    symbol: str, value: float, trailing_percent: float, stop_price: float
+) -> TralityOrder:
+    return TralityOrder()
+
+
+def order_amount(
+    symbol: str, amount: float, stop_price: float, limit_price: float
+) -> TralityOrder:
+    return TralityOrder()
+
+
+def order_value(
+    symbol: str, value: float, stop_price: float, limit_price: float
+) -> TralityOrder:
+    return TralityOrder()
+
+
+def order_target(
+    symbol: str, target_percent: float, limit_price: float
+) -> TralityOrder:
+    return TralityOrder()
+
 
 def query_order(id: str) -> Optional[TralityOrder]:
     return TralityOrder()
+
+
 def query_open_orders() -> list[TralityOrder]:
     return []
 
+
 def cancel_order(order_id: str) -> TralityOrder:
     return TralityOrder()
+
+
 def subtract_order_fees(amount: float) -> float:
     return 0.1
 
+
 def query_balance(asset: str) -> Balance:
     return Balance()
+
+
 def query_balance_free(asset: str) -> Decimal:
     return Decimal(3.14)
+
+
 def query_balance_locked(asset: str) -> Decimal:
     return Decimal(3.14)
+
+
 def query_balances() -> list[Balance]:
     return []
 
-def has_open_position(symbol: str, include_dust: bool =False) -> bool:
+
+def has_open_position(symbol: str, include_dust: bool = False) -> bool:
     return True
-def query_open_position_by_symbol(symbol: str, include_dust: bool = False) -> Optional[TralityPosition]:
+
+
+def query_open_position_by_symbol(
+    symbol: str, include_dust: bool = False
+) -> Optional[TralityPosition]:
     return None
+
+
 def query_position_by_id(position_id: str) -> Optional[TralityPosition]:
     return None
+
+
 def query_open_positions(include_dust: bool = False) -> list[TralityPosition]:
     return []
+
+
 # def query_position_pnl(symbol: str) -> Pnl if exists else None
 def query_position_offset_trades(symbol: str) -> list[OffsetTrade]:
     return []
+
+
 # def query_position_profitability(symbol: str) -> ProfitabilityMetrics if exists else None
 def query_losing_positions(include_dust: bool = False) -> list[TralityPosition]:
     return []
+
+
 def query_winning_positions(include_dust: bool = False) -> list[TralityPosition]:
     return []
+
+
 def query_position_weight(symbol: str) -> Decimal:
     return Decimal(2)
+
+
 def query_position_weights() -> dict[Decimal]:
-    decimal_number1 = Decimal('123.456')
+    decimal_number1 = Decimal("123.456")
     decimal_number2 = Decimal(3.14)
-    decimal_number3 = Decimal('42.0')
+    decimal_number3 = Decimal("42.0")
     decimal_dict = {
-        'value1': decimal_number1,
-        'value2': decimal_number2,
-        'value3': decimal_number3
+        "value1": decimal_number1,
+        "value2": decimal_number2,
+        "value3": decimal_number3,
     }
     return decimal_dict
 
+
 def close_position(symbol: str) -> TralityOrder:
     return TralityOrder()
+
+
 def close_all_positions() -> list[TralityOrder]:
     return []
+
+
 def adjust_position(symbol: str, weight: float) -> TralityOrder:
     return TralityOrder()
 
+
 def query_portfolio() -> TralityPortfolio:
     return TralityPortfolio()
-def query_portfolio_pnl() -> dict: #A PNL namedtuple with attributes: realized and unrealized
+
+
+def query_portfolio_pnl() -> (
+    dict
+):  # A PNL namedtuple with attributes: realized and unrealized
     portfolio = query_portfolio()
     return {
         "realized": portfolio.realized_pnl,
         "unrealized": portfolio.unrealized_pnl,
     }
+
+
 def query_portfolio_value() -> Decimal:
     portfolio = query_portfolio()
     return Decimal(portfolio.portfolio_value)
-def query_portfolio_profitablity() -> dict: # PortfolioProfitabilityMetric
+
+
+def query_portfolio_profitablity() -> dict:  # PortfolioProfitabilityMetric
     return {}
+
+
 # Pnl = namedtuple("Pnl",["realized","unrealized"])
 # ProfitabilityMetrics = namedtuple("ProfitablityMetrics",["numberOfTrades","numberOfOffsettingTrades",
 #                                                         "numberOfWinningTrades","averageProfitPerWinningTrade",
 #                                                         "averageLossPerLosingTrade","worstTradeReturn","bestTradeReturn",
 #                                                         "worstTradePnl","bestTradePnl"])
 
+
 def margin_borrow(asset: str, amount: float) -> Loan:
     return Loan()
+
+
 def margin_repay(asset: str, amount: float) -> Repayment:
     return Repayment()
-def margin_order_market_amount(symbol: str, amount: float, side_effect: OrderMarginSideEffect) -> TralityOrder:
+
+
+def margin_order_market_amount(
+    symbol: str, amount: float, side_effect: OrderMarginSideEffect
+) -> TralityOrder:
     return TralityOrder()
-def margin_order_market_value(symbol: str, value: float, side_effect: OrderMarginSideEffect) -> TralityOrder:
+
+
+def margin_order_market_value(
+    symbol: str, value: float, side_effect: OrderMarginSideEffect
+) -> TralityOrder:
     return TralityOrder()
-def margin_order_limit_amount(symbol: str, amount: float, limit_price: float, side_effect: OrderMarginSideEffect) -> TralityOrder:
+
+
+def margin_order_limit_amount(
+    symbol: str, amount: float, limit_price: float, side_effect: OrderMarginSideEffect
+) -> TralityOrder:
     return TralityOrder()
-def margin_order_limit_value(symbol: str, value: float, side_effect: OrderMarginSideEffect) -> TralityOrder:
+
+
+def margin_order_limit_value(
+    symbol: str, value: float, side_effect: OrderMarginSideEffect
+) -> TralityOrder:
     return TralityOrder()
-def margin_order_iftouched_market_amount(symbol: str, amount: float, stop_pric: float, side_effect: OrderMarginSideEffect) -> TralityOrder:
+
+
+def margin_order_iftouched_market_amount(
+    symbol: str, amount: float, stop_pric: float, side_effect: OrderMarginSideEffect
+) -> TralityOrder:
     return TralityOrder()
-def margin_order_iftouched_market_value(symbol: str, value: float, stop_price: float, side_effect: OrderMarginSideEffect) -> TralityOrder:
+
+
+def margin_order_iftouched_market_value(
+    symbol: str, value: float, stop_price: float, side_effect: OrderMarginSideEffect
+) -> TralityOrder:
     return TralityOrder()
+
+
 def margin_close_position(symbol: str) -> TralityOrder:
     return TralityOrder()
+
+
 def margin_adjust_position(symbol: str, weight: float) -> TralityOrder:
     return TralityOrder()
+
+
 def query_margin_daily_interest_rate(asset: str) -> Decimal:
     return Decimal(1.1)
+
+
 def query_balance_borrowed(asset: str) -> Decimal:
     balance = MarginBalance()
     return Decimal(balance.borrowed)
+
+
 def query_balance_interest(asset: str) -> Decimal:
     balance = MarginBalance()
     return Decimal(balance.interest)
+
+
 def query_margin_level() -> float:
     return 1.0
+
+
 def margin_allowed() -> bool:
     return True
+
+
 def margin_enabled() -> bool:
     return True
+
 
 def symbol_limits(symbol: str) -> Limit:
     return Limit()
 
+
 def get_quoted_asset() -> str:
-    return ''
+    return ""
+
+
 def symbol_to_asset(symbol: str) -> str:
-    return ''
+    return ""
+
 
 def validate_symbol(symbol: str) -> bool:
     return True
 
+
 def get_timestamp() -> int:
     return 1609459200
+
+
 def get_version() -> int:
     return 1

@@ -4,15 +4,16 @@ from typing import Dict
 
 from trapilot.LIB.constants import LAST_BT_RESULT_FN
 from trapilot.LIB.misc import file_dump_joblib, file_dump_json
-from trapilot.LIB.optimize.backtest_caching import get_backtest_metadata_filename
+from trapilot.LIB.optimize.backtest_caching import \
+    get_backtest_metadata_filename
 from trapilot.LIB.types import BacktestResultType
-
 
 logger = logging.getLogger(__name__)
 
 
 def store_backtest_stats(
-        recordfilename: Path, stats: BacktestResultType, dtappendix: str) -> Path:
+    recordfilename: Path, stats: BacktestResultType, dtappendix: str
+) -> Path:
     """
     Stores backtest results
     :param recordfilename: Path object, which can either be a filename or a directory.
@@ -22,31 +23,31 @@ def store_backtest_stats(
     :param dtappendix: Datetime to use for the filename
     """
     if recordfilename.is_dir():
-        filename = (recordfilename / f'backtest-result-{dtappendix}.json')
+        filename = recordfilename / f"backtest-result-{dtappendix}.json"
     else:
         filename = Path.joinpath(
-            recordfilename.parent, f'{recordfilename.stem}-{dtappendix}'
+            recordfilename.parent, f"{recordfilename.stem}-{dtappendix}"
         ).with_suffix(recordfilename.suffix)
 
     # Store metadata separately.
-    file_dump_json(get_backtest_metadata_filename(filename), stats['metadata'])
+    file_dump_json(get_backtest_metadata_filename(filename), stats["metadata"])
     # Don't mutate the original stats dict.
     stats_copy = {
-        'strategy': stats['strategy'],
-        'strategy_comparison': stats['strategy_comparison'],
+        "strategy": stats["strategy"],
+        "strategy_comparison": stats["strategy_comparison"],
     }
 
     file_dump_json(filename, stats_copy)
 
     latest_filename = Path.joinpath(filename.parent, LAST_BT_RESULT_FN)
-    file_dump_json(latest_filename, {'latest_backtest': str(filename.name)})
+    file_dump_json(latest_filename, {"latest_backtest": str(filename.name)})
 
     return filename
 
 
 def _store_backtest_analysis_data(
-        recordfilename: Path, data: Dict[str, Dict],
-        dtappendix: str, name: str) -> Path:
+    recordfilename: Path, data: Dict[str, Dict], dtappendix: str, name: str
+) -> Path:
     """
     Stores backtest trade candles for analysis
     :param recordfilename: Path object, which can either be a filename or a directory.
@@ -58,10 +59,10 @@ def _store_backtest_analysis_data(
     :param name: Name to use for the file, e.g. signals, rejected
     """
     if recordfilename.is_dir():
-        filename = (recordfilename / f'backtest-result-{dtappendix}_{name}.pkl')
+        filename = recordfilename / f"backtest-result-{dtappendix}_{name}.pkl"
     else:
         filename = Path.joinpath(
-            recordfilename.parent, f'{recordfilename.stem}-{dtappendix}_{name}.pkl'
+            recordfilename.parent, f"{recordfilename.stem}-{dtappendix}_{name}.pkl"
         )
 
     file_dump_joblib(filename, data)
@@ -70,7 +71,10 @@ def _store_backtest_analysis_data(
 
 
 def store_backtest_analysis_results(
-        recordfilename: Path, candles: Dict[str, Dict], trades: Dict[str, Dict],
-        dtappendix: str) -> None:
+    recordfilename: Path,
+    candles: Dict[str, Dict],
+    trades: Dict[str, Dict],
+    dtappendix: str,
+) -> None:
     _store_backtest_analysis_data(recordfilename, candles, dtappendix, "signals")
     _store_backtest_analysis_data(recordfilename, trades, dtappendix, "rejected")

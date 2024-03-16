@@ -1,5 +1,6 @@
 from trapilot.enums import Side
-from trapilot.exchanges.interfaces.futures_exchange_interface import FuturesExchangeInterface
+from trapilot.exchanges.interfaces.futures_exchange_interface import \
+    FuturesExchangeInterface
 from trapilot.frameworks.strategy import FuturesStrategyState
 
 
@@ -14,12 +15,12 @@ def close_position(symbol: str, state: FuturesStrategyState):
     if not position:
         return
 
-    if position['size'] < 0:
+    if position["size"] < 0:
         side = Side.BUY
-    elif position['size'] > 0:
+    elif position["size"] > 0:
         side = Side.SELL
     else:
         # wtf?
         return
 
-    state.interface.market_order(symbol, side, abs(position['size']), reduce_only=True)
+    state.interface.market_order(symbol, side, abs(position["size"]), reduce_only=True)

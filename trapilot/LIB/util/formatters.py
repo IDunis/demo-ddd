@@ -20,12 +20,13 @@ def round_value(value: float, decimals: int, keep_trailing_zeros=False) -> str:
     """
     val = f"{value:.{decimals}f}"
     if not keep_trailing_zeros:
-        val = val.rstrip('0').rstrip('.')
+        val = val.rstrip("0").rstrip(".")
     return val
 
 
 def fmt_coin(
-        value: float, coin: str, show_coin_name=True, keep_trailing_zeros=False) -> str:
+    value: float, coin: str, show_coin_name=True, keep_trailing_zeros=False
+) -> str:
     """
     Format price value for this coin
     :param value: Value to be printed

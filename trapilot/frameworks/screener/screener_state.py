@@ -18,7 +18,8 @@
 
 import time
 
-from trapilot.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface as Interface
+from trapilot.exchanges.interfaces.abc_exchange_interface import \
+    ABCExchangeInterface as Interface
 from trapilot.utils.utils import AttributeDict, format_with_new_line
 
 
@@ -61,6 +62,6 @@ class ScreenerState:
 
     def __str__(self):
         output = ""
-        output = format_with_new_line(output, 'Time: ', self.time)
-        output = format_with_new_line(output, 'Symbols: ', self.symbols)
-        return format_with_new_line(output, 'Variables: ', self.variables)
+        output = format_with_new_line(output, "Time: ", self.time)
+        output = format_with_new_line(output, "Symbols: ", self.symbols)
+        return format_with_new_line(output, "Variables: ", self.variables)

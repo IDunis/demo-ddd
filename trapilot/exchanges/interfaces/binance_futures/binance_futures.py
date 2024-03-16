@@ -15,32 +15,39 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 from binance.client import Client
 
 from trapilot.exchanges.auth.auth_constructor import AuthConstructor
 from trapilot.exchanges.futures.futures_exchange import FuturesExchange
-from trapilot.exchanges.interfaces.binance_futures.binance_futures_interface import BinanceFuturesInterface
-from trapilot.exchanges.interfaces.futures_exchange_interface import FuturesExchangeInterface
+from trapilot.exchanges.interfaces.binance_futures.binance_futures_interface import \
+    BinanceFuturesInterface
+from trapilot.exchanges.interfaces.futures_exchange_interface import \
+    FuturesExchangeInterface
 
 
 class BinanceFutures(FuturesExchange):
 
-    def __init__(self,
-                 portfolio_name=None,
-                 keys_path="user_data/keys.json",
-                 preferences_path=None):
+    def __init__(
+        self,
+        portfolio_name=None,
+        keys_path="user_data/keys.json",
+        preferences_path=None,
+    ):
         super().__init__("binance_futures", portfolio_name, preferences_path)
 
         # Load auth from keys file
-        auth = AuthConstructor(keys_path, portfolio_name, 'binance',
-                               ['API_KEY', 'API_SECRET', 'sandbox'])
+        auth = AuthConstructor(
+            keys_path, portfolio_name, "binance", ["API_KEY", "API_SECRET", "sandbox"]
+        )
 
-        self.__calls = Client(api_key=auth.keys['API_KEY'],
-                              api_secret=auth.keys['API_SECRET'],
-                              testnet=auth.keys['sandbox'])
+        self.__calls = Client(
+            api_key=auth.keys["API_KEY"],
+            api_secret=auth.keys["API_SECRET"],
+            testnet=auth.keys["sandbox"],
+        )
 
-        self.__interface = BinanceFuturesInterface(self.exchange_type,
-                                                   self.calls)
+        self.__interface = BinanceFuturesInterface(self.exchange_type, self.calls)
 
         self.initialize()
 

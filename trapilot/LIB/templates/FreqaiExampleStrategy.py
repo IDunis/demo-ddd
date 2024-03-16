@@ -8,7 +8,6 @@ from technical import qtpylib
 
 from trapilot.LIB.strategy import IStrategy
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -45,8 +44,9 @@ class FreqaiExampleStrategy(IStrategy):
     startup_candle_count: int = 40
     can_short = True
 
-    def feature_engineering_expand_all(self, dataframe: DataFrame, period: int,
-                                       metadata: Dict, **kwargs) -> DataFrame:
+    def feature_engineering_expand_all(
+        self, dataframe: DataFrame, period: int, metadata: Dict, **kwargs
+    ) -> DataFrame:
         """
         *Only functional with FreqAI enabled strategies*
         This function will automatically expand the defined features on the config defined
@@ -89,8 +89,7 @@ class FreqaiExampleStrategy(IStrategy):
         dataframe["bb_upperband-period"] = bollinger["upper"]
 
         dataframe["%-bb_width-period"] = (
-            dataframe["bb_upperband-period"]
-            - dataframe["bb_lowerband-period"]
+            dataframe["bb_upperband-period"] - dataframe["bb_lowerband-period"]
         ) / dataframe["bb_middleband-period"]
         dataframe["%-close-bb_lower-period"] = (
             dataframe["close"] / dataframe["bb_lowerband-period"]
@@ -105,7 +104,8 @@ class FreqaiExampleStrategy(IStrategy):
         return dataframe
 
     def feature_engineering_expand_basic(
-            self, dataframe: DataFrame, metadata: Dict, **kwargs) -> DataFrame:
+        self, dataframe: DataFrame, metadata: Dict, **kwargs
+    ) -> DataFrame:
         """
         *Only functional with FreqAI enabled strategies*
         This function will automatically expand the defined features on the config defined
@@ -142,7 +142,8 @@ class FreqaiExampleStrategy(IStrategy):
         return dataframe
 
     def feature_engineering_standard(
-            self, dataframe: DataFrame, metadata: Dict, **kwargs) -> DataFrame:
+        self, dataframe: DataFrame, metadata: Dict, **kwargs
+    ) -> DataFrame:
         """
         *Only functional with FreqAI enabled strategies*
         This optional function will be called once with the dataframe of the base timeframe.
@@ -172,7 +173,9 @@ class FreqaiExampleStrategy(IStrategy):
         dataframe["%-hour_of_day"] = dataframe["date"].dt.hour
         return dataframe
 
-    def set_freqai_targets(self, dataframe: DataFrame, metadata: Dict, **kwargs) -> DataFrame:
+    def set_freqai_targets(
+        self, dataframe: DataFrame, metadata: Dict, **kwargs
+    ) -> DataFrame:
         """
         *Only functional with FreqAI enabled strategies*
         Required function to set the targets for the model.
@@ -197,7 +200,7 @@ class FreqaiExampleStrategy(IStrategy):
             .mean()
             / dataframe["close"]
             - 1
-            )
+        )
 
         # Classifiers are typically set up with strings as targets:
         # df['&s-up_or_down'] = np.where( df["close"].shift(-100) >
@@ -241,37 +244,33 @@ class FreqaiExampleStrategy(IStrategy):
         enter_long_conditions = [
             df["do_predict"] == 1,
             df["&-s_close"] > 0.01,
-            ]
+        ]
 
         if enter_long_conditions:
             df.loc[
-                reduce(lambda x, y: x & y, enter_long_conditions), ["enter_long", "enter_tag"]
+                reduce(lambda x, y: x & y, enter_long_conditions),
+                ["enter_long", "enter_tag"],
             ] = (1, "long")
 
         enter_short_conditions = [
             df["do_predict"] == 1,
             df["&-s_close"] < -0.01,
-            ]
+        ]
 
         if enter_short_conditions:
             df.loc[
-                reduce(lambda x, y: x & y, enter_short_conditions), ["enter_short", "enter_tag"]
+                reduce(lambda x, y: x & y, enter_short_conditions),
+                ["enter_short", "enter_tag"],
             ] = (1, "short")
 
         return df
 
     def populate_exit_trend(self, df: DataFrame, metadata: dict) -> DataFrame:
-        exit_long_conditions = [
-            df["do_predict"] == 1,
-            df["&-s_close"] < 0
-            ]
+        exit_long_conditions = [df["do_predict"] == 1, df["&-s_close"] < 0]
         if exit_long_conditions:
             df.loc[reduce(lambda x, y: x & y, exit_long_conditions), "exit_long"] = 1
 
-        exit_short_conditions = [
-            df["do_predict"] == 1,
-            df["&-s_close"] > 0
-            ]
+        exit_short_conditions = [df["do_predict"] == 1, df["&-s_close"] > 0]
         if exit_short_conditions:
             df.loc[reduce(lambda x, y: x & y, exit_short_conditions), "exit_short"] = 1
 

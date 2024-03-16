@@ -4,7 +4,8 @@ from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, RootModel, SerializeAsAny
 
 from trapilot.LIB.constants import IntOrInf
-from trapilot.LIB.enums import MarginMode, OrderTypeValues, SignalDirection, TradingMode
+from trapilot.LIB.enums import (MarginMode, OrderTypeValues, SignalDirection,
+                                TradingMode)
 from trapilot.LIB.types import ValidExchangesType
 
 
@@ -539,7 +540,7 @@ class BacktestHistoryEntry(BaseModel):
     strategy: str
     run_id: str
     backtest_start_time: int
-    notes: Optional[str] = ''
+    notes: Optional[str] = ""
     backtest_start_ts: Optional[int] = None
     backtest_end_ts: Optional[int] = None
     timeframe: Optional[str] = None
@@ -548,7 +549,7 @@ class BacktestHistoryEntry(BaseModel):
 
 class BacktestMetadataUpdate(BaseModel):
     strategy: str
-    notes: str = ''
+    notes: str = ""
 
 
 class SysInfo(BaseModel):

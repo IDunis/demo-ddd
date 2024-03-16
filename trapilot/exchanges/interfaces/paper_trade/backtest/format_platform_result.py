@@ -60,9 +60,7 @@ def __compress_dict_series(values_column: dict, time_dictionary: dict):
         return {}
 
     last_value = values_column[values_keys[0]]
-    output_dict = {
-        time_dictionary[time_keys[0]]: last_value
-    }
+    output_dict = {time_dictionary[time_keys[0]]: last_value}
     for i in range(len(values_column)):
         # This used to compress by saving the last value, but now it does not
         output_dict[time_dictionary[time_keys[i]]] = values_column[values_keys[i]]
@@ -70,7 +68,9 @@ def __compress_dict_series(values_column: dict, time_dictionary: dict):
     return output_dict
 
 
-def __parse_backtest_trades(trades: list, limit_executed: list, limit_canceled: list, market_executed: list):
+def __parse_backtest_trades(
+    trades: list, limit_executed: list, limit_canceled: list, market_executed: list
+):
     """
     Determine the lifecycle of limit orders
 
@@ -84,37 +84,33 @@ def __parse_backtest_trades(trades: list, limit_executed: list, limit_canceled: 
     # Now just parse if there should be an executed time or a canceled time
     for i in range(len(trades)):
         try:
-            trades[i]['time'] = trades[i].pop('created_at')
+            trades[i]["time"] = trades[i].pop("created_at")
         except KeyError:
             pass
-        if trades[i]['type'] == 'limit':
+        if trades[i]["type"] == "limit":
             # TODO this wastes a few CPU cycles at the moment so it could be cleaned up
             for j in limit_executed:
-                if trades[i]['id'] == j['id']:
-                    trades[i]['executed_time'] = j['executed_time']
+                if trades[i]["id"] == j["id"]:
+                    trades[i]["executed_time"] = j["executed_time"]
                     break
 
             for j in limit_canceled:
-                if trades[i]['id'] == j['id']:
-                    trades[i]['canceled_time'] = j['canceled_time']
+                if trades[i]["id"] == j["id"]:
+                    trades[i]["canceled_time"] = j["canceled_time"]
                     break
-        elif trades[i]['type'] == 'market':
+        elif trades[i]["type"] == "market":
             # This adds in the execution price for the market orders
-            trades[i]['type'] = 'spot-market'
+            trades[i]["type"] = "spot-market"
             for j in market_executed:
-                if trades[i]['id'] == j['id']:
-                    trades[i]['price'] = j['executed_price']
+                if trades[i]["id"] == j["id"]:
+                    trades[i]["price"] = j["executed_price"]
                     break
 
     return trades
 
 
 def format_metric(metrics: dict, display_name, type_: str):
-    return {
-        "value": metrics[display_name],
-        "display_name": display_name,
-        "type": type_
-    }
+    return {"value": metrics[display_name], "display_name": display_name, "type": type_}
 
 
 def format_platform_result(backtest_result):
@@ -130,76 +126,76 @@ def format_platform_result(backtest_result):
     # Grab a list of the traded assets
     # The paper trade interface format may change in the future to be more optimized
     traded_symbols = []
-    for i in backtest_result.trades['created']:
-        if i['symbol'] not in traded_symbols:
-            traded_symbols.append(i['symbol'])
+    for i in backtest_result.trades["created"]:
+        if i["symbol"] not in traded_symbols:
+            traded_symbols.append(i["symbol"])
 
     # Set the account values to None
     # Now grab the account value dictionary itself
     # Now just replicate the format of the resampled version
     # This was the annoying backtest glitch that almost cost us an investor meeting so its important
-    history = history_and_returns['history']
-    account_value_name = 'Account Value (' + backtest_result.quote_currency + ')'
+    history = history_and_returns["history"]
+    account_value_name = "Account Value (" + backtest_result.quote_currency + ")"
     raw_or_resampled_account_values = {
-        'value': history[account_value_name],
-        'time': history['time']
+        "value": history[account_value_name],
+        "time": history["time"],
     }
 
     # Now grab the raw account values
-    compressed_asset_column = __compress_dict_series(raw_or_resampled_account_values['value'],
-                                                     raw_or_resampled_account_values['time'])
+    compressed_asset_column = __compress_dict_series(
+        raw_or_resampled_account_values["value"],
+        raw_or_resampled_account_values["time"],
+    )
 
     compressed_array_conversion = []
     for i in compressed_asset_column:
-        compressed_array_conversion.append({
-            'time': i,
-            'value': compressed_asset_column[i]
-        })
+        compressed_array_conversion.append(
+            {"time": i, "value": compressed_asset_column[i]}
+        )
 
     compressed_asset_keys = list(compressed_asset_column.keys())
     first_account_value = compressed_asset_column[compressed_asset_keys[0]]
     last_account_value = compressed_asset_column[compressed_asset_keys[-1]]
 
-    trades = __parse_backtest_trades(backtest_result.trades['created'],
-                                     backtest_result.trades['limits_executed'],
-                                     backtest_result.trades['limits_canceled'],
-                                     backtest_result.trades['executed_market_orders'])
+    trades = __parse_backtest_trades(
+        backtest_result.trades["created"],
+        backtest_result.trades["limits_executed"],
+        backtest_result.trades["limits_canceled"],
+        backtest_result.trades["executed_market_orders"],
+    )
 
     # Now change the metrics keys to be nicer
     metrics = backtest_result.metrics
     refined_metrics = {
-        'calmar': format_metric(metrics, 'Calmar Ratio', 'number'),
-        'cagr': format_metric(metrics, 'Compound Annual Growth Rate (%)', 'number'),
-        'cavr': format_metric(metrics, 'Conditional Value-at-Risk', 'number'),
-
-        'cum_returns': format_metric(metrics, 'Cumulative Returns (%)', 'number'),
-        'max_drawdown': format_metric(metrics, 'Max Drawdown (%)', 'number'),
-        'resampled_time': format_metric(metrics, 'Resampled Time', 'number'),
-
-        'risk_free_rate': format_metric(metrics, 'Risk Free Return Rate', 'number'),
-        'sharpe': format_metric(metrics, 'Sharpe Ratio', 'number'),
-        'sortino': format_metric(metrics, 'Sortino Ratio', 'number'),
-
-        'value_at_risk': format_metric(metrics, 'Value-at-Risk', 'number'),
-        'variance': format_metric(metrics, 'Variance (%)', 'number'),
-        'volatility': format_metric(metrics, 'Volatility', 'number')
+        "calmar": format_metric(metrics, "Calmar Ratio", "number"),
+        "cagr": format_metric(metrics, "Compound Annual Growth Rate (%)", "number"),
+        "cavr": format_metric(metrics, "Conditional Value-at-Risk", "number"),
+        "cum_returns": format_metric(metrics, "Cumulative Returns (%)", "number"),
+        "max_drawdown": format_metric(metrics, "Max Drawdown (%)", "number"),
+        "resampled_time": format_metric(metrics, "Resampled Time", "number"),
+        "risk_free_rate": format_metric(metrics, "Risk Free Return Rate", "number"),
+        "sharpe": format_metric(metrics, "Sharpe Ratio", "number"),
+        "sortino": format_metric(metrics, "Sortino Ratio", "number"),
+        "value_at_risk": format_metric(metrics, "Value-at-Risk", "number"),
+        "variance": format_metric(metrics, "Variance (%)", "number"),
+        "volatility": format_metric(metrics, "Volatility", "number"),
     }
 
     backtest_result.metrics = refined_metrics
     return {
-        'exchange': backtest_result.exchange,
-        'symbols': traded_symbols,
-        'quote_asset': backtest_result.quote_currency,
-        'start_time': backtest_result.start_time,
-        'stop_time': backtest_result.stop_time,
-        'account_values': compressed_array_conversion,
-        'trades': trades,
-        'metrics': refined_metrics,
-        'indicators': {},  # Add to this array when we support
+        "exchange": backtest_result.exchange,
+        "symbols": traded_symbols,
+        "quote_asset": backtest_result.quote_currency,
+        "start_time": backtest_result.start_time,
+        "stop_time": backtest_result.stop_time,
+        "account_values": compressed_array_conversion,
+        "trades": trades,
+        "metrics": refined_metrics,
+        "indicators": {},  # Add to this array when we support
         # strategy indicators
-        'user_callbacks': backtest_result.user_callbacks,
-        'initial_account_value': first_account_value,
-        'final_account_value': last_account_value,
-        'backtest_id': str(uuid.uuid4())
+        "user_callbacks": backtest_result.user_callbacks,
+        "initial_account_value": first_account_value,
+        "final_account_value": last_account_value,
+        "backtest_id": str(uuid.uuid4()),
         # Everything above here is put into the firebase root
     }

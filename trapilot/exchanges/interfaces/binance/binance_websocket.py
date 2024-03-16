@@ -26,8 +26,15 @@ from trapilot.utils.utils import info_print
 
 
 class Tickers(Websocket):
-    def __init__(self, symbol, stream, log=None, initially_stopped=False,
-                 websocket_url="wss://stream.binance.{}:9443/ws", **kwargs):
+    def __init__(
+        self,
+        symbol,
+        stream,
+        log=None,
+        initially_stopped=False,
+        websocket_url="wss://stream.binance.{}:9443/ws",
+        **kwargs,
+    ):
         """
         Create and initialize the ticker
         Args:
@@ -39,8 +46,12 @@ class Tickers(Websocket):
         # Reload preferences
         self.__preferences = trapilot.utils.load_user_preferences()
 
-        self.__logging_callback, self.__interface_callback, log_message = websocket_utils.switch_type(stream)
-        url = websocket_url.format(self.__preferences['settings']['binance']['binance_tld'])
+        self.__logging_callback, self.__interface_callback, log_message = (
+            websocket_utils.switch_type(stream)
+        )
+        url = websocket_url.format(
+            self.__preferences["settings"]["binance"]["binance_tld"]
+        )
 
         super().__init__(symbol, stream, log, log_message, url, None, kwargs)
 
@@ -51,7 +62,7 @@ class Tickers(Websocket):
                 self.on_message,
                 self.on_error,
                 self.on_close,
-                self.read_websocket
+                self.read_websocket,
             )
 
     def read_websocket(self):
@@ -66,7 +77,7 @@ class Tickers(Websocket):
         self.message_count += 1
         message = json.loads(message)
         try:
-            self.most_recent_time = message['E']
+            self.most_recent_time = message["E"]
             self.time_feed.append(self.most_recent_time)
 
             self.log_response(self.__logging_callback, message)
@@ -80,7 +91,7 @@ class Tickers(Websocket):
             # If the try below figures this out then we don't have to traceback
             error_found = False
             try:
-                if message['result'] is None:
+                if message["result"] is None:
                     self.response = message
                     error_found = True
             except KeyError:
@@ -97,11 +108,9 @@ class Tickers(Websocket):
         pass
 
     def on_open(self, ws):
-        request = json.dumps({
-            'method': 'SUBSCRIBE',
-            'params': [f'{self.symbol}@{self.stream}'],
-            'id': 1
-        })
+        request = json.dumps(
+            {"method": "SUBSCRIBE", "params": [f"{self.symbol}@{self.stream}"], "id": 1}
+        )
         ws.send(request)
 
     def restart_ticker(self):
@@ -110,5 +119,5 @@ class Tickers(Websocket):
             self.on_message,
             self.on_error,
             self.on_close,
-            self.read_websocket
+            self.read_websocket,
         )

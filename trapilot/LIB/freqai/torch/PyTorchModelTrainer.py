@@ -9,26 +9,26 @@ from torch.optim import Optimizer
 from torch.utils.data import DataLoader, TensorDataset
 
 from trapilot.LIB.freqai.torch.PyTorchDataConvertor import PyTorchDataConvertor
-from trapilot.LIB.freqai.torch.PyTorchTrainerInterface import PyTorchTrainerInterface
+from trapilot.LIB.freqai.torch.PyTorchTrainerInterface import \
+    PyTorchTrainerInterface
 
 from .datasets import WindowDataset
-
 
 logger = logging.getLogger(__name__)
 
 
 class PyTorchModelTrainer(PyTorchTrainerInterface):
     def __init__(
-            self,
-            model: nn.Module,
-            optimizer: Optimizer,
-            criterion: nn.Module,
-            device: str,
-            data_convertor: PyTorchDataConvertor,
-            model_meta_data: Dict[str, Any] = {},
-            window_size: int = 1,
-            tb_logger: Any = None,
-            **kwargs
+        self,
+        model: nn.Module,
+        optimizer: Optimizer,
+        criterion: nn.Module,
+        device: str,
+        data_convertor: PyTorchDataConvertor,
+        model_meta_data: Dict[str, Any] = {},
+        window_size: int = 1,
+        tb_logger: Any = None,
+        **kwargs,
     ):
         """
         :param model: The PyTorch model to be trained.
@@ -77,7 +77,9 @@ class PyTorchModelTrainer(PyTorchTrainerInterface):
         """
         self.model.train()
 
-        data_loaders_dictionary = self.create_data_loaders_dictionary(data_dictionary, splits)
+        data_loaders_dictionary = self.create_data_loaders_dictionary(
+            data_dictionary, splits
+        )
         n_obs = len(data_dictionary["train_features"])
         n_epochs = self.n_epochs or self.calc_n_epochs(n_obs=n_obs)
         batch_counter = 0
@@ -101,9 +103,9 @@ class PyTorchModelTrainer(PyTorchTrainerInterface):
 
     @torch.no_grad()
     def estimate_loss(
-            self,
-            data_loader_dictionary: Dict[str, DataLoader],
-            split: str,
+        self,
+        data_loader_dictionary: Dict[str, DataLoader],
+        split: str,
     ) -> None:
         self.model.eval()
         for _, batch_data in enumerate(data_loader_dictionary[split]):
@@ -113,23 +115,27 @@ class PyTorchModelTrainer(PyTorchTrainerInterface):
 
             yb_pred = self.model(xb)
             loss = self.criterion(yb_pred, yb)
-            self.tb_logger.log_scalar(f"{split}_loss", loss.item(), self.test_batch_counter)
+            self.tb_logger.log_scalar(
+                f"{split}_loss", loss.item(), self.test_batch_counter
+            )
             self.test_batch_counter += 1
 
         self.model.train()
 
     def create_data_loaders_dictionary(
-            self,
-            data_dictionary: Dict[str, pd.DataFrame],
-            splits: List[str]
+        self, data_dictionary: Dict[str, pd.DataFrame], splits: List[str]
     ) -> Dict[str, DataLoader]:
         """
         Converts the input data to PyTorch tensors using a data loader.
         """
         data_loader_dictionary = {}
         for split in splits:
-            x = self.data_convertor.convert_x(data_dictionary[f"{split}_features"], self.device)
-            y = self.data_convertor.convert_y(data_dictionary[f"{split}_labels"], self.device)
+            x = self.data_convertor.convert_x(
+                data_dictionary[f"{split}_features"], self.device
+            )
+            y = self.data_convertor.convert_y(
+                data_dictionary[f"{split}_labels"], self.device
+            )
             dataset = TensorDataset(x, y)
             data_loader = DataLoader(
                 dataset,
@@ -150,7 +156,9 @@ class PyTorchModelTrainer(PyTorchTrainerInterface):
         the motivation here is that `n_steps` is easier to optimize and keep stable,
         across different n_obs - the number of data points.
         """
-        assert isinstance(self.n_steps, int), "Either `n_steps` or `n_epochs` should be set."
+        assert isinstance(
+            self.n_steps, int
+        ), "Either `n_steps` or `n_epochs` should be set."
         n_batches = n_obs // self.batch_size
         n_epochs = min(self.n_steps // n_batches, 1)
         if n_epochs <= 10:
@@ -168,12 +176,15 @@ class PyTorchModelTrainer(PyTorchTrainerInterface):
           user needs to store. e.g. class_names for classification models.
         """
 
-        torch.save({
-            "model_state_dict": self.model.state_dict(),
-            "optimizer_state_dict": self.optimizer.state_dict(),
-            "model_meta_data": self.model_meta_data,
-            "pytrainer": self
-        }, path)
+        torch.save(
+            {
+                "model_state_dict": self.model.state_dict(),
+                "optimizer_state_dict": self.optimizer.state_dict(),
+                "model_meta_data": self.model_meta_data,
+                "pytrainer": self,
+            },
+            path,
+        )
 
     def load(self, path: Path):
         checkpoint = torch.load(path)
@@ -198,17 +209,19 @@ class PyTorchTransformerTrainer(PyTorchModelTrainer):
     """
 
     def create_data_loaders_dictionary(
-            self,
-            data_dictionary: Dict[str, pd.DataFrame],
-            splits: List[str]
+        self, data_dictionary: Dict[str, pd.DataFrame], splits: List[str]
     ) -> Dict[str, DataLoader]:
         """
         Converts the input data to PyTorch tensors using a data loader.
         """
         data_loader_dictionary = {}
         for split in splits:
-            x = self.data_convertor.convert_x(data_dictionary[f"{split}_features"], self.device)
-            y = self.data_convertor.convert_y(data_dictionary[f"{split}_labels"], self.device)
+            x = self.data_convertor.convert_x(
+                data_dictionary[f"{split}_features"], self.device
+            )
+            y = self.data_convertor.convert_y(
+                data_dictionary[f"{split}_labels"], self.device
+            )
             dataset = WindowDataset(x, y, self.window_size)
             data_loader = DataLoader(
                 dataset,

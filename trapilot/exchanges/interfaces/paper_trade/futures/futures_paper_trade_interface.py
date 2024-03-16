@@ -2,16 +2,18 @@ import dataclasses
 import functools
 import random
 from collections import defaultdict
+from copy import deepcopy
 from typing import List, Optional
 
-from trapilot.enums import MarginType, HedgeMode, PositionMode, Side, TimeInForce, ContractType, OrderStatus, OrderType
-from trapilot.exchanges.interfaces.futures_exchange_interface import FuturesExchangeInterface
-from trapilot.exchanges.interfaces.paper_trade.backtesting_wrapper import BacktestingWrapper
+from trapilot.enums import (ContractType, HedgeMode, MarginType, OrderStatus,
+                            OrderType, PositionMode, Side, TimeInForce)
+from trapilot.exchanges.interfaces.futures_exchange_interface import \
+    FuturesExchangeInterface
+from trapilot.exchanges.interfaces.paper_trade.backtesting_wrapper import \
+    BacktestingWrapper
 from trapilot.exchanges.orders.futures.futures_order import FuturesOrder
 from trapilot.utils import utils as utils
-from copy import deepcopy
-
-from trapilot.utils.exceptions import InvalidOrder, BacktestingException
+from trapilot.utils.exceptions import BacktestingException, InvalidOrder
 
 
 class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
@@ -60,8 +62,8 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
 
     @staticmethod
     def convert_symbol_name(symbol: str):
-        base, quote = symbol.split('-')
-        return base + '-PERP', quote
+        base, quote = symbol.split("-")
+        return base + "-PERP", quote
 
     def add_symbol(self, symbol):
         contract_name, quote = self.convert_symbol_name(symbol)
@@ -69,7 +71,12 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
         self.add_asset(contract_name)
         self.add_asset(quote)
 
-    def __init__(self, exchange_name: str, interface: FuturesExchangeInterface, account_values: dict = None):
+    def __init__(
+        self,
+        exchange_name: str,
+        interface: FuturesExchangeInterface,
+        account_values: dict = None,
+    ):
         self.interface = interface
         super().__init__(exchange_name, interface.calls)
         BacktestingWrapper.__init__(self)
@@ -83,7 +90,7 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
         self._funding_rate_cache = []
 
         # same functionality as 'real' FuturesExchangeInterface's
-        self.paper_account = defaultdict(lambda: {'available': 0, 'hold': 0})
+        self.paper_account = defaultdict(lambda: {"available": 0, "hold": 0})
         self.paper_positions = {}
         self.traded_assets = []
 
@@ -110,7 +117,9 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
             except KeyError as e:
                 if self.backtesting:
                     raise KeyError(
-                        "Symbol not found. This can be caused by an invalid quote currency in user_data/backtest.json.", e)
+                        "Symbol not found. This can be caused by an invalid quote currency in user_data/backtest.json.",
+                        e,
+                    )
                 else:
                     raise KeyError("Symbol not found.", e)
         return acc
@@ -120,21 +129,52 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
             return self.paper_positions.get(symbol, None)
         return self.paper_positions
 
-    def market_order(self, symbol: str, side: Side, size: float, position: PositionMode = PositionMode.BOTH,
-                     reduce_only: bool = False) -> FuturesOrder:
-        return self._place_order(OrderType.MARKET, symbol, side, size, 0, position, reduce_only)
+    def market_order(
+        self,
+        symbol: str,
+        side: Side,
+        size: float,
+        position: PositionMode = PositionMode.BOTH,
+        reduce_only: bool = False,
+    ) -> FuturesOrder:
+        return self._place_order(
+            OrderType.MARKET, symbol, side, size, 0, position, reduce_only
+        )
 
-    def limit_order(self, symbol: str, side: Side, price: float, size: float,
-                    position: PositionMode = PositionMode.BOTH,
-                    reduce_only: bool = False, time_in_force: TimeInForce = None) -> FuturesOrder:
-        return self._place_order(OrderType.LIMIT, symbol, side, size, price, position, reduce_only)
+    def limit_order(
+        self,
+        symbol: str,
+        side: Side,
+        price: float,
+        size: float,
+        position: PositionMode = PositionMode.BOTH,
+        reduce_only: bool = False,
+        time_in_force: TimeInForce = None,
+    ) -> FuturesOrder:
+        return self._place_order(
+            OrderType.LIMIT, symbol, side, size, price, position, reduce_only
+        )
 
-    def take_profit_order(self, symbol: str, side: Side, price: float, size: float,
-                          position: PositionMode = PositionMode.BOTH) -> FuturesOrder:
-        return self._place_order(OrderType.TAKE_PROFIT, symbol, side, size, price, position)
+    def take_profit_order(
+        self,
+        symbol: str,
+        side: Side,
+        price: float,
+        size: float,
+        position: PositionMode = PositionMode.BOTH,
+    ) -> FuturesOrder:
+        return self._place_order(
+            OrderType.TAKE_PROFIT, symbol, side, size, price, position
+        )
 
-    def stop_loss_order(self, symbol: str, side: Side, price: float, size: float,
-                        position: PositionMode = PositionMode.BOTH) -> FuturesOrder:
+    def stop_loss_order(
+        self,
+        symbol: str,
+        side: Side,
+        price: float,
+        size: float,
+        position: PositionMode = PositionMode.BOTH,
+    ) -> FuturesOrder:
         return self._place_order(OrderType.STOP, symbol, side, size, price, position)
 
     def should_run_order(self, order):
@@ -153,14 +193,14 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
 
     def set_hedge_mode(self, hedge_mode: HedgeMode):
         if hedge_mode == HedgeMode.HEDGE:
-            raise ValueError('Hedge mode not supported')
+            raise ValueError("Hedge mode not supported")
 
     def get_hedge_mode(self):
         return HedgeMode.ONEWAY
 
     def set_leverage(self, leverage: float, symbol: str = None):
         if len(self.paper_positions):
-            raise BacktestingException('can\'t set leverage with open positions')
+            raise BacktestingException("can't set leverage with open positions")
         if symbol:
             self.leverage[symbol] = leverage
         else:
@@ -171,9 +211,9 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
 
     def set_margin_type(self, symbol: str, type: MarginType):
         if len(self.paper_positions):
-            raise BacktestingException('can\'t set margin type with open positions')
+            raise BacktestingException("can't set margin type with open positions")
         if type == MarginType.ISOLATED:
-            raise BacktestingException('isolated margin not supported')
+            raise BacktestingException("isolated margin not supported")
         self.margin_type[symbol] = type
 
     def get_margin_type(self, symbol: str) -> MarginType:
@@ -186,7 +226,7 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
             assert order.symbol == symbol
             return dataclasses.replace(order, status=OrderStatus.CANCELED)
         except KeyError:
-            raise BacktestingException('order not found')
+            raise BacktestingException("order not found")
 
     def get_open_orders(self, symbol: str = None) -> List[FuturesOrder]:
         return [dataclasses.replace(o) for o in self._placed_orders]
@@ -197,7 +237,7 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
             assert order.symbol == symbol
             return dataclasses.replace(order, status=OrderStatus.CANCELED)
         except KeyError:
-            raise Exception('order not found')
+            raise Exception("order not found")
 
     def get_funding_rate(self, symbol: str):
         if self.backtesting:
@@ -209,26 +249,28 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
         # check if cache needs to be refreshed
         # TODO this all need to be moved into events framework once that's done
         time = self.time()
-        if not self._funding_rate_cache or self._funding_rate_cache[-1]['time'] < time:
+        if not self._funding_rate_cache or self._funding_rate_cache[-1]["time"] < time:
             self._funding_rate_cache = self.get_funding_rate_history(symbol, time, None)
         for i, o in self._funding_rate_cache[:-1].enumerate():
-            if o['time'] < time:
-                last = o['rate']
-                next = self._funding_rate_cache[i + 1]['time']
+            if o["time"] < time:
+                last = o["rate"]
+                next = self._funding_rate_cache[i + 1]["time"]
                 return last, next
-        print(f'failed to download funding rate at time {time}')
+        print(f"failed to download funding rate at time {time}")
         return 0.0001, time + (time % self.get_funding_rate_resolution())
 
     def get_price(self, symbol: str) -> float:
-        if symbol.endswith('-PERP'):
+        if symbol.endswith("-PERP"):
             quote = self._quote_map[symbol]
-            symbol = symbol.split('-')[0] + '-' + quote
+            symbol = symbol.split("-")[0] + "-" + quote
         if self.backtesting:
             return self.get_backtesting_price(symbol)
         else:
             return self.interface.get_price(symbol)
 
-    def get_funding_rate_history(self, symbol: str, epoch_start: int, epoch_stop: int) -> list:
+    def get_funding_rate_history(
+        self, symbol: str, epoch_start: int, epoch_stop: int
+    ) -> list:
         return self.interface.get_funding_rate_history(symbol, epoch_start, epoch_stop)
 
     def get_funding_rate_resolution(self) -> int:
@@ -236,25 +278,32 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
 
     def get_product_history(self, symbol, epoch_start, epoch_stop, resolution):
         if self.backtesting:
-            return utils.extract_price_by_resolution(self.full_prices, symbol, epoch_start, epoch_stop, resolution)
+            return utils.extract_price_by_resolution(
+                self.full_prices, symbol, epoch_start, epoch_stop, resolution
+            )
         else:
-            return self.interface.get_product_history(symbol, epoch_start, epoch_stop, resolution)
+            return self.interface.get_product_history(
+                symbol, epoch_start, epoch_stop, resolution
+            )
 
     def evaluate_traded_account_assets(self):
         pass
 
     def override_local_account(self, value_dictionary: dict):
         # if python3.9 we could use the new dict update operator here :(
-        self.paper_account.update({
-            asset: {'available': value, 'hold': 0} for asset, value in value_dictionary.items()
-        })
+        self.paper_account.update(
+            {
+                asset: {"available": value, "hold": 0}
+                for asset, value in value_dictionary.items()
+            }
+        )
 
     def do_funding(self, symbol: str, rate: float):
         # positive rate = longs pay for shorts
         # negative rate = shorts pay for longs
         if symbol not in self.paper_positions:
             return
-        position = self.paper_positions[symbol]['size']
+        position = self.paper_positions[symbol]["size"]
         if (rate > 0) == (position > 0):
             # we lose money :(
             # either funding rate is positive and we are long
@@ -262,14 +311,14 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
             m = -1
         else:
             m = 1
-        self.paper_positions[symbol]['size'] *= 1 + (abs(rate) * m)
+        self.paper_positions[symbol]["size"] *= 1 + (abs(rate) * m)
 
     def calculate_position_value(self, symbol):
         position = self.paper_positions.get(symbol, None)
         if not position:
             return 0
-        entry_price = position['exchange_specific']['entry_price']
-        current_price = self.get_price(symbol) * abs(position['size'])
+        entry_price = position["exchange_specific"]["entry_price"]
+        current_price = self.get_price(symbol) * abs(position["size"])
         return entry_price + (current_price - entry_price) * self.get_leverage(symbol)
 
     def evaluate_limits(self):
@@ -286,53 +335,59 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
                 continue
 
             product = self.get_products(order.symbol)
-            base, quote = order.symbol.split('-')
+            base, quote = order.symbol.split("-")
 
             asset_price = order.limit_price or self.get_price(order.symbol)
             # if we held funds for the order, use those orelse just default to current price * ordersize
-            held_curr, notional = self._funds_held.pop(id, (quote, asset_price * order.size))
+            held_curr, notional = self._funds_held.pop(
+                id, (quote, asset_price * order.size)
+            )
 
             assert held_curr == quote
 
             # copy order to _executed_orders
             del self._placed_orders[id]
-            self._executed_orders[id] = dataclasses.replace(order, status=OrderStatus.FILLED, price=notional)
+            self._executed_orders[id] = dataclasses.replace(
+                order, status=OrderStatus.FILLED, price=notional
+            )
 
-            position_size = (self.get_position(order.symbol) or {'size': 0})['size']
+            position_size = (self.get_position(order.symbol) or {"size": 0})["size"]
             size_diff = order.size * (1 if order.side == Side.BUY else -1)
 
             position = self.paper_positions.get(order.symbol, None)
-            entry_price = position['exchange_specific']['entry_price'] if position else 0
+            entry_price = (
+                position["exchange_specific"]["entry_price"] if position else 0
+            )
             entry_price += notional
             # we sold off our position
             if is_closing:
                 value = self.calculate_position_value(order.symbol)
-                self.paper_account[quote]['available'] += value
+                self.paper_account[quote]["available"] += value
             else:
-                self.paper_account[quote]['hold'] -= notional
+                self.paper_account[quote]["hold"] -= notional
 
             # this overwrites but it's fine, we don't need to update
             new_position = position_size + size_diff
 
             # minimum possible position size you can buy, times two
             # TODO improve this to just take minimum position size from exchange
-            if abs(new_position) >= 2 * utils.precision_to_increment(product['size_precision']):
+            if abs(new_position) >= 2 * utils.precision_to_increment(
+                product["size_precision"]
+            ):
                 self.paper_positions[order.symbol] = {
-                    'symbol': order.symbol,
-                    'base_asset': base,
-                    'quote_asset': quote,
-                    'size': new_position,
-                    'position': PositionMode.BOTH,
-                    'leverage': self.get_leverage(order.symbol),
-                    'margin_type': self.get_margin_type(order.symbol),
-                    'contract_type': ContractType.PERPETUAL,
-                    'exchange_specific': {
-                        'entry_price': entry_price
-                    }
+                    "symbol": order.symbol,
+                    "base_asset": base,
+                    "quote_asset": quote,
+                    "size": new_position,
+                    "position": PositionMode.BOTH,
+                    "leverage": self.get_leverage(order.symbol),
+                    "margin_type": self.get_margin_type(order.symbol),
+                    "contract_type": ContractType.PERPETUAL,
+                    "exchange_specific": {"entry_price": entry_price},
                 }
             else:
                 del self.paper_positions[order.symbol]
-            self.paper_account[base + '-PERP']['available'] = new_position
+            self.paper_account[base + "-PERP"]["available"] = new_position
 
     def check_margin_call(self):
         called = []
@@ -343,35 +398,49 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
                 called.append((symbol, position))
 
         for symbol, position in called:
-            self.market_order(symbol, Side.BUY if position['size'] < 0 else Side.SELL, abs(position['size']),
-                              reduce_only=True)
+            self.market_order(
+                symbol,
+                Side.BUY if position["size"] < 0 else Side.SELL,
+                abs(position["size"]),
+                reduce_only=True,
+            )
 
-    def _place_order(self, type: OrderType, symbol: str, side: Side, size: float, limit_price: float = 0,
-                     position_mode: PositionMode = PositionMode.BOTH, reduce_only: bool = False,
-                     time_in_force: TimeInForce = TimeInForce.GTC) -> FuturesOrder:
+    def _place_order(
+        self,
+        type: OrderType,
+        symbol: str,
+        side: Side,
+        size: float,
+        limit_price: float = 0,
+        position_mode: PositionMode = PositionMode.BOTH,
+        reduce_only: bool = False,
+        time_in_force: TimeInForce = TimeInForce.GTC,
+    ) -> FuturesOrder:
         self.add_symbol(symbol)
         product = self.get_products(symbol)
 
         if self.should_auto_trunc:
-            size = utils.trunc(size, product['size_precision'])
+            size = utils.trunc(size, product["size_precision"])
 
         if not product:
-            raise ValueError(f'invalid symbol {symbol}')
+            raise ValueError(f"invalid symbol {symbol}")
 
         if position_mode != PositionMode.BOTH:
-            raise ValueError(f'only PositionMode.BOTH is supported for paper trading at this time')
+            raise ValueError(
+                f"only PositionMode.BOTH is supported for paper trading at this time"
+            )
 
         if size <= 0:
-            raise ValueError('cannot place empty order')
+            raise ValueError("cannot place empty order")
 
         if limit_price < 0 or (limit_price == 0 and type != OrderType.MARKET):
-            raise ValueError('invalid limit price')
+            raise ValueError("invalid limit price")
 
         # place funds on hold
         if type == OrderType.MARKET:
             price = self.get_price(symbol)
         elif reduce_only:
-            raise ValueError('reduce_only only supported for market order')
+            raise ValueError("reduce_only only supported for market order")
         else:
             price = limit_price
 
@@ -380,23 +449,29 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
         # no position == we are never closing
         is_closing = self.is_closing_position(position, side)
         if not position and reduce_only:
-            raise Exception('reduce_only set to True but there is no position to reduce')
+            raise Exception(
+                "reduce_only set to True but there is no position to reduce"
+            )
 
         if reduce_only and not is_closing:
-            raise Exception(f'reduce_only set to True but order side ({side}) is opening or growing position')
+            raise Exception(
+                f"reduce_only set to True but order side ({side}) is opening or growing position"
+            )
 
         if reduce_only:
-            size = min(size, abs(position['size']))
+            size = min(size, abs(position["size"]))
 
-        if is_closing and size > abs(position['size']):
+        if is_closing and size > abs(position["size"]):
             # we need to close position and then buy/sell extra w/ the extra funds
             # this is weird behavior but it's what binance futures does
             # for now raise exception in backtesting, nobody is going to do this anyways
             # and the workaround is simple, just close your position first
-            raise Exception(f'order size ({size}) is greater than position ({abs(position["size"])}), '
-                            'close your position first and then place order')
+            raise Exception(
+                f'order size ({size}) is greater than position ({abs(position["size"])}), '
+                "close your position first and then place order"
+            )
 
-        base, quote = symbol.split('-')
+        base, quote = symbol.split("-")
         acc = self.paper_account[quote]
 
         fee = self.get_taker_fee()
@@ -407,17 +482,28 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
 
         order_id = self.gen_order_id()
         if not is_closing:
-            if acc['available'] < funds:
-                raise Exception('not enough funds')
+            if acc["available"] < funds:
+                raise Exception("not enough funds")
 
-            acc['available'] -= funds
-            acc['hold'] += funds
+            acc["available"] -= funds
+            acc["hold"] += funds
             self._funds_held[order_id] = (quote, funds)
 
-        order = FuturesOrder(symbol=symbol, id=order_id, size=size, status=OrderStatus.OPEN, type=type,
-                             contract_type=ContractType.PERPETUAL, side=side, position=PositionMode.BOTH,
-                             limit_price=limit_price,
-                             price=0, time_in_force=TimeInForce.GTC, response={}, interface=self.interface)
+        order = FuturesOrder(
+            symbol=symbol,
+            id=order_id,
+            size=size,
+            status=OrderStatus.OPEN,
+            type=type,
+            contract_type=ContractType.PERPETUAL,
+            side=side,
+            position=PositionMode.BOTH,
+            limit_price=limit_price,
+            price=0,
+            time_in_force=TimeInForce.GTC,
+            response={},
+            interface=self.interface,
+        )
         self._placed_orders[order_id] = (is_closing, order)
 
         self.execute_orders()
@@ -441,15 +527,15 @@ class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):
 
     @staticmethod
     def is_closing_position(position, side):
-        if not position or position['size'] == 0:
+        if not position or position["size"] == 0:
             return False
-        if (position['size'] > 0) == (side == Side.SELL):
+        if (position["size"] > 0) == (side == Side.SELL):
             return True
         return False
 
     @staticmethod
     def gen_order_id():
-        return random.randrange(10 ** 4, 10 ** 5)
+        return random.randrange(10**4, 10**5)
 
     @functools.lru_cache(None)
     def get_maker_fee(self) -> float:

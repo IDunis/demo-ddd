@@ -15,11 +15,12 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 from abc import ABC
 
 from trapilot.enums import Side
-from trapilot.exchanges.interfaces.futures_exchange_interface import FuturesExchangeInterface
-
+from trapilot.exchanges.interfaces.futures_exchange_interface import \
+    FuturesExchangeInterface
 # TODO
 from trapilot.exchanges.orders.futures.futures_order import FuturesOrder
 
@@ -41,7 +42,8 @@ class FuturesStrategyLogger:
 
     # TODO log order (and other order types)
     # example:
-    def market_order(self, symbol: str, side: Side, size: float, *args,
-                     **kwargs) -> FuturesOrder:
+    def market_order(
+        self, symbol: str, side: Side, size: float, *args, **kwargs
+    ) -> FuturesOrder:
         # log here
         return self.interface.market_order(symbol, side, size, *args, **kwargs)

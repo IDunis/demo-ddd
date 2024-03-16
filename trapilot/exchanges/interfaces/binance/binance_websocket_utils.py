@@ -23,10 +23,12 @@ import trapilot.utils.utils as utils
 
 def switch_type(stream):
     if stream == "aggTrade":
-        return trade, \
-               trade_interface, \
-               "event_time,system_time,event_type,symbol,trade_id,price,quantity," \
-               "trade_time,buyer_is_maker\n"
+        return (
+            trade,
+            trade_interface,
+            "event_time,system_time,event_type,symbol,trade_id,price,quantity,"
+            "trade_time,buyer_is_maker\n",
+        )
     elif stream == "depth":
         return depth, depth_interface, ""
     else:
@@ -46,9 +48,28 @@ def depth_interface(message):
 
 
 def trade(message):
-    return str(message["E"]) + "," + str(time.time()) + "," + message["e"] + "," + message["s"] + "," + \
-           str(message["a"]) + "," + message["p"] + "," + message["q"] + "," + "," + "," + \
-           str(message["T"]) + "," + str(message["m"]) + "\n"
+    return (
+        str(message["E"])
+        + ","
+        + str(time.time())
+        + ","
+        + message["e"]
+        + ","
+        + message["s"]
+        + ","
+        + str(message["a"])
+        + ","
+        + message["p"]
+        + ","
+        + message["q"]
+        + ","
+        + ","
+        + ","
+        + str(message["T"])
+        + ","
+        + str(message["m"])
+        + "\n"
+    )
 
 
 def trade_interface(message):
@@ -89,7 +110,7 @@ def trade_interface(message):
         ["s", "symbol"],
         ["a", "trade_id"],
         ["p", "price"],
-        ['q', "size"],
+        ["q", "size"],
         ["T", "time"],
     ]
     message = utils.rename_to(renames, message)
@@ -98,10 +119,10 @@ def trade_interface(message):
         ["price", float],
         ["time", float],
         ["trade_id", int],
-        ["size", float]
+        ["size", float],
     ]
     message["time"] = message["time"] / 1000
     isolated = utils.isolate_specific(needed, message)
-    isolated['symbol'] = utils.to_blankly_symbol(isolated['symbol'], 'binance')
+    isolated["symbol"] = utils.to_blankly_symbol(isolated["symbol"], "binance")
 
     return isolated

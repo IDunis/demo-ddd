@@ -15,15 +15,16 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import secrets
 
 
 def generate_coinbase_pro_id():
     # Create coinbase pro-like id
     coinbase_pro_id = secrets.token_hex(nbytes=16)
-    coinbase_pro_id = coinbase_pro_id[:8] + '-' + coinbase_pro_id[8:]
-    coinbase_pro_id = coinbase_pro_id[:13] + '-' + coinbase_pro_id[13:]
-    coinbase_pro_id = coinbase_pro_id[:18] + '-' + coinbase_pro_id[18:]
-    coinbase_pro_id = coinbase_pro_id[:23] + '-' + coinbase_pro_id[23:]
+    coinbase_pro_id = coinbase_pro_id[:8] + "-" + coinbase_pro_id[8:]
+    coinbase_pro_id = coinbase_pro_id[:13] + "-" + coinbase_pro_id[13:]
+    coinbase_pro_id = coinbase_pro_id[:18] + "-" + coinbase_pro_id[18:]
+    coinbase_pro_id = coinbase_pro_id[:23] + "-" + coinbase_pro_id[23:]
 
     return coinbase_pro_id

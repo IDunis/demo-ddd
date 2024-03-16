@@ -25,7 +25,9 @@ from trapilot.utils.utils import info_print
 
 
 class AuthConstructor(abc.ABC):
-    def __init__(self, keys_file: str, portfolio_name: str, exchange: str, needed_keys: list):
+    def __init__(
+        self, keys_file: str, portfolio_name: str, exchange: str, needed_keys: list
+    ):
         """
         Create an auth interface
         Args:
@@ -50,21 +52,34 @@ class AuthConstructor(abc.ABC):
                 keys_dict.pop(i)
             else:
                 # Append a description header if not present
-                example_str = json.dumps({'portfolio': {'API_KEY': '********************',
-                                                        'API_SECRET': '********************',
-                                                        f'{i}': False}}, indent=2)
+                example_str = json.dumps(
+                    {
+                        "portfolio": {
+                            "API_KEY": "********************",
+                            "API_SECRET": "********************",
+                            f"{i}": False,
+                        }
+                    },
+                    indent=2,
+                )
                 if error_message == "":
-                    error_message += f"Error while loading authentication. Required keys for this are missing: \n" \
-                                     f"Please add the \"{i}\" key to the user_data/keys.json file. For example: \n" \
-                                     f"{example_str}"
+                    error_message += (
+                        f"Error while loading authentication. Required keys for this are missing: \n"
+                        f'Please add the "{i}" key to the user_data/keys.json file. For example: \n'
+                        f"{example_str}"
+                    )
 
                 if i != "sandbox":
                     raise AuthError(error_message)
                 else:
-                    info_print(f"Please add the sandbox keys to your user_data/keys.json file. The use_sandbox setting will be "
-                               f"removed in the next update: \n"
-                               f"{example_str}")
+                    info_print(
+                        f"Please add the sandbox keys to your user_data/keys.json file. The use_sandbox setting will be "
+                        f"removed in the next update: \n"
+                        f"{example_str}"
+                    )
 
         if len(keys_dict.keys()) > 0:
-            info_print(f"Additional keys for Exchange: {self.exchange} Portfolio: {self.portfolio_name} will be"
-                       f" ignored.")
+            info_print(
+                f"Additional keys for Exchange: {self.exchange} Portfolio: {self.portfolio_name} will be"
+                f" ignored."
+            )

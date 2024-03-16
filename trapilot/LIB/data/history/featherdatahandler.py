@@ -4,11 +4,11 @@ from typing import Optional
 from pandas import DataFrame, read_feather, to_datetime
 
 from trapilot.LIB.configuration import TimeRange
-from trapilot.LIB.constants import DEFAULT_DATAFRAME_COLUMNS, DEFAULT_TRADES_COLUMNS
+from trapilot.LIB.constants import (DEFAULT_DATAFRAME_COLUMNS,
+                                    DEFAULT_TRADES_COLUMNS)
 from trapilot.LIB.enums import CandleType
 
 from .idatahandler import IDataHandler
-
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,8 @@ class FeatherDataHandler(IDataHandler):
     _columns = DEFAULT_DATAFRAME_COLUMNS
 
     def ohlcv_store(
-            self, pair: str, timeframe: str, data: DataFrame, candle_type: CandleType) -> None:
+        self, pair: str, timeframe: str, data: DataFrame, candle_type: CandleType
+    ) -> None:
         """
         Store data in json format "values".
             format looks as follows:
@@ -33,11 +34,16 @@ class FeatherDataHandler(IDataHandler):
         self.create_dir_if_needed(filename)
 
         data.reset_index(drop=True).loc[:, self._columns].to_feather(
-            filename, compression_level=9, compression='lz4')
+            filename, compression_level=9, compression="lz4"
+        )
 
-    def _ohlcv_load(self, pair: str, timeframe: str,
-                    timerange: Optional[TimeRange], candle_type: CandleType
-                    ) -> DataFrame:
+    def _ohlcv_load(
+        self,
+        pair: str,
+        timeframe: str,
+        timerange: Optional[TimeRange],
+        candle_type: CandleType,
+    ) -> DataFrame:
         """
         Internal method used to load data for one pair from disk.
         Implements the loading and conversion to a Pandas dataframe.
@@ -51,27 +57,36 @@ class FeatherDataHandler(IDataHandler):
         :return: DataFrame with ohlcv data, or empty DataFrame
         """
         filename = self._pair_data_filename(
-            self._datadir, pair, timeframe, candle_type=candle_type)
+            self._datadir, pair, timeframe, candle_type=candle_type
+        )
         if not filename.exists():
             # Fallback mode for 1M files
             filename = self._pair_data_filename(
-                self._datadir, pair, timeframe, candle_type=candle_type, no_timeframe_modify=True)
+                self._datadir,
+                pair,
+                timeframe,
+                candle_type=candle_type,
+                no_timeframe_modify=True,
+            )
             if not filename.exists():
                 return DataFrame(columns=self._columns)
 
         pairdata = read_feather(filename)
         pairdata.columns = self._columns
-        pairdata = pairdata.astype(dtype={'open': 'float', 'high': 'float',
-                                          'low': 'float', 'close': 'float', 'volume': 'float'})
-        pairdata['date'] = to_datetime(pairdata['date'], unit='ms', utc=True)
+        pairdata = pairdata.astype(
+            dtype={
+                "open": "float",
+                "high": "float",
+                "low": "float",
+                "close": "float",
+                "volume": "float",
+            }
+        )
+        pairdata["date"] = to_datetime(pairdata["date"], unit="ms", utc=True)
         return pairdata
 
     def ohlcv_append(
-        self,
-        pair: str,
-        timeframe: str,
-        data: DataFrame,
-        candle_type: CandleType
+        self, pair: str, timeframe: str, data: DataFrame, candle_type: CandleType
     ) -> None:
         """
         Append data to existing data structures
@@ -91,7 +106,9 @@ class FeatherDataHandler(IDataHandler):
         """
         filename = self._pair_trades_filename(self._datadir, pair)
         self.create_dir_if_needed(filename)
-        data.reset_index(drop=True).to_feather(filename, compression_level=9, compression='lz4')
+        data.reset_index(drop=True).to_feather(
+            filename, compression_level=9, compression="lz4"
+        )
 
     def trades_append(self, pair: str, data: DataFrame):
         """
@@ -102,7 +119,9 @@ class FeatherDataHandler(IDataHandler):
         """
         raise NotImplementedError()
 
-    def _trades_load(self, pair: str, timerange: Optional[TimeRange] = None) -> DataFrame:
+    def _trades_load(
+        self, pair: str, timerange: Optional[TimeRange] = None
+    ) -> DataFrame:
         """
         Load a pair from file, either .json.gz or .json
         # TODO: respect timerange ...

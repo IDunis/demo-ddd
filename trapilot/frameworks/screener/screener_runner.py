@@ -15,13 +15,16 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import datetime
-from datetime import timezone
-import time
-import runpy
 import os
-import __main__
+import runpy
 import threading
+import time
+from datetime import timezone
+
+import __main__
+
 from trapilot.utils.utils import info_print, trunc
 
 
@@ -29,16 +32,24 @@ class ScreenerRunner:
     def __init__(self, cronjob: str):
         try:
             from croniter import croniter
+
             self.croniter = croniter
         except ImportError:
-            raise ImportError("To run screeners locally, please \"pip install croniter\".")
+            raise ImportError(
+                'To run screeners locally, please "pip install croniter".'
+            )
         try:
             self.__main = __main__.__file__
         except AttributeError as e:
-            raise AttributeError(f"Please make a github issue for this error at "
-                                 f"https://github.com/trapilot-finance/trapilot/issues: \n{e}")
+            raise AttributeError(
+                f"Please make a github issue for this error at "
+                f"https://github.com/trapilot-finance/trapilot/issues: \n{e}"
+            )
 
-        self.croniter = self.croniter(cronjob, datetime.datetime.fromtimestamp(time.time()).astimezone(timezone.utc))
+        self.croniter = self.croniter(
+            cronjob,
+            datetime.datetime.fromtimestamp(time.time()).astimezone(timezone.utc),
+        )
 
         self.__stopped = False
 
@@ -50,8 +61,10 @@ class ScreenerRunner:
             # Sleep until the next
             next_run_datetime = self.croniter.get_next()
             next_run_in = next_run_datetime - time.time()
-            info_print(f"Starting screener...the next screener run will be started in {trunc(next_run_in, 2)} "
-                       f"seconds or at {datetime.datetime.fromtimestamp(next_run_datetime)}")
+            info_print(
+                f"Starting screener...the next screener run will be started in {trunc(next_run_in, 2)} "
+                f"seconds or at {datetime.datetime.fromtimestamp(next_run_datetime)}"
+            )
             time.sleep(next_run_in)
             if not self.__stopped:
                 # Start the screener in a different thread

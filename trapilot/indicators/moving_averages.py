@@ -97,12 +97,22 @@ def trima(data: Any, period: int = 50, use_series=False) -> Any:
     return pd.Series(trima) if use_series else trima
 
 
-def macd(data: Any, short_period: int = 12, long_period: int = 26, signal_period: int = 9, use_series=False) -> Any:
+def macd(
+    data: Any,
+    short_period: int = 12,
+    long_period: int = 26,
+    signal_period: int = 9,
+    use_series=False,
+) -> Any:
     if check_series(data):
         use_series = True
     data = convert_to_numpy(data)
-    macd, macd_signal, macd_histogram = ti.macd(data, short_period, long_period, signal_period)
+    macd, macd_signal, macd_histogram = ti.macd(
+        data, short_period, long_period, signal_period
+    )
     if use_series:
-        df = pd.DataFrame({'macd': macd, 'macd_signal': macd_signal, 'macd_histogram': macd_histogram})
+        df = pd.DataFrame(
+            {"macd": macd, "macd_signal": macd_signal, "macd_histogram": macd_histogram}
+        )
         return df
     return macd, macd_signal, macd_histogram

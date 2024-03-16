@@ -22,21 +22,19 @@ import alpaca_trade_api
 from binance.client import Client as BinanceClient
 
 from trapilot.deployment.exchange_data import Exchange
-from trapilot.deployment.ui import print_failure, show_spinner
-
-from trapilot.deployment.ui import confirm
+from trapilot.deployment.ui import confirm, print_failure, show_spinner
 
 
 def load_keys():
     try:
-        with open('user_data/keys.json', 'r') as file:
+        with open("user_data/keys.json", "r") as file:
             return json.load(file)
     except FileNotFoundError:
         return {}
 
 
 def write_keys(data):
-    with open('user_data/keys.json', 'w') as file:
+    with open("user_data/keys.json", "w") as file:
         json.dump(data, file, indent=4)
 
 
@@ -48,28 +46,35 @@ def add_key(exchange: Exchange, tld: str, key_name: str, data: dict):
 
     # change name until it's not already in our file
     if not key_name:
-        key_name = 'example-portfolio'
+        key_name = "example-portfolio"
     if key_name in keys:
-        key_name = key_name + '-1'
+        key_name = key_name + "-1"
     while key_name in keys:
-        base, num = key_name.rsplit('-', 1)
-        key_name = f'{base}-{int(num) + 1}'
+        base, num = key_name.rsplit("-", 1)
+        key_name = f"{base}-{int(num) + 1}"
 
     keys[key_name] = data  # this writes to saved_data
 
     key_is_valid = check_key(exchange, tld, data)
-    if key_is_valid or confirm('Would you like to save this key anyway?', default=False).unsafe_ask():
+    if (
+        key_is_valid
+        or confirm(
+            "Would you like to save this key anyway?", default=False
+        ).unsafe_ask()
+    ):
         write_keys(saved_data)
         return True
     return False
 
 
 def check_key(exchange: Exchange, tld: str, auth):
-    with show_spinner(f'Checking {exchange.display_name} API Key') as spinner:
+    with show_spinner(f"Checking {exchange.display_name} API Key") as spinner:
         try:
             exchange.test_func(auth, tld)
         except Exception as e:
-            spinner.fail(f'Failed to connect to {exchange.display_name}. {e}. Check that your keys are valid.')
+            spinner.fail(
+                f"Failed to connect to {exchange.display_name}. {e}. Check that your keys are valid."
+            )
             return False
-        spinner.ok(f'Checked {exchange.display_name} API Key')
+        spinner.ok(f"Checked {exchange.display_name} API Key")
         return True

@@ -19,9 +19,10 @@
 import json
 
 import requests
+
 from trapilot.utils.utils import info_print
 
-deployment_url = 'https://deploy.trapilot.finance'
+deployment_url = "https://deploy.trapilot.finance"
 
 
 # deployment_url = 'http://localhost:80'
@@ -38,12 +39,20 @@ class API:
         self.auth_data = self.exchange_token(token)
 
         try:
-            self.token = self.auth_data['idToken']
+            self.token = self.auth_data["idToken"]
         except (KeyError, TypeError):
-            raise KeyError("Failed to authenticate - run \"trapilot login\" again.")
-        self.user_id = self.auth_data['data']['user_id']
+            raise KeyError('Failed to authenticate - run "trapilot login" again.')
+        self.user_id = self.auth_data["data"]["user_id"]
 
-    def __request(self, type_: str, route: str, json_: dict = None, params: dict = None, file=None, data: dict = None):
+    def __request(
+        self,
+        type_: str,
+        route: str,
+        json_: dict = None,
+        params: dict = None,
+        file=None,
+        data: dict = None,
+    ):
         """
         Create a general request to the trapilot API services
 
@@ -56,21 +65,21 @@ class API:
             file: Optional file uploaded in bytes: file = {'file': open(file_path, 'rb')}
         """
         url = self.url
-        if url[-1] != '/' and route[0] != '/':
-            url += '/'
+        if url[-1] != "/" and route[0] != "/":
+            url += "/"
         url += route
 
         kwargs = {
-            'url': url,
-            'params': params,
-            'json': json_,
-            'files': file,
-            'data': data,
+            "url": url,
+            "params": params,
+            "json": json_,
+            "files": file,
+            "data": data,
         }
 
         # Add the token if we have it
         if self.token is not None:
-            kwargs['headers'] = {'token': self.token}
+            kwargs["headers"] = {"token": self.token}
 
         try:
             if type_ == "get":
@@ -82,7 +91,9 @@ class API:
             else:
                 raise LookupError("Request type is not implemented or does not exist.")
         except requests.exceptions.ConnectionError:
-            raise requests.exceptions.ConnectionError("Failed to connect to deployment service.")
+            raise requests.exceptions.ConnectionError(
+                "Failed to connect to deployment service."
+            )
 
         # Show info that the request was not authorized but still
         #  allow the process to continue
@@ -92,119 +103,166 @@ class API:
         try:
             return out.json()
         except ValueError:
-            print(f'Invalid Response: {out}')
+            print(f"Invalid Response: {out}")
             return None
 
     def exchange_token(self, token):
         """
         Get the JWT from the refresh token
         """
-        return self.__request('post', 'auth/token', data={'refreshToken': token})
+        return self.__request("post", "auth/token", data={"refreshToken": token})
 
     def get_details(self, project_id: str, model_id: str):
         """
         Get the details route
         """
-        return self.__request('post', 'model/details', data={'projectId': project_id, 'modelId': model_id})
+        return self.__request(
+            "post", "model/details", data={"projectId": project_id, "modelId": model_id}
+        )
 
     def get_status(self):
-        return self.__request('get', 'model/status')
+        return self.__request("get", "model/status")
 
     def list_projects(self):
-        return self.__request('get', 'project/list')
+        return self.__request("get", "project/list")
 
     def get_plans(self, type_: str):
         """
         Args:
             type_: Can be 'backtesting' or 'live'
         """
-        return self.__request('post', 'project/plans', data={'type': type_})
+        return self.__request("post", "project/plans", data={"type": type_})
 
     def create_project(self, name: str, description: str):
-        return self.__request('post', 'project/create', data={'name': name,
-                                                              'description': description})
+        return self.__request(
+            "post", "project/create", data={"name": name, "description": description}
+        )
 
-    def deploy(self, file_path: str, model_id: str, version_description: str,
-               python_version: float, type_: str, plan: str, schedule: str = None,
-               project_id: str = None):
-        file_path = r'{}'.format(file_path)
-        file = {'model': open(file_path, 'rb')}
-        return self.__request('post', 'model/deploy', file=file, data={'pythonVersion': python_version,
-                                                                       'versionDescription': version_description,
-                                                                       'projectId': project_id or self.user_id,
-                                                                       'modelId': model_id,
-                                                                       'type': type_,
-                                                                       'plan': plan,
-                                                                       'schedule': schedule})
+    def deploy(
+        self,
+        file_path: str,
+        model_id: str,
+        version_description: str,
+        python_version: float,
+        type_: str,
+        plan: str,
+        schedule: str = None,
+        project_id: str = None,
+    ):
+        file_path = r"{}".format(file_path)
+        file = {"model": open(file_path, "rb")}
+        return self.__request(
+            "post",
+            "model/deploy",
+            file=file,
+            data={
+                "pythonVersion": python_version,
+                "versionDescription": version_description,
+                "projectId": project_id or self.user_id,
+                "modelId": model_id,
+                "type": type_,
+                "plan": plan,
+                "schedule": schedule,
+            },
+        )
 
-    def backtest_deployed(self, model_id: str, args: dict, version_id: str, backtest_description: str):
-        return self.__request('post', 'model/backtestUploadedModel',
-                              json_={'projectId': self.user_id,
-                                     'modelId': model_id,
-                                     'versionId': version_id,
-                                     'backtestArgs': args,
-                                     'backtestDescription': backtest_description})
+    def backtest_deployed(
+        self, model_id: str, args: dict, version_id: str, backtest_description: str
+    ):
+        return self.__request(
+            "post",
+            "model/backtestUploadedModel",
+            json_={
+                "projectId": self.user_id,
+                "modelId": model_id,
+                "versionId": version_id,
+                "backtestArgs": args,
+                "backtestDescription": backtest_description,
+            },
+        )
 
-    def backtest(self, file_path: str, model_id: str, args: dict, plan: str,
-                 type_: str, python_version: float, backtest_description: str = ""):
-        file_path = r'{}'.format(file_path)
-        file = {'model': open(file_path, 'rb')}
-        return self.__request('post', 'model/backtest', file=file,
-                              data={'pythonVersion': str(python_version),
-                                    'projectId': self.user_id,
-                                    'modelId': model_id,
-                                    'type': type_,
-                                    'backtestArgs': json.dumps(args),
-                                    'backtestDescription': backtest_description,
-                                    'plan': plan,
-                                    })
+    def backtest(
+        self,
+        file_path: str,
+        model_id: str,
+        args: dict,
+        plan: str,
+        type_: str,
+        python_version: float,
+        backtest_description: str = "",
+    ):
+        file_path = r"{}".format(file_path)
+        file = {"model": open(file_path, "rb")}
+        return self.__request(
+            "post",
+            "model/backtest",
+            file=file,
+            data={
+                "pythonVersion": str(python_version),
+                "projectId": self.user_id,
+                "modelId": model_id,
+                "type": type_,
+                "backtestArgs": json.dumps(args),
+                "backtestDescription": backtest_description,
+                "plan": plan,
+            },
+        )
 
     def create_model(self, project_id: str, type_: str, name: str, description: str):
-        model = self.__request('post', 'model/create-model',
-                               data={
-                                   'projectId': project_id or self.user_id,
-                                   'type': type_,
-                                   'name': name,
-                                   'description': description
-                               })
-        model['id'] = model['modelId']
-        model['projectId'] = project_id or self.user_id
+        model = self.__request(
+            "post",
+            "model/create-model",
+            data={
+                "projectId": project_id or self.user_id,
+                "type": type_,
+                "name": name,
+                "description": description,
+            },
+        )
+        model["id"] = model["modelId"]
+        model["projectId"] = project_id or self.user_id
         return model
 
     def list_models(self, project_id: str = None):
-        models = self.__request('post', 'model/list',
-                                data={
-                                    'projectId': project_id or self.user_id
-                                })
+        models = self.__request(
+            "post", "model/list", data={"projectId": project_id or self.user_id}
+        )
         for model in models:
-            model['modelId'] = model['id']
-            model['projectId'] = project_id or self.user_id
+            model["modelId"] = model["id"]
+            model["projectId"] = project_id or self.user_id
         return models
 
     def list_all_models(self):
         models = self.list_models(self.user_id)
         for team in self.list_teams():
             # TODO nah
-            models += [{'team': team, **model}
-                       for model in self.list_models(team['id'])]
+            models += [
+                {"team": team, **model} for model in self.list_models(team["id"])
+            ]
         return models
 
     def get_starter_models(self):
-        return self.__request('get', 'model/starter-models')
+        return self.__request("get", "model/starter-models")
 
     def list_teams(self):
-        return self.__request('get', 'project/teams')
+        return self.__request("get", "project/teams")
 
     def generate_keys(self, project_id: str, name: str, autogenerated: bool = True):
-        return self.__request('post', 'project/generate-project-token',
-                              data={'projectId': project_id,
-                                    'name': name,
-                                    'autogenerated': autogenerated})
+        return self.__request(
+            "post",
+            "project/generate-project-token",
+            data={
+                "projectId": project_id,
+                "name": name,
+                "autogenerated": autogenerated,
+            },
+        )
 
 
-if __name__ == '__main__':
-    from trapilot.deployment import new_cli as cli
+if __name__ == "__main__":
     import code
+
+    from trapilot.deployment import new_cli as cli
 
     api = cli.ensure_login()
     code.interact(local=dict(globals(), **locals()))  # drop to interactive

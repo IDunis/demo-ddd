@@ -19,11 +19,14 @@
 import typing
 
 from trapilot.exchanges.futures.futures_exchange import FuturesExchange
-from trapilot.exchanges.futures.futures_strategy_logger import FuturesStrategyLogger
-from trapilot.exchanges.interfaces.futures_exchange_interface import FuturesExchangeInterface
-from trapilot.exchanges.interfaces.paper_trade.backtest_result import BacktestResult
-from trapilot.frameworks.strategy.strategy_base import StrategyBase
+from trapilot.exchanges.futures.futures_strategy_logger import \
+    FuturesStrategyLogger
+from trapilot.exchanges.interfaces.futures_exchange_interface import \
+    FuturesExchangeInterface
+from trapilot.exchanges.interfaces.paper_trade.backtest_result import \
+    BacktestResult
 from trapilot.frameworks.strategy.strategy import Strategy
+from trapilot.frameworks.strategy.strategy_base import StrategyBase
 
 
 class FuturesStrategy(Strategy):

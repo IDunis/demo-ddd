@@ -14,21 +14,20 @@ from requests.exceptions import RequestException
 from trapilot.LIB.constants import SUPPORTED_FIAT
 from trapilot.LIB.mixins.logging_mixin import LoggingMixin
 
-
 logger = logging.getLogger(__name__)
 
 
 # Manually map symbol to ID for some common coins
 # with duplicate coingecko entries
 coingecko_mapping = {
-    'eth': 'ethereum',
-    'bnb': 'binancecoin',
-    'sol': 'solana',
-    'usdt': 'tether',
-    'busd': 'binance-usd',
-    'tusd': 'true-usd',
-    'usdc': 'usd-coin',
-    'btc': 'bitcoin'
+    "eth": "ethereum",
+    "bnb": "binancecoin",
+    "sol": "solana",
+    "usdt": "tether",
+    "busd": "binance-usd",
+    "tusd": "true-usd",
+    "usdc": "usd-coin",
+    "btc": "bitcoin",
 }
 
 
@@ -38,6 +37,7 @@ class CryptoToFiatConverter(LoggingMixin):
     This object contains a list of pair Crypto, FIAT
     This object is also a Singleton
     """
+
     __instance = None
     _coingekko: CoinGeckoAPI = None
     _coinlistings: List[Dict] = []
@@ -71,7 +71,8 @@ class CryptoToFiatConverter(LoggingMixin):
         except RequestException as request_exception:
             if "429" in str(request_exception):
                 logger.warning(
-                    "Too many requests for CoinGecko API, backing off and trying again later.")
+                    "Too many requests for CoinGecko API, backing off and trying again later."
+                )
                 # Set backoff timestamp to 60 seconds in the future
                 self._backoff = datetime.now().timestamp() + 60
                 return
@@ -81,9 +82,10 @@ class CryptoToFiatConverter(LoggingMixin):
                     request_exception
                 )
             )
-        except (Exception) as exception:
+        except Exception as exception:
             logger.error(
-                f"Could not load FIAT Cryptocurrency map for the following problem: {exception}")
+                f"Could not load FIAT Cryptocurrency map for the following problem: {exception}"
+            )
 
     def _get_gekko_id(self, crypto_symbol):
         if not self._coinlistings:
@@ -94,20 +96,26 @@ class CryptoToFiatConverter(LoggingMixin):
                     return None
             else:
                 return None
-        found = [x for x in self._coinlistings if x['symbol'].lower() == crypto_symbol]
+        found = [x for x in self._coinlistings if x["symbol"].lower() == crypto_symbol]
 
         if crypto_symbol in coingecko_mapping.keys():
-            found = [x for x in self._coinlistings if x['id'] == coingecko_mapping[crypto_symbol]]
+            found = [
+                x
+                for x in self._coinlistings
+                if x["id"] == coingecko_mapping[crypto_symbol]
+            ]
 
         if len(found) == 1:
-            return found[0]['id']
+            return found[0]["id"]
 
         if len(found) > 0:
             # Wrong!
             logger.warning(f"Found multiple mappings in CoinGecko for {crypto_symbol}.")
             return None
 
-    def convert_amount(self, crypto_amount: float, crypto_symbol: str, fiat_symbol: str) -> float:
+    def convert_amount(
+        self, crypto_amount: float, crypto_symbol: str, fiat_symbol: str
+    ) -> float:
         """
         Convert an amount of crypto-currency to fiat
         :param crypto_amount: amount of crypto-currency to convert
@@ -131,25 +139,24 @@ class CryptoToFiatConverter(LoggingMixin):
         fiat_symbol = fiat_symbol.lower()
         inverse = False
 
-        if crypto_symbol == 'usd':
+        if crypto_symbol == "usd":
             # usd corresponds to "uniswap-state-dollar" for coingecko.
             # We'll therefore need to "swap" the currencies
             logger.info(f"reversing Rates {crypto_symbol}, {fiat_symbol}")
             crypto_symbol = fiat_symbol
-            fiat_symbol = 'usd'
+            fiat_symbol = "usd"
             inverse = True
 
         symbol = f"{crypto_symbol}/{fiat_symbol}"
         # Check if the fiat conversion you want is supported
         if not self._is_supported_fiat(fiat=fiat_symbol):
-            raise ValueError(f'The fiat {fiat_symbol} is not supported.')
+            raise ValueError(f"The fiat {fiat_symbol} is not supported.")
 
         price = self._pair_price.get(symbol, None)
 
         if not price:
             price = self._find_price(
-                crypto_symbol=crypto_symbol,
-                fiat_symbol=fiat_symbol
+                crypto_symbol=crypto_symbol, fiat_symbol=fiat_symbol
             )
             if inverse and price != 0.0:
                 price = 1 / price
@@ -175,7 +182,7 @@ class CryptoToFiatConverter(LoggingMixin):
         """
         # Check if the fiat conversion you want is supported
         if not self._is_supported_fiat(fiat=fiat_symbol):
-            raise ValueError(f'The fiat {fiat_symbol} is not supported.')
+            raise ValueError(f"The fiat {fiat_symbol} is not supported.")
 
         # No need to convert if both crypto and fiat are the same
         if crypto_symbol == fiat_symbol:
@@ -187,15 +194,15 @@ class CryptoToFiatConverter(LoggingMixin):
             # return 0 for unsupported stake currencies (fiat-convert should not break the bot)
             self.log_once(
                 f"unsupported crypto-symbol {crypto_symbol.upper()} - returning 0.0",
-                logger.warning)
+                logger.warning,
+            )
             return 0.0
 
         try:
             return float(
-                self._coingekko.get_price(
-                    ids=_gekko_id,
-                    vs_currencies=fiat_symbol
-                )[_gekko_id][fiat_symbol]
+                self._coingekko.get_price(ids=_gekko_id, vs_currencies=fiat_symbol)[
+                    _gekko_id
+                ][fiat_symbol]
             )
         except Exception as exception:
             logger.error("Error in _find_price: %s", exception)

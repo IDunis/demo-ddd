@@ -15,6 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import abc
 import collections
 import threading
@@ -27,7 +28,9 @@ from trapilot.utils.utils import info_print
 
 
 class Websocket(ABCExchangeWebsocket, abc.ABC):
-    def __init__(self, symbol, stream, log, log_message, url, pre_event_callback, kwargs):
+    def __init__(
+        self, symbol, stream, log, log_message, url, pre_event_callback, kwargs
+    ):
         self.symbol = symbol
         self.stream = stream
         self.kwargs = kwargs
@@ -37,10 +40,10 @@ class Websocket(ABCExchangeWebsocket, abc.ABC):
             self.log = True
             self.file_path = log
             try:
-                self.__file = open(log, 'x+')
+                self.__file = open(log, "x+")
                 self.__file.write(log_message)
             except FileExistsError:
-                self.__file = open(log, 'a')
+                self.__file = open(log, "a")
         else:
             self.log = False
 
@@ -57,23 +60,31 @@ class Websocket(ABCExchangeWebsocket, abc.ABC):
 
         # Reload preferences
         self.preferences = trapilot.utils.load_user_preferences()
-        buffer_size = self.preferences['settings']['websocket_buffer_size']
+        buffer_size = self.preferences["settings"]["websocket_buffer_size"]
         self.ticker_feed = collections.deque(maxlen=buffer_size)
         self.time_feed = collections.deque(maxlen=buffer_size)
 
         self.ws = None
 
-    def start_websocket(self, on_open: callable, on_message: callable, on_error: callable, on_close: callable,
-                        target: callable):
+    def start_websocket(
+        self,
+        on_open: callable,
+        on_message: callable,
+        on_error: callable,
+        on_close: callable,
+        target: callable,
+    ):
         """
         Restart websocket if it was asked to stop.
         """
         if self.ws is None:
-            self.ws = websocket.WebSocketApp(self.url,
-                                             on_open=on_open,
-                                             on_message=on_message,
-                                             on_error=on_error,
-                                             on_close=on_close)
+            self.ws = websocket.WebSocketApp(
+                self.url,
+                on_open=on_open,
+                on_message=on_message,
+                on_error=on_error,
+                on_close=on_close,
+            )
             self.thread = threading.Thread(target=target)
             self.thread.start()
         else:
@@ -89,9 +100,10 @@ class Websocket(ABCExchangeWebsocket, abc.ABC):
         if self.log:
             if self.message_count % 100 == 0:
                 self.__file.close()
-                self.__file = open(self.file_path, 'a')
+                self.__file = open(self.file_path, "a")
             line = logging_callback(message)
             self.__file.write(line)
+
     """
     The are access functions
     """
@@ -144,7 +156,13 @@ class Websocket(ABCExchangeWebsocket, abc.ABC):
         if self.thread is not None and self.thread.is_alive():
             self.ws.close()
         else:
-            print("Websocket for " + self.symbol + '@' + self.stream + " is already closed")
+            print(
+                "Websocket for "
+                + self.symbol
+                + "@"
+                + self.stream
+                + " is already closed"
+            )
 
     @abc.abstractmethod
     def on_open(self, ws):

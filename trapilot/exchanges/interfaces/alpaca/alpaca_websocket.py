@@ -26,48 +26,57 @@ import msgpack
 from websocket import create_connection
 
 import trapilot
-from trapilot.utils.utils import info_print
 from trapilot.exchanges.abc_exchange_websocket import ABCExchangeWebsocket
 from trapilot.exchanges.auth.utils import load_auth
-from trapilot.exchanges.interfaces.alpaca.alpaca_websocket_utils import parse_alpaca_timestamp, switch_type
+from trapilot.exchanges.interfaces.alpaca.alpaca_websocket_utils import (
+    parse_alpaca_timestamp, switch_type)
+from trapilot.utils.utils import info_print
 
 
 def subscribe(ws, channel, symbol):
     ws.send(
-        msgpack.packb({
-            'action': 'subscribe',
-            channel: tuple([symbol]),
-        })
+        msgpack.packb(
+            {
+                "action": "subscribe",
+                channel: tuple([symbol]),
+            }
+        )
     )
 
 
 def unsubscribe(ws, channel):
     ws.send(
-        msgpack.packb({
-            'action': 'unsubscribe',
-            channel: (),
-        })
+        msgpack.packb(
+            {
+                "action": "unsubscribe",
+                channel: (),
+            }
+        )
     )
 
 
 def create_ticker_connection(symbol, url, channel):
-    ws = create_connection(url, sslopt={"cert_reqs": ssl.CERT_NONE}, header={'Content-Type': 'application/msgpack'})
-    _, auth = load_auth('alpaca')
+    ws = create_connection(
+        url,
+        sslopt={"cert_reqs": ssl.CERT_NONE},
+        header={"Content-Type": "application/msgpack"},
+    )
+    _, auth = load_auth("alpaca")
 
-    ws.send(msgpack.packb({
-        'action': 'auth',
-        'key': auth['API_KEY'],
-        'secret': auth['API_SECRET']
-    }))
+    ws.send(
+        msgpack.packb(
+            {"action": "auth", "key": auth["API_KEY"], "secret": auth["API_SECRET"]}
+        )
+    )
     # Check if the response is valid
     response = msgpack.unpackb(ws.recv())
-    if response[0]['msg'] != 'connected':
+    if response[0]["msg"] != "connected":
         info_print("Connection failed.")
 
     subscribe(ws, channel, symbol)
     response = msgpack.unpackb(ws.recv())
-    if response[0]['msg'] != 'authenticated':
-        if response[0]['msg'] == 'connection limit exceeded':
+    if response[0]["msg"] != "authenticated":
+        if response[0]["msg"] == "connection limit exceeded":
             # Unsubscribe and resubscribe
             unsubscribe(ws, channel)
             print(msgpack.unpackb(ws.recv()))
@@ -89,9 +98,16 @@ def create_ticker_connection(symbol, url, channel):
 
 
 class Tickers(ABCExchangeWebsocket):
-    def __init__(self, symbol, stream, log=None,
-                 pre_event_callback=None, initially_stopped=False,
-                 websocket_url="wss://stream.data.alpaca.markets/v2/iex/", **kwargs):
+    def __init__(
+        self,
+        symbol,
+        stream,
+        log=None,
+        pre_event_callback=None,
+        initially_stopped=False,
+        websocket_url="wss://stream.data.alpaca.markets/v2/iex/",
+        **kwargs
+    ):
         """
         Create and initialize the ticker
         Args:
@@ -103,7 +119,9 @@ class Tickers(ABCExchangeWebsocket):
         """
         self.__symbol = symbol
         self.__stream = stream
-        self.__logging_callback, self.__interface_callback, log_message = switch_type(stream)
+        self.__logging_callback, self.__interface_callback, log_message = switch_type(
+            stream
+        )
         self.__kwargs = kwargs
 
         # Initialize log file
@@ -111,10 +129,10 @@ class Tickers(ABCExchangeWebsocket):
             self.__log = True
             self.__filePath = log
             try:
-                self.__file = open(log, 'x+')
+                self.__file = open(log, "x+")
                 self.__file.write(log_message)
             except FileExistsError:
-                self.__file = open(log, 'a')
+                self.__file = open(log, "a")
         else:
             self.__log = False
 
@@ -166,10 +184,10 @@ class Tickers(ABCExchangeWebsocket):
                 received = msgpack.unpackb(received)[0]  # type: dict
                 # Modify time to use epoch
 
-                if 't' in received:
-                    received['t'] = parse_alpaca_timestamp(received['t'])
-                    recent_time = received['t']
-                elif 'code' in received:
+                if "t" in received:
+                    received["t"] = parse_alpaca_timestamp(received["t"])
+                    recent_time = received["t"]
+                elif "code" in received:
                     continue
                 else:
                     recent_time = time.time()
@@ -196,12 +214,19 @@ class Tickers(ABCExchangeWebsocket):
                 if persist_connected:
                     pass
                 else:
-                    print("Error reading ticker websocket for " + self.__symbol + " on " +
-                          self.__stream + ": attempting to re-initialize")
+                    print(
+                        "Error reading ticker websocket for "
+                        + self.__symbol
+                        + " on "
+                        + self.__stream
+                        + ": attempting to re-initialize"
+                    )
                     # Give a delay so this doesn't eat up from the main thread if it takes many tries to initialize
                     time.sleep(2)
                     self.ws.close()
-                    self.ws = create_ticker_connection(self.__symbol, self.URL, self.__stream)
+                    self.ws = create_ticker_connection(
+                        self.__symbol, self.URL, self.__stream
+                    )
                     # Update response
                     self.__response = self.ws.recv()
 
@@ -251,7 +276,13 @@ class Tickers(ABCExchangeWebsocket):
         if self.ws.connected:
             self.ws.close()
         else:
-            print("Websocket for " + self.__symbol + ' on channel ' + self.__stream + " is already closed")
+            print(
+                "Websocket for "
+                + self.__symbol
+                + " on channel "
+                + self.__stream
+                + " is already closed"
+            )
 
     """ Required in manager """
 

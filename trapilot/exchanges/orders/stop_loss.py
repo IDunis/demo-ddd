@@ -15,6 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 from trapilot.exchanges.orders.order import Order
 
 
@@ -50,7 +51,9 @@ class StopLossOrder(Order):
 
         return_string = self.add_new_line(return_string, "Stop Loss Order Parameters: ")
 
-        return_string = self.add_new_line(return_string, "Time In Force: ", newline=False)
+        return_string = self.add_new_line(
+            return_string, "Time In Force: ", newline=False
+        )
         return_string = self.add_new_line(return_string, self.get_time_in_force())
 
         return_string = self.add_new_line(return_string, "Price: ", newline=False)
@@ -60,4 +63,4 @@ class StopLossOrder(Order):
 
     # override this here to homogenize these strings
     def get_type(self) -> str:
-        return 'stop_loss'
+        return "stop_loss"

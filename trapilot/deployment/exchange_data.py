@@ -17,6 +17,7 @@
 """
 
 from typing import Dict, List
+
 import alpaca_trade_api
 from binance.client import Client as BinanceClient
 from questionary import Choice
@@ -34,43 +35,75 @@ class Exchange:
     display_name: str
     key_info: Dict[str, str]
 
-    def __init__(self, name: str, symbols: List[str], test_func, key_info: List[str] = None, python_class: str = None,
-                 tlds: List[str] = None, display_name: str = None, currency: str = 'USD'):
+    def __init__(
+        self,
+        name: str,
+        symbols: List[str],
+        test_func,
+        key_info: List[str] = None,
+        python_class: str = None,
+        tlds: List[str] = None,
+        display_name: str = None,
+        currency: str = "USD",
+    ):
         self.name = name
         self.symbols = symbols
         self.test_func = test_func
-        self.key_info = {k.replace('_', ' ').title().replace('Api', 'API'): k  # autogen key instructions
-                         for k in key_info or ['API_KEY', 'API_SECRET']}  # default to just key/secret
-        self.python_class = python_class or name.replace('_', ' ').title().replace(' ', '')  # snake case to pascalcase
+        self.key_info = {
+            k.replace("_", " ")
+            .title()
+            .replace("Api", "API"): k  # autogen key instructions
+            for k in key_info or ["API_KEY", "API_SECRET"]
+        }  # default to just key/secret
+        self.python_class = python_class or name.replace("_", " ").title().replace(
+            " ", ""
+        )  # snake case to pascalcase
         self.tlds = tlds or []
-        self.display_name = display_name or name.replace('_', ' ').title()  # prettify
+        self.display_name = display_name or name.replace("_", " ").title()  # prettify
         self.currency = currency
 
 
 EXCHANGES = [
-    Exchange('alpaca', ['MSFT', 'GME', 'AAPL'],
-             lambda auth, tld: alpaca_trade_api.REST(key_id=auth['API_KEY'],
-                                                     secret_key=auth['API_SECRET'],
-                                                     base_url=(alpaca_api.live_url, alpaca_api.paper_url)[auth['sandbox']]
-                                                     ).get_account()),
-
-    Exchange('binance', ['BTC-USDT', 'ETH-USDT', 'SOL-USDT'],
-             lambda auth, tld: BinanceClient(api_key=auth['API_KEY'], api_secret=auth['API_SECRET'],
-                                             tld=tld, testnet=auth['sandbox']).get_account(),
-             tlds=['com', 'us'], currency='USDT'),
-
-    Exchange('ssi', ['HPG'],
-             lambda auth, tld: ssi_api.REST(key_id=auth['API_KEY'],
-                                                     secret_key=auth['API_SECRET'],
-                                                     base_url=(ssi_api.live_url, ssi_api.paper_url)[auth['sandbox']]
-                                                     ).get_account()),
+    Exchange(
+        "alpaca",
+        ["MSFT", "GME", "AAPL"],
+        lambda auth, tld: alpaca_trade_api.REST(
+            key_id=auth["API_KEY"],
+            secret_key=auth["API_SECRET"],
+            base_url=(alpaca_api.live_url, alpaca_api.paper_url)[auth["sandbox"]],
+        ).get_account(),
+    ),
+    Exchange(
+        "binance",
+        ["BTC-USDT", "ETH-USDT", "SOL-USDT"],
+        lambda auth, tld: BinanceClient(
+            api_key=auth["API_KEY"],
+            api_secret=auth["API_SECRET"],
+            tld=tld,
+            testnet=auth["sandbox"],
+        ).get_account(),
+        tlds=["com", "us"],
+        currency="USDT",
+    ),
+    Exchange(
+        "ssi",
+        ["HPG"],
+        lambda auth, tld: ssi_api.REST(
+            key_id=auth["API_KEY"],
+            secret_key=auth["API_SECRET"],
+            base_url=(ssi_api.live_url, ssi_api.paper_url)[auth["sandbox"]],
+        ).get_account(),
+    ),
 ]
 
-EXCHANGE_CHOICES_NO_KEYLESS = [Choice(exchange.display_name, exchange)
-                               for exchange in EXCHANGES]
+EXCHANGE_CHOICES_NO_KEYLESS = [
+    Choice(exchange.display_name, exchange) for exchange in EXCHANGES
+]
 EXCHANGE_CHOICES = EXCHANGE_CHOICES_NO_KEYLESS[:]
-EXCHANGE_CHOICES.append(Choice('Keyless/No Exchange', False))
+EXCHANGE_CHOICES.append(Choice("Keyless/No Exchange", False))
 
 
 def exc_display_name(name):
-    return next((exchange.display_name for exchange in EXCHANGES if name == exchange.name), name)
+    return next(
+        (exchange.display_name for exchange in EXCHANGES if name == exchange.name), name
+    )

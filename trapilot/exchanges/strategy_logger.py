@@ -16,14 +16,16 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import pandas
-from typing import Union
 from datetime import datetime as dt
+from typing import Union
+
+import pandas
 
 import trapilot
-from trapilot.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
-from trapilot.exchanges.orders.market_order import MarketOrder
+from trapilot.exchanges.interfaces.abc_exchange_interface import \
+    ABCExchangeInterface
 from trapilot.exchanges.orders.limit_order import LimitOrder
+from trapilot.exchanges.orders.market_order import MarketOrder
 from trapilot.utils.utils import AttributeDict
 
 
@@ -61,26 +63,40 @@ class StrategyLogger(ABCExchangeInterface):
         """
         return self.interface.get_products()
 
-    def get_product_history(self, symbol: str, epoch_start: float,
-                            epoch_stop: float, resolution: Union[str, int]) -> pandas.DataFrame:
+    def get_product_history(
+        self,
+        symbol: str,
+        epoch_start: float,
+        epoch_stop: float,
+        resolution: Union[str, int],
+    ) -> pandas.DataFrame:
         """
         No logging implemented
         """
-        return self.interface.get_product_history(symbol, epoch_start, epoch_stop, resolution)
+        return self.interface.get_product_history(
+            symbol, epoch_start, epoch_stop, resolution
+        )
 
-    def history(self,
-                symbol: str,
-                to: Union[str, int] = 200,
-                resolution: Union[str, int] = '1d',
-                start_date: Union[str, dt, float] = None,
-                end_date: Union[str, dt, float] = None,
-                return_as: str = 'df') -> pandas.DataFrame:
+    def history(
+        self,
+        symbol: str,
+        to: Union[str, int] = 200,
+        resolution: Union[str, int] = "1d",
+        start_date: Union[str, dt, float] = None,
+        end_date: Union[str, dt, float] = None,
+        return_as: str = "df",
+    ) -> pandas.DataFrame:
         """
         No logging implemented
         """
-        return self.interface.history(symbol, to=to,
-                                      resolution=resolution, start_date=start_date,
-                                      end_date=end_date, return_as=return_as)
+        return self.interface.history(
+            symbol,
+            to=to,
+            resolution=resolution,
+            start_date=start_date,
+            end_date=end_date,
+            return_as=return_as,
+        )
 
     # no logging for these on platform yet
     def take_profit_order(self, symbol: str, price: float, size: float) -> LimitOrder:
@@ -95,30 +111,38 @@ class StrategyLogger(ABCExchangeInterface):
 
         # Record this market order along with the arguments
         try:
-            trapilot.reporter.log_market_order({
-                'symbol': symbol,
-                'exchange': self.__type,
-                'size': size,
-                'id': out.get_id(),
-                'side': side
-            }, self.__type)
+            trapilot.reporter.log_market_order(
+                {
+                    "symbol": symbol,
+                    "exchange": self.__type,
+                    "size": size,
+                    "id": out.get_id(),
+                    "side": side,
+                },
+                self.__type,
+            )
         except Exception:
             pass
         return out
 
-    def limit_order(self, symbol: str, side: str, price: float, size: float) -> LimitOrder:
+    def limit_order(
+        self, symbol: str, side: str, price: float, size: float
+    ) -> LimitOrder:
         out = self.interface.limit_order(symbol, side, price, size)
 
         # Record limit order along with the arguments
         try:
-            trapilot.reporter.log_limit_order({
-                'symbol': symbol,
-                'exchange': self.__type,
-                'size': size,
-                'id': out.get_id(),
-                'side': side,
-                'price': price
-            }, self.__type)
+            trapilot.reporter.log_limit_order(
+                {
+                    "symbol": symbol,
+                    "exchange": self.__type,
+                    "size": size,
+                    "id": out.get_id(),
+                    "side": side,
+                    "price": price,
+                },
+                self.__type,
+            )
         except Exception:
             pass
         return out
@@ -143,10 +167,9 @@ class StrategyLogger(ABCExchangeInterface):
 
         # Record the arguments
         try:
-            trapilot.reporter.update_order({
-                'id': order_id,
-                'status': out['status']
-            }, self.__type)
+            trapilot.reporter.update_order(
+                {"id": order_id, "status": out["status"]}, self.__type
+            )
         except Exception:
             pass
         return out

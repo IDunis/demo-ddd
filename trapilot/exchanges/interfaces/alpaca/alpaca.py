@@ -18,17 +18,22 @@
 
 import alpaca_trade_api
 
-from trapilot.exchanges.exchange import Exchange
 from trapilot.exchanges.auth.auth_constructor import AuthConstructor
-from trapilot.exchanges.interfaces.alpaca.alpaca_api import create_alpaca_client
+from trapilot.exchanges.exchange import Exchange
+from trapilot.exchanges.interfaces.alpaca.alpaca_api import \
+    create_alpaca_client
 
 
 class Alpaca(Exchange):
-    def __init__(self, portfolio_name=None, keys_path="user_data/keys.json", settings_path=None):
+    def __init__(
+        self, portfolio_name=None, keys_path="user_data/keys.json", settings_path=None
+    ):
         Exchange.__init__(self, "alpaca", portfolio_name, settings_path)
 
         # Load the auth from the keys file
-        auth = AuthConstructor(keys_path, portfolio_name, 'alpaca', ['API_KEY', 'API_SECRET', 'sandbox'])
+        auth = AuthConstructor(
+            keys_path, portfolio_name, "alpaca", ["API_KEY", "API_SECRET", "sandbox"]
+        )
 
         sandbox = super().evaluate_sandbox(auth)
 

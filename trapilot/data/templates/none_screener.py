@@ -1,4 +1,4 @@
-from trapilot import Screener, EXCHANGE_CLASS, ScreenerState
+from trapilot import EXCHANGE_CLASS, Screener, ScreenerState
 
 
 def evaluator(symbol, state: ScreenerState):
@@ -9,8 +9,10 @@ def formatter(results, state: ScreenerState):
     pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exchange = EXCHANGE_CLASS()  # initialize our exchange
-    screener = Screener(exchange, evaluator, symbols=[], formatter=formatter)  # find oversold
+    screener = Screener(
+        exchange, evaluator, symbols=[], formatter=formatter
+    )  # find oversold
 
     print(screener.formatted_results)

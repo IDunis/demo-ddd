@@ -18,21 +18,20 @@
 """
 
 import abc
-from typing import Union, Optional, List
+from typing import List, Optional, Union
 
 import trapilot.utils.utils as utils
-from trapilot.enums import MarginType, HedgeMode, PositionMode, OrderType, Side, TimeInForce, ContractType
-from trapilot.exchanges.interfaces.abc_base_exchange_interface import ABCBaseExchangeInterface
+from trapilot.enums import (ContractType, HedgeMode, MarginType, OrderType,
+                            PositionMode, Side, TimeInForce)
+from trapilot.exchanges.interfaces.abc_base_exchange_interface import \
+    ABCBaseExchangeInterface
 from trapilot.exchanges.orders.futures.futures_order import FuturesOrder
 
 
 class FuturesExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
     exchange_name: str
 
-    def __init__(self,
-                 exchange_name,
-                 authenticated_api,
-                 preferences_path=None):
+    def __init__(self, exchange_name, authenticated_api, preferences_path=None):
         self.exchange_name = exchange_name
         self.calls = authenticated_api
 
@@ -41,7 +40,7 @@ class FuturesExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         self.exchange_properties = None
         self.available_currencies = {}
 
-        if self.user_preferences['settings']['test_connectivity_on_auth']:
+        if self.user_preferences["settings"]["test_connectivity_on_auth"]:
             self.init_exchange()
 
     @staticmethod
@@ -78,44 +77,52 @@ class FuturesExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def market_order(self,
-                     symbol: str,
-                     side: Side,
-                     size: float,
-                     position: PositionMode = None,
-                     reduce_only: bool = None) -> FuturesOrder:
+    def market_order(
+        self,
+        symbol: str,
+        side: Side,
+        size: float,
+        position: PositionMode = None,
+        reduce_only: bool = None,
+    ) -> FuturesOrder:
         """Places a market order"""
         pass
 
     @abc.abstractmethod
-    def limit_order(self,
-                    symbol: str,
-                    side: Side,
-                    price: float,
-                    size: float,
-                    position: PositionMode = None,
-                    reduce_only: bool = None,
-                    time_in_force: TimeInForce = None) -> FuturesOrder:
+    def limit_order(
+        self,
+        symbol: str,
+        side: Side,
+        price: float,
+        size: float,
+        position: PositionMode = None,
+        reduce_only: bool = None,
+        time_in_force: TimeInForce = None,
+    ) -> FuturesOrder:
         """Places a limit order"""
         pass
 
     @abc.abstractmethod
-    def take_profit_order(self,
-                          symbol: str,
-                          side: Side,
-                          price: float,
-                          size: float,
-                          position: PositionMode = None) -> FuturesOrder:
+    def take_profit_order(
+        self,
+        symbol: str,
+        side: Side,
+        price: float,
+        size: float,
+        position: PositionMode = None,
+    ) -> FuturesOrder:
         """Place a take-profit order for a position"""
         pass
 
     @abc.abstractmethod
-    def stop_loss_order(self,
-                        symbol: str,
-                        side: Side,
-                        price: float,
-                        size: float,
-                        position: PositionMode = None) -> FuturesOrder:
+    def stop_loss_order(
+        self,
+        symbol: str,
+        side: Side,
+        price: float,
+        size: float,
+        position: PositionMode = None,
+    ) -> FuturesOrder:
         """Place a stop-loss order for a position"""
         pass
 
@@ -181,13 +188,13 @@ class FuturesExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
     @property
     def cash(self) -> float:
         """The amount of cash in a portfolio. The currency for 'cash' is set in user_data/settings.json"""
-        using_setting = self.user_preferences['settings'][
-            self.exchange_name]['cash']
-        return self.get_account(using_setting)['available']
+        using_setting = self.user_preferences["settings"][self.exchange_name]["cash"]
+        return self.get_account(using_setting)["available"]
 
     @abc.abstractmethod
-    def get_funding_rate_history(self, symbol: str, epoch_start: int,
-                                 epoch_stop: int) -> list:
+    def get_funding_rate_history(
+        self, symbol: str, epoch_start: int, epoch_stop: int
+    ) -> list:
         """
         Get the funding rate history between `epoch_start` and `epoch_end`.
         Returns a list of {'rate': int, 'time': int}
@@ -212,4 +219,4 @@ class FuturesExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
 
     @property
     def should_auto_trunc(self):
-        return self.user_preferences['settings'].get('auto_truncate', False)
+        return self.user_preferences["settings"].get("auto_truncate", False)

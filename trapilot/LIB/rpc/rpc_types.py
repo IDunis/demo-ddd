@@ -4,7 +4,6 @@ from typing import Any, List, Literal, Optional, TypedDict, Union
 from trapilot.LIB.constants import PairWithTimeframe
 from trapilot.LIB.enums import RPCMessageType
 
-
 ProfitLossStr = Literal["profit", "loss"]
 
 
@@ -15,18 +14,22 @@ class RPCSendMsgBase(TypedDict):
 
 class RPCStatusMsg(RPCSendMsgBase):
     """Used for Status, Startup and Warning messages"""
+
     type: Literal[RPCMessageType.STATUS, RPCMessageType.STARTUP, RPCMessageType.WARNING]
     status: str
 
 
 class RPCStrategyMsg(RPCSendMsgBase):
     """Used for Status, Startup and Warning messages"""
+
     type: Literal[RPCMessageType.STRATEGY_MSG]
     msg: str
 
 
 class RPCProtectionMsg(RPCSendMsgBase):
-    type: Literal[RPCMessageType.PROTECTION_TRIGGER, RPCMessageType.PROTECTION_TRIGGER_GLOBAL]
+    type: Literal[
+        RPCMessageType.PROTECTION_TRIGGER, RPCMessageType.PROTECTION_TRIGGER_GLOBAL
+    ]
     id: int
     pair: str
     base_currency: Optional[str]
@@ -108,12 +111,14 @@ class _AnalyzedDFData(TypedDict):
 
 class RPCAnalyzedDFMsg(RPCSendMsgBase):
     """New Analyzed dataframe message"""
+
     type: Literal[RPCMessageType.ANALYZED_DF]
     data: _AnalyzedDFData
 
 
 class RPCNewCandleMsg(RPCSendMsgBase):
     """New candle ping message, issued once per new candle/pair"""
+
     type: Literal[RPCMessageType.NEW_CANDLE]
     data: PairWithTimeframe
 
@@ -131,5 +136,5 @@ RPCSendMsg = Union[
     RPCExitMsg,
     RPCExitCancelMsg,
     RPCAnalyzedDFMsg,
-    RPCNewCandleMsg
-    ]
+    RPCNewCandleMsg,
+]

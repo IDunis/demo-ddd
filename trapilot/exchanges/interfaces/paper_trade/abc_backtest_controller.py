@@ -15,9 +15,12 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import abc
 import typing
-from trapilot.data.data_reader import PriceReader, JsonEventReader, TickReader, DataReader
+
+from trapilot.data.data_reader import (DataReader, JsonEventReader,
+                                       PriceReader, TickReader)
 
 
 class ABCBacktestController(abc.ABC):
@@ -25,11 +28,14 @@ class ABCBacktestController(abc.ABC):
     initial_time = None
 
     @abc.abstractmethod
-    def add_prices(self, symbol: str,
-                   resolution: [str, int, float],
-                   to: str = None,
-                   start_date: typing.Union[str, float, int] = None,
-                   stop_date: typing.Union[str, float, int] = None):
+    def add_prices(
+        self,
+        symbol: str,
+        resolution: [str, int, float],
+        to: str = None,
+        start_date: typing.Union[str, float, int] = None,
+        stop_date: typing.Union[str, float, int] = None,
+    ):
         """
         Add prices directly to the backtest engine
         """

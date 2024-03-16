@@ -18,13 +18,13 @@
 
 import smtplib
 import ssl
-
 from typing import Any
 
-from trapilot.utils.utils import load_notify_preferences
-from trapilot.frameworks.strategy import Strategy
+from trapilot.exchanges.interfaces.paper_trade.backtest_result import \
+    BacktestResult
 from trapilot.frameworks.screener.screener import Screener
-from trapilot.exchanges.interfaces.paper_trade.backtest_result import BacktestResult
+from trapilot.frameworks.strategy import Strategy
+from trapilot.utils.utils import load_notify_preferences
 
 
 class Reporter:
@@ -73,7 +73,9 @@ class Reporter:
         if self.__screener is None:
             self.__screener = screener
         else:
-            raise RuntimeError("Currently only a single screener can be created per model.")
+            raise RuntimeError(
+                "Currently only a single screener can be created per model."
+            )
 
     def export_screener_result(self, screener: Screener):
         """
@@ -138,23 +140,25 @@ class Reporter:
             text: The message body to be sent to your phone number
         """
         notify_preferences = load_notify_preferences()
-        provider = notify_preferences['text']['provider']
-        phone_number = notify_preferences['text']['phone_number']
+        provider = notify_preferences["text"]["provider"]
+        phone_number = notify_preferences["text"]["phone_number"]
 
         email_lookup = {
-            'att': '@txt.att.net',
-            'boost': '@smsmyboostmobile.com',
-            'cricket': '@sms.cricketwireless.net',
-            'sprint': '@messaging.sprintpcs.com',
-            't_mobile': '@tmomail.net',
-            'us_cellular': '@email.uscc.net',
-            'verizon': '@vtext.com',
-            'virgin_mobile': '@vmobl.com'
+            "att": "@txt.att.net",
+            "boost": "@smsmyboostmobile.com",
+            "cricket": "@sms.cricketwireless.net",
+            "sprint": "@messaging.sprintpcs.com",
+            "t_mobile": "@tmomail.net",
+            "us_cellular": "@email.uscc.net",
+            "verizon": "@vtext.com",
+            "virgin_mobile": "@vmobl.com",
         }
         try:
             email = email_lookup[provider]
         except KeyError:
-            raise KeyError("Provider not found. Check the user_data/notify.json documentation to see supported providers.")
+            raise KeyError(
+                "Provider not found. Check the user_data/notify.json documentation to see supported providers."
+            )
 
         self.__send_email(text, override_receiver=phone_number + email)
 
@@ -164,11 +168,11 @@ class Reporter:
         Internal email send. This is separated because override_receiver shouldn't be exposed to the user
         """
         notify_preferences = load_notify_preferences()
-        port = notify_preferences['email']['port']
-        smtp_server = notify_preferences['email']['smtp_server']
-        sender_email = notify_preferences['email']['sender_email']
-        receiver_email = notify_preferences['email']['receiver_email']
-        password = notify_preferences['email']['password']
+        port = notify_preferences["email"]["port"]
+        smtp_server = notify_preferences["email"]["smtp_server"]
+        sender_email = notify_preferences["email"]["sender_email"]
+        receiver_email = notify_preferences["email"]["receiver_email"]
+        password = notify_preferences["email"]["password"]
 
         if override_receiver is not None:
             receiver_email = override_receiver
@@ -208,11 +212,12 @@ class Reporter:
         """
         # https://github.com/googleworkspace/google-chat-samples/blob/main/python/webhook/quickstart.py
         from json import dumps
+
         from httplib2 import Http
 
         try:
             notify_preferences = load_notify_preferences()
-            webhook = notify_preferences['chat']['webhook_url']
+            webhook = notify_preferences["chat"]["webhook_url"]
 
             app_message = {"text": message}
             message_headers = {"Content-Type": "application/json; charset=UTF-8"}
@@ -224,4 +229,6 @@ class Reporter:
                 body=dumps(app_message),
             )
         except KeyError:
-            raise KeyError("Google Chat webhook URL not found. Check the user_data/notify.json documentation")
+            raise KeyError(
+                "Google Chat webhook URL not found. Check the user_data/notify.json documentation"
+            )

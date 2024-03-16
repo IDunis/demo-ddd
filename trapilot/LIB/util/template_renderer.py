@@ -8,19 +8,21 @@ def render_template(templatefile: str, arguments: dict = {}) -> str:
     from jinja2 import Environment, PackageLoader, select_autoescape
 
     env = Environment(
-        loader=PackageLoader('trapilot', 'templates'),
-        autoescape=select_autoescape(['html', 'xml'])
+        loader=PackageLoader("trapilot", "templates"),
+        autoescape=select_autoescape(["html", "xml"]),
     )
     template = env.get_template(templatefile)
     return template.render(**arguments)
 
 
-def render_template_with_fallback(templatefile: str, templatefallbackfile: str,
-                                  arguments: dict = {}) -> str:
+def render_template_with_fallback(
+    templatefile: str, templatefallbackfile: str, arguments: dict = {}
+) -> str:
     """
     Use templatefile if possible, otherwise fall back to templatefallbackfile
     """
     from jinja2.exceptions import TemplateNotFound
+
     try:
         return render_template(templatefile, arguments)
     except TemplateNotFound:

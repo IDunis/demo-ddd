@@ -2,10 +2,11 @@ from typing import Any, Dict
 
 import torch
 
-from trapilot.LIB.freqai.base_models.BasePyTorchRegressor import BasePyTorchRegressor
+from trapilot.LIB.freqai.base_models.BasePyTorchRegressor import \
+    BasePyTorchRegressor
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
-from trapilot.LIB.freqai.torch.PyTorchDataConvertor import (DefaultPyTorchDataConvertor,
-                                                         PyTorchDataConvertor)
+from trapilot.LIB.freqai.torch.PyTorchDataConvertor import (
+    DefaultPyTorchDataConvertor, PyTorchDataConvertor)
 from trapilot.LIB.freqai.torch.PyTorchMLPModel import PyTorchMLPModel
 from trapilot.LIB.freqai.torch.PyTorchModelTrainer import PyTorchModelTrainer
 
@@ -48,9 +49,9 @@ class PyTorchMLPRegressor(BasePyTorchRegressor):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         config = self.freqai_info.get("model_training_parameters", {})
-        self.learning_rate: float = config.get("learning_rate",  3e-4)
-        self.model_kwargs: Dict[str, Any] = config.get("model_kwargs",  {})
-        self.trainer_kwargs: Dict[str, Any] = config.get("trainer_kwargs",  {})
+        self.learning_rate: float = config.get("learning_rate", 3e-4)
+        self.model_kwargs: Dict[str, Any] = config.get("model_kwargs", {})
+        self.trainer_kwargs: Dict[str, Any] = config.get("trainer_kwargs", {})
 
     def fit(self, data_dictionary: Dict, dk: FreqaiDataKitchen, **kwargs) -> Any:
         """
@@ -61,11 +62,7 @@ class PyTorchMLPRegressor(BasePyTorchRegressor):
         """
 
         n_features = data_dictionary["train_features"].shape[-1]
-        model = PyTorchMLPModel(
-            input_dim=n_features,
-            output_dim=1,
-            **self.model_kwargs
-        )
+        model = PyTorchMLPModel(input_dim=n_features, output_dim=1, **self.model_kwargs)
         model.to(self.device)
         optimizer = torch.optim.AdamW(model.parameters(), lr=self.learning_rate)
         criterion = torch.nn.MSELoss()

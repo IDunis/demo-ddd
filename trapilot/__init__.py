@@ -15,33 +15,34 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import trapilot.utils.utils
+
 import trapilot.data
 import trapilot.indicators
-
+import trapilot.utils.utils
 from trapilot.deployment.reporter_headers import Reporter as __Reporter_Headers
-from trapilot.enums import Side, OrderType, OrderStatus, TimeInForce
-from trapilot.exchanges.interfaces.binance_futures.binance_futures import BinanceFutures
-from trapilot.exchanges.interfaces.binance.binance import Binance
+from trapilot.enums import OrderStatus, OrderType, Side, TimeInForce
+from trapilot.exchanges.interfaces.abc_exchange_interface import \
+    ABCExchangeInterface as Interface
 from trapilot.exchanges.interfaces.alpaca.alpaca import Alpaca
+from trapilot.exchanges.interfaces.binance.binance import Binance
+from trapilot.exchanges.interfaces.binance_futures.binance_futures import \
+    BinanceFutures
 from trapilot.exchanges.interfaces.paper_trade.paper_trade import PaperTrade
-from trapilot.exchanges.managers.ticker_manager import TickerManager
-from trapilot.exchanges.managers.orderbook_manager import OrderbookManager
 from trapilot.exchanges.managers.general_stream_manager import GeneralManager
-from trapilot.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface as Interface
-from trapilot.frameworks.multiprocessing.bot import Trapilot
-from trapilot.frameworks.strategy import Strategy as Strategy
+from trapilot.exchanges.managers.orderbook_manager import OrderbookManager
+from trapilot.exchanges.managers.ticker_manager import TickerManager
 from trapilot.frameworks.model.model import Model as Model
-from trapilot.frameworks.strategy import StrategyState as StrategyState
+from trapilot.frameworks.multiprocessing.bot import Trapilot
 from trapilot.frameworks.screener.screener import Screener
 from trapilot.frameworks.screener.screener_state import ScreenerState
-from trapilot.frameworks.strategy import FuturesStrategy
-from trapilot.frameworks.strategy import FuturesStrategyState
+from trapilot.frameworks.strategy import FuturesStrategy, FuturesStrategyState
+from trapilot.frameworks.strategy import Strategy as Strategy
+from trapilot.frameworks.strategy import StrategyState as StrategyState
+from trapilot.utils import time_builder
 from trapilot.utils.scheduler import Scheduler
 from trapilot.utils.utils import trunc
-from trapilot.utils import time_builder
 
-__version__ = '2024.3-dev'
+__version__ = "2024.3-dev"
 is_deployed = False
 _screener_runner = None
 

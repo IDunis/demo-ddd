@@ -17,11 +17,13 @@
 """
 
 import json
-import pandas as pd
 from enum import Enum
 
+import pandas as pd
+
+from trapilot.exchanges.interfaces.futures_exchange_interface import \
+    FuturesExchangeInterface
 from trapilot.utils import convert_epochs
-from trapilot.exchanges.interfaces.futures_exchange_interface import FuturesExchangeInterface
 
 
 class DataTypes(Enum):
@@ -40,18 +42,20 @@ This class seeks to solve these problems:
 
 
 class FileTypes(Enum):
-    csv = 'csv'
-    json = 'json'
-    df = 'df'
+    csv = "csv"
+    json = "json"
+    df = "df"
 
 
 class DataReader:
     @staticmethod
     def _check_length(df: pd.DataFrame, identifier: str):
         try:
-            assert (len(df) > 2)
+            assert len(df) > 2
         except AssertionError:
-            raise AssertionError(f"Must give data with at least 2 rows in {identifier}.")
+            raise AssertionError(
+                f"Must give data with at least 2 rows in {identifier}."
+            )
 
     @staticmethod
     def __is_price_data(data_type: DataTypes) -> bool:
@@ -64,9 +68,11 @@ class DataReader:
     def _write_dataset(self, contents: dict, key: str, required_columns: tuple):
         try:
             # Check if all the keys exist for each part of the dictionary
-            assert (all(key in contents for key in required_columns))
+            assert all(key in contents for key in required_columns)
         except AssertionError:
-            raise AssertionError(f"Must have at least these columns: {required_columns} for {key}")
+            raise AssertionError(
+                f"Must have at least these columns: {required_columns} for {key}"
+            )
         self._internal_dataset[key] = pd.DataFrame.from_dict(contents)
 
     def __init__(self, data_type: [DataTypes, str]):
@@ -103,25 +109,33 @@ class __FormatReader(DataReader):
         if symbols is None:
             raise LookupError("Must pass one or more symbols to identify the DataFrame")
         if len(file_paths) != len(symbols):
-            raise LookupError(f"Mismatching symbol & file path lengths, got {len(file_paths)} and {len(symbols)} for "
-                              f"file paths and symbol lengths.")
+            raise LookupError(
+                f"Mismatching symbol & file path lengths, got {len(file_paths)} and {len(symbols)} for "
+                f"file paths and symbol lengths."
+            )
 
         for index in range(len(file_paths)):
 
             self._check_length(file_paths[index], file_paths[index])
 
             # Check if its contained
-            assert (columns.issubset(file_paths[index].columns)), f"{columns} not subset of {file_paths[index].columns}"
+            assert columns.issubset(
+                file_paths[index].columns
+            ), f"{columns} not subset of {file_paths[index].columns}"
 
             # Now push it directly into the dataset and sort by time
-            self._internal_dataset[symbols[index]] = file_paths[index].sort_values('time')
+            self._internal_dataset[symbols[index]] = file_paths[index].sort_values(
+                "time"
+            )
 
     def _parse_csv_prices(self, file_paths: list, symbols: list, columns: set) -> None:
         if symbols is None:
             raise LookupError("Must pass one or more symbols to identify the csv files")
         if len(file_paths) != len(symbols):
-            raise LookupError(f"Mismatching symbol & file path lengths, got {len(file_paths)} and {len(symbols)} for "
-                              f"file paths and symbol lengths.")
+            raise LookupError(
+                f"Mismatching symbol & file path lengths, got {len(file_paths)} and {len(symbols)} for "
+                f"file paths and symbol lengths."
+            )
 
         for index in range(len(file_paths)):
             # Load the file via pandas
@@ -130,10 +144,12 @@ class __FormatReader(DataReader):
             self._check_length(contents, file_paths[index])
 
             # Check if its contained
-            assert (columns.issubset(contents.columns)), f"{columns} not subset of {contents.columns}"
+            assert columns.issubset(
+                contents.columns
+            ), f"{columns} not subset of {contents.columns}"
 
             # Now push it directly into the dataset and sort by time
-            self._internal_dataset[symbols[index]] = contents.sort_values('time')
+            self._internal_dataset[symbols[index]] = contents.sort_values("time")
 
     def _parse_json_prices(self, file_paths: list, keys: tuple) -> None:
         for file in file_paths:
@@ -146,29 +162,33 @@ class __FormatReader(DataReader):
                 self._check_length(self._internal_dataset[symbol], file)
 
                 # Ensure that the dataframe is sorted by time
-                self._internal_dataset[symbol] = self._internal_dataset[symbol].sort_values('time')
+                self._internal_dataset[symbol] = self._internal_dataset[
+                    symbol
+                ].sort_values("time")
 
 
 class PriceReader(__FormatReader):
     @staticmethod
     def __associate(file_paths: list) -> str:
-        file_type = ''
+        file_type = ""
 
         def complain_if_different(ending_: str, type_: str):
             nonlocal file_type
-            if file_type == '':
+            if file_type == "":
                 file_type = type_
             elif file_type is not None and file_type != ending_:
-                raise LookupError("Cannot pass both csv files and json files into a single constructor.")
+                raise LookupError(
+                    "Cannot pass both csv files and json files into a single constructor."
+                )
 
         for file_path in file_paths:
             if isinstance(file_path, pd.DataFrame):
-                complain_if_different('df', FileTypes.df.value)
-            elif file_path[-3:] == 'csv':
-                complain_if_different('csv', FileTypes.csv.value)
-            elif file_path[-4:] == 'json':
+                complain_if_different("df", FileTypes.df.value)
+            elif file_path[-3:] == "csv":
+                complain_if_different("csv", FileTypes.csv.value)
+            elif file_path[-4:] == "json":
                 # In this instance the symbols should be None
-                complain_if_different('json', FileTypes.json.value)
+                complain_if_different("json", FileTypes.json.value)
             else:
                 raise LookupError(f"Unknown filetype for {file_path}")
 
@@ -177,7 +197,7 @@ class PriceReader(__FormatReader):
     def _guess_resolutions(self):
         for symbol in self._internal_dataset:
             # Get the time diff
-            time_series: pd.Series = self._internal_dataset[symbol]['time']
+            time_series: pd.Series = self._internal_dataset[symbol]["time"]
 
             # Convert all epochs using the convert epoch function
             time_series = time_series.apply(lambda x: convert_epochs(x))
@@ -192,13 +212,17 @@ class PriceReader(__FormatReader):
 
             # If the resolution is 0, then we have a problem
             if guessed_resolution == 0:
-                raise LookupError(f"Resolution is 0 for {symbol}, this is not allowed. Please check your data."
-                                  f" This commonly occurs when the data is in exponential format or too few datapoints")
+                raise LookupError(
+                    f"Resolution is 0 for {symbol}, this is not allowed. Please check your data."
+                    f" This commonly occurs when the data is in exponential format or too few datapoints"
+                )
 
             # Store the resolution start time and end time of each dataset
-            self.prices_info[symbol]['resolution'] = int(time_dif.value_counts().idxmax())
-            self.prices_info[symbol]['start_time'] = time_series.iloc[0]
-            self.prices_info[symbol]['stop_time'] = time_series.iloc[-1]
+            self.prices_info[symbol]["resolution"] = int(
+                time_dif.value_counts().idxmax()
+            )
+            self.prices_info[symbol]["start_time"] = time_series.iloc[0]
+            self.prices_info[symbol]["stop_time"] = time_series.iloc[-1]
 
     def __init__(self, file_path: [str, list], symbol: [str, list]):
         """
@@ -219,21 +243,29 @@ class PriceReader(__FormatReader):
         self.prices_info = {}
 
         try:
-            assert (len(symbols) == len(set(symbols)))
+            assert len(symbols) == len(set(symbols))
         except AssertionError:
-            raise AssertionError("Cannot use duplicate symbols for one price reader. Please use multiple price readers"
-                                 " to read in different datasets of the same symbol.")
+            raise AssertionError(
+                "Cannot use duplicate symbols for one price reader. Please use multiple price readers"
+                " to read in different datasets of the same symbol."
+            )
 
         data_type = self.__associate(file_paths)
 
         super().__init__(data_type)
 
         if data_type == FileTypes.df.value:
-            self._parse_df_prices(file_paths, symbols, {'open', 'high', 'low', 'close', 'volume', 'time'})
+            self._parse_df_prices(
+                file_paths, symbols, {"open", "high", "low", "close", "volume", "time"}
+            )
         elif data_type == FileTypes.json.value:
-            self._parse_json_prices(file_paths, ('open', 'high', 'low', 'close', 'volume', 'time'))
+            self._parse_json_prices(
+                file_paths, ("open", "high", "low", "close", "volume", "time")
+            )
         elif data_type == FileTypes.csv.value:
-            self._parse_csv_prices(file_paths, symbols, {'open', 'high', 'low', 'close', 'volume', 'time'})
+            self._parse_csv_prices(
+                file_paths, symbols, {"open", "high", "low", "close", "volume", "time"}
+            )
         else:
             raise LookupError("No parsing written for input type.")
 
@@ -245,7 +277,9 @@ class EventReader(DataReader):
         super().__init__(DataTypes.event_json)
         if events:
             time, data = zip(*events.items())
-            self._write_dataset({'time': time, 'data': data}, event_type, ('time', 'data'))
+            self._write_dataset(
+                {"time": time, "data": data}, event_type, ("time", "data")
+            )
 
 
 class JsonEventReader(DataReader):
@@ -253,23 +287,27 @@ class JsonEventReader(DataReader):
         contents = json.loads(open(file_path).read())
 
         for event_type in contents:
-            self._write_dataset(contents[event_type], event_type, ('time', 'data'))
+            self._write_dataset(contents[event_type], event_type, ("time", "data"))
 
     def __init__(self, file_path):
         super().__init__(DataTypes.event_json)
         try:
-            assert file_path[-4:] == 'json'
+            assert file_path[-4:] == "json"
         except AssertionError:
-            raise AssertionError(f"The filepath did not have a \'json\' ending - got: {file_path[-4:]}")
+            raise AssertionError(
+                f"The filepath did not have a 'json' ending - got: {file_path[-4:]}"
+            )
 
         self.__parse_json_events(file_path)
 
 
 class FundingRateEventReader(EventReader):
-    def __init__(self, symbol: str, start: int, stop: int, interface: FuturesExchangeInterface):
+    def __init__(
+        self, symbol: str, start: int, stop: int, interface: FuturesExchangeInterface
+    ):
         history = interface.get_funding_rate_history(symbol, start, stop)
-        history = {ev['time']: {'symbol': symbol, 'rate': ev['rate']} for ev in history}
-        super().__init__('__blankly__funding_rate', history)
+        history = {ev["time"]: {"symbol": symbol, "rate": ev["rate"]} for ev in history}
+        super().__init__("__blankly__funding_rate", history)
 
 
 class TickReader(__FormatReader):
@@ -278,7 +316,9 @@ class TickReader(__FormatReader):
         file_paths, symbols = self._convert_to_list(file_path, symbol)
 
         try:
-            assert file_path[-3:] == 'csv'
+            assert file_path[-3:] == "csv"
         except AssertionError:
-            raise AssertionError(f"The filepath did not have a \'csv\' ending - got: {file_path[-3:]}")
-        self._parse_csv_prices(file_paths, symbols, {'time', 'price'})
+            raise AssertionError(
+                f"The filepath did not have a 'csv' ending - got: {file_path[-3:]}"
+            )
+        self._parse_csv_prices(file_paths, symbols, {"time", "price"})

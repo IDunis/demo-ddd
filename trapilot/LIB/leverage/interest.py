@@ -3,17 +3,13 @@ from math import ceil
 from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.util import FtPrecise
 
-
 one = FtPrecise(1.0)
 four = FtPrecise(4.0)
 twenty_four = FtPrecise(24.0)
 
 
 def interest(
-    exchange_name: str,
-    borrowed: FtPrecise,
-    rate: FtPrecise,
-    hours: FtPrecise
+    exchange_name: str, borrowed: FtPrecise, rate: FtPrecise, hours: FtPrecise
 ) -> FtPrecise:
     """
     Equation to calculate interest on margin trades
@@ -36,4 +32,6 @@ def interest(
         # Rounded based on https://kraken-fees-calculator.github.io/
         return borrowed * rate * (one + FtPrecise(ceil(hours / four)))
     else:
-        raise OperationalException(f"Leverage not available on {exchange_name} with trapilot")
+        raise OperationalException(
+            f"Leverage not available on {exchange_name} with trapilot"
+        )

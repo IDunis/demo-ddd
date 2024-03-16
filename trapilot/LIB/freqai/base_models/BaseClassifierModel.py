@@ -10,7 +10,6 @@ from pandas import DataFrame
 from trapilot.LIB.freqai.data_kitchen import FreqaiDataKitchen
 from trapilot.LIB.freqai.freqai_interface import IFreqaiModel
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -33,7 +32,9 @@ class BaseClassifierModel(IFreqaiModel):
         :model: Trained model which can be used to inference (self.predict)
         """
 
-        logger.info(f"-------------------- Starting training {pair} --------------------")
+        logger.info(
+            f"-------------------- Starting training {pair} --------------------"
+        )
 
         start_time = time()
 
@@ -47,26 +48,28 @@ class BaseClassifierModel(IFreqaiModel):
 
         start_date = unfiltered_df["date"].iloc[0].strftime("%Y-%m-%d")
         end_date = unfiltered_df["date"].iloc[-1].strftime("%Y-%m-%d")
-        logger.info(f"-------------------- Training on data from {start_date} to "
-                    f"{end_date} --------------------")
+        logger.info(
+            f"-------------------- Training on data from {start_date} to "
+            f"{end_date} --------------------"
+        )
         # split data into train/test data.
         dd = dk.make_train_test_datasets(features_filtered, labels_filtered)
         if not self.freqai_info.get("fit_live_predictions_candles", 0) or not self.live:
             dk.fit_labels()
         dk.feature_pipeline = self.define_data_pipeline(threads=dk.thread_count)
 
-        (dd["train_features"],
-         dd["train_labels"],
-         dd["train_weights"]) = dk.feature_pipeline.fit_transform(dd["train_features"],
-                                                                  dd["train_labels"],
-                                                                  dd["train_weights"])
+        (dd["train_features"], dd["train_labels"], dd["train_weights"]) = (
+            dk.feature_pipeline.fit_transform(
+                dd["train_features"], dd["train_labels"], dd["train_weights"]
+            )
+        )
 
-        if self.freqai_info.get('data_split_parameters', {}).get('test_size', 0.1) != 0:
-            (dd["test_features"],
-             dd["test_labels"],
-             dd["test_weights"]) = dk.feature_pipeline.transform(dd["test_features"],
-                                                                 dd["test_labels"],
-                                                                 dd["test_weights"])
+        if self.freqai_info.get("data_split_parameters", {}).get("test_size", 0.1) != 0:
+            (dd["test_features"], dd["test_labels"], dd["test_weights"]) = (
+                dk.feature_pipeline.transform(
+                    dd["test_features"], dd["test_labels"], dd["test_weights"]
+                )
+            )
 
         logger.info(
             f"Training model on {len(dk.data_dictionary['train_features'].columns)} features"
@@ -77,8 +80,10 @@ class BaseClassifierModel(IFreqaiModel):
 
         end_time = time()
 
-        logger.info(f"-------------------- Done training {pair} "
-                    f"({end_time - start_time:.2f} secs) --------------------")
+        logger.info(
+            f"-------------------- Done training {pair} "
+            f"({end_time - start_time:.2f} secs) --------------------"
+        )
 
         return model
 
@@ -101,8 +106,11 @@ class BaseClassifierModel(IFreqaiModel):
 
         dk.data_dictionary["prediction_features"] = filtered_df
 
-        dk.data_dictionary["prediction_features"], outliers, _ = dk.feature_pipeline.transform(
-            dk.data_dictionary["prediction_features"], outlier_check=True)
+        dk.data_dictionary["prediction_features"], outliers, _ = (
+            dk.feature_pipeline.transform(
+                dk.data_dictionary["prediction_features"], outlier_check=True
+            )
+        )
 
         predictions = self.model.predict(dk.data_dictionary["prediction_features"])
         if self.CONV_WIDTH == 1:
@@ -110,9 +118,13 @@ class BaseClassifierModel(IFreqaiModel):
 
         pred_df = DataFrame(predictions, columns=dk.label_list)
 
-        predictions_prob = self.model.predict_proba(dk.data_dictionary["prediction_features"])
+        predictions_prob = self.model.predict_proba(
+            dk.data_dictionary["prediction_features"]
+        )
         if self.CONV_WIDTH == 1:
-            predictions_prob = np.reshape(predictions_prob, (-1, len(self.model.classes_)))
+            predictions_prob = np.reshape(
+                predictions_prob, (-1, len(self.model.classes_))
+            )
         pred_df_prob = DataFrame(predictions_prob, columns=self.model.classes_)
 
         pred_df = pd.concat([pred_df, pred_df_prob], axis=1)

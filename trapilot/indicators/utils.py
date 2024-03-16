@@ -16,8 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from typing import Any
 from collections import deque
+from typing import Any
 
 import numpy as np
 import pandas as pd

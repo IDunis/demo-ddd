@@ -1,4 +1,3 @@
-
 from trapilot.LIB.persistence.pairlock_middleware import PairLocks
 from trapilot.LIB.persistence.trade_model import Trade
 
@@ -18,12 +17,12 @@ def enable_database_use() -> None:
     Cleanup function to restore database usage.
     """
     PairLocks.use_db = True
-    PairLocks.timeframe = ''
+    PairLocks.timeframe = ""
     Trade.use_db = True
 
 
 class FtNoDBContext:
-    def __init__(self, timeframe: str = ''):
+    def __init__(self, timeframe: str = ""):
         self.timeframe = timeframe
 
     def __enter__(self):

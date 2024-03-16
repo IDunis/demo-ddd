@@ -3,7 +3,6 @@ import logging
 import torch
 from torch import nn
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -41,7 +40,9 @@ class PyTorchMLPModel(nn.Module):
         dropout_percent: int = kwargs.get("dropout_percent", 0.2)
         n_layer: int = kwargs.get("n_layer", 1)
         self.input_layer = nn.Linear(input_dim, hidden_dim)
-        self.blocks = nn.Sequential(*[Block(hidden_dim, dropout_percent) for _ in range(n_layer)])
+        self.blocks = nn.Sequential(
+            *[Block(hidden_dim, dropout_percent) for _ in range(n_layer)]
+        )
         self.output_layer = nn.Linear(hidden_dim, output_dim)
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout(p=dropout_percent)

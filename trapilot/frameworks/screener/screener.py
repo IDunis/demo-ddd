@@ -15,25 +15,29 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import time
 import typing
+from copy import deepcopy
 from typing import List
-from trapilot.frameworks.screener.screener_runner import ScreenerRunner
-from trapilot.utils.utils import load_deployment_settings
 
 import trapilot
 from trapilot.exchanges.exchange import Exchange
+from trapilot.frameworks.screener.screener_runner import ScreenerRunner
 from trapilot.frameworks.screener.screener_state import ScreenerState
-from copy import deepcopy
+from trapilot.utils.utils import load_deployment_settings
 
 
 class Screener:
-    def __init__(self, exchange: Exchange,
-                 evaluator: typing.Callable,
-                 symbols: List[str],
-                 init: typing.Callable = None,
-                 final: typing.Callable = None,
-                 formatter: typing.Callable = None):
+    def __init__(
+        self,
+        exchange: Exchange,
+        evaluator: typing.Callable,
+        symbols: List[str],
+        init: typing.Callable = None,
+        final: typing.Callable = None,
+        formatter: typing.Callable = None,
+    ):
         """
         Create a new screener.
 
@@ -60,7 +64,7 @@ class Screener:
         """
 
         if not trapilot.is_deployed and trapilot._screener_runner is None:
-            cron_settings = load_deployment_settings()['screener']['schedule']
+            cron_settings = load_deployment_settings()["screener"]["schedule"]
             trapilot._screener_runner = ScreenerRunner(cron_settings)
 
         self.status = {}
@@ -71,10 +75,10 @@ class Screener:
 
         # Store callables as a dictionary
         self.__callables = {
-            'evaluator': evaluator,
-            'init': init,
-            'teardown': final,
-            'formatter': formatter
+            "evaluator": evaluator,
+            "init": init,
+            "teardown": final,
+            "formatter": formatter,
         }
         self.interface = exchange.interface
 
@@ -91,8 +95,8 @@ class Screener:
         self.__run()
 
     def __run(self):
-        self.status['startTime'] = time.time()
-        init = self.__callables['init']
+        self.status["startTime"] = time.time()
+        init = self.__callables["init"]
         if callable(init):
             init(self.screener_state)
 
@@ -108,7 +112,7 @@ class Screener:
         #     }
         # }
 
-        evaluator = self.__callables['evaluator']
+        evaluator = self.__callables["evaluator"]
         if not callable(evaluator):
             raise TypeError("Must pass a callable for the evaluator.")
 
@@ -118,10 +122,8 @@ class Screener:
             # If it's a dictionary it's A ok but if it's a non-dict give it the value column
             result = evaluator(i, self.screener_state)
             if not isinstance(result, dict):
-                result = {
-                    'value': result
-                }
-            result['symbol_time'] = time.time() - start_time
+                result = {"value": result}
+            result["symbol_time"] = time.time() - start_time
             self.raw_results[i] = result
 
         self.symbols = self.screener_state.symbols
@@ -129,21 +131,23 @@ class Screener:
         # Copy the evaluator results so that they can be formatted
         self.formatted_results = deepcopy(self.raw_results)
 
-        formatter = self.__callables['formatter']
+        formatter = self.__callables["formatter"]
         if callable(formatter):
             # Mutate the copied dictionary
-            self.formatted_results = formatter(self.formatted_results, self.screener_state)
+            self.formatted_results = formatter(
+                self.formatted_results, self.screener_state
+            )
 
         self.symbols = self.screener_state.symbols
 
-        teardown = self.__callables['teardown']
+        teardown = self.__callables["teardown"]
         if callable(teardown):
             teardown(self.screener_state)
 
         self.symbols = self.screener_state.symbols
 
-        self.status['stopTime'] = time.time()
-        self.status['timeElapsed'] = self.status['stopTime'] - self.status['startTime']
+        self.status["stopTime"] = time.time()
+        self.status["timeElapsed"] = self.status["stopTime"] - self.status["startTime"]
 
         trapilot.reporter.export_screener_result(self)
 

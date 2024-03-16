@@ -3,7 +3,6 @@ from typing import Dict
 
 from trapilot.LIB.exchange import Exchange
 
-
 logger = logging.getLogger(__name__)
 
 

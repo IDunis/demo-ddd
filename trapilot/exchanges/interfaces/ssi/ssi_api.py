@@ -21,15 +21,17 @@ from trapilot.exchanges.auth.auth_constructor import AuthConstructor
 live_url = "https://fc-tradeapi.ssi.com.vn"
 paper_url = "https://fc-tradeapi.ssi.com.vn"
 
+
 class REST:
-    def __init__(self,
-                 key_id: str = None,
-                 secret_key: str = None,
-                 base_url: str = None,
-                 api_version: str = None,
-                 oauth=None,
-                 raw_data: bool = False
-                 ):
+    def __init__(
+        self,
+        key_id: str = None,
+        secret_key: str = None,
+        base_url: str = None,
+        api_version: str = None,
+        oauth=None,
+        raw_data: bool = False,
+    ):
         self.key_id = key_id
         self.secret_key = secret_key
         self.base_url = base_url
@@ -43,7 +45,7 @@ class REST:
 
     def get_clock(self) -> str:
         print("SSI REST get_clock")
-        return ''
+        return ""
 
 
 def create_client(auth: AuthConstructor, sandbox_mode=True):
@@ -52,4 +54,6 @@ def create_client(auth: AuthConstructor, sandbox_mode=True):
     else:
         api_url = live_url
 
-    return REST(auth.keys['API_KEY'], auth.keys['API_SECRET'], api_url, 'v2', raw_data=True)
+    return REST(
+        auth.keys["API_KEY"], auth.keys["API_SECRET"], api_url, "v2", raw_data=True
+    )

@@ -43,17 +43,27 @@ class ABCBaseExchangeInterface(abc.ABC):
     def get_product_history(self, symbol, epoch_start, epoch_stop, resolution):
         pass
 
-    def history(self,
-                symbol: str,
-                to: Union[str, int] = 200,
-                resolution: Union[str, float] = '1d',
-                start_date: Union[str, dt, float] = None,
-                end_date: Union[str, dt, float] = None,
-                return_as: str = 'df'):
+    def history(
+        self,
+        symbol: str,
+        to: Union[str, int] = 200,
+        resolution: Union[str, float] = "1d",
+        start_date: Union[str, dt, float] = None,
+        end_date: Union[str, dt, float] = None,
+        return_as: str = "df",
+    ):
 
-        start, stop, res_seconds, to, present = self.calculate_epochs(start_date, end_date, resolution, to)
+        start, stop, res_seconds, to, present = self.calculate_epochs(
+            start_date, end_date, resolution, to
+        )
 
-        response = self.overridden_history(symbol, start, stop, res_seconds, to=to,)
+        response = self.overridden_history(
+            symbol,
+            start,
+            stop,
+            res_seconds,
+            to=to,
+        )
 
         # Add a check to make sure that coinbase pro has updated
         # I tried to delete this code but the entire function broke :(
@@ -63,27 +73,34 @@ class ABCBaseExchangeInterface(abc.ABC):
             while True:
                 if data_append is None:
                     # We can continue if this is valid
-                    if response['time'].iloc[-1] == stop:
+                    if response["time"].iloc[-1] == stop:
                         break
                 else:
-                    if data_append[0]['time'] == stop:
+                    if data_append[0]["time"] == stop:
                         break
-                time.sleep(.5)
+                time.sleep(0.5)
                 tries += 1
                 if tries > 5:
                     # Admit failure and return
-                    warnings.warn("Exchange failed to provide updated data within the timeout.")
+                    warnings.warn(
+                        "Exchange failed to provide updated data within the timeout."
+                    )
                     return self.cast_type(response, return_as)
                 try:
-                    data_append = [self.get_product_history(symbol,
-                                                            stop - res_seconds,
-                                                            stop,
-                                                            res_seconds).iloc[-1].to_dict()]
-                    data_append[0]['time'] = int(data_append[0]['time'])
+                    data_append = [
+                        self.get_product_history(
+                            symbol, stop - res_seconds, stop, res_seconds
+                        )
+                        .iloc[-1]
+                        .to_dict()
+                    ]
+                    data_append[0]["time"] = int(data_append[0]["time"])
                 except IndexError:
                     # If there is no recent data on the exchange this will be an empty dataframe.
                     # This happens for low volume
-                    utils.info_print("Most recent bar at this resolution does not yet exist - skipping.")
+                    utils.info_print(
+                        "Most recent bar at this resolution does not yet exist - skipping."
+                    )
                     break
 
             response = response.append(data_append, ignore_index=True)
@@ -92,7 +109,7 @@ class ABCBaseExchangeInterface(abc.ABC):
         if isinstance(to, int):
             point_count = to
         else:
-            point_count = int((stop-start)/res_seconds + 1)
+            point_count = int((stop - start) / res_seconds + 1)
         # response.index = pd.to_datetime(response['time'], unit='s')
         return self.cast_type(response, return_as, point_count)
 
@@ -111,22 +128,31 @@ class ABCBaseExchangeInterface(abc.ABC):
         resolution_seconds = int(time_interval_to_seconds(resolution))
         if end_date is None:
             # Figure out the next point and then subtract to the last stamp
-            most_recent_valid_resolution = utils.ceil_date(dt.now(),
-                                                           seconds=resolution_seconds).timestamp() - resolution_seconds
+            most_recent_valid_resolution = (
+                utils.ceil_date(dt.now(), seconds=resolution_seconds).timestamp()
+                - resolution_seconds
+            )
             # Binance is nice enough to update OHLCV data, so we have to exclude that by subtracting a resolution
             epoch_stop = most_recent_valid_resolution - resolution_seconds
             count_from = most_recent_valid_resolution
         else:
             if isinstance(end_date, str):
                 from dateutil import parser
+
                 parsed_date = parser.parse(end_date)
-            elif isinstance(end_date, float) or isinstance(end_date, numpy.int64) or isinstance(end_date, int) or \
-                    isinstance(end_date, numpy.int32):
+            elif (
+                isinstance(end_date, float)
+                or isinstance(end_date, numpy.int64)
+                or isinstance(end_date, int)
+                or isinstance(end_date, numpy.int32)
+            ):
                 parsed_date = dt.fromtimestamp(end_date)
             else:
                 parsed_date = end_date
-            valid_time_in_past = utils.ceil_date(parsed_date,
-                                                 seconds=resolution_seconds).timestamp() - resolution_seconds
+            valid_time_in_past = (
+                utils.ceil_date(parsed_date, seconds=resolution_seconds).timestamp()
+                - resolution_seconds
+            )
             epoch_stop = valid_time_in_past - resolution_seconds
             count_from = valid_time_in_past
         if start_date is None and end_date is None:
@@ -144,7 +170,9 @@ class ABCBaseExchangeInterface(abc.ABC):
             epoch_start = utils.convert_input_to_epoch(start_date)
         return epoch_start, epoch_stop, resolution_seconds, to, to_present
 
-    def overridden_history(self, symbol, epoch_start, epoch_stop, resolution, **kwargs) -> pd.DataFrame:
+    def overridden_history(
+        self, symbol, epoch_start, epoch_stop, resolution, **kwargs
+    ) -> pd.DataFrame:
         return self.get_product_history(symbol, epoch_start, epoch_stop, resolution)
 
     def backtesting_time(self):
@@ -152,15 +180,15 @@ class ABCBaseExchangeInterface(abc.ABC):
 
     @staticmethod
     def cast_type(response: pd.DataFrame, return_as: str, point_count=None):
-        if return_as != 'df' and return_as != 'deque':
+        if return_as != "df" and return_as != "deque":
             return response.to_dict(return_as)
-        elif return_as == 'deque':
+        elif return_as == "deque":
             # Create a deque object that has the same length
-            response = response.to_dict('list')
+            response = response.to_dict("list")
             for i in response.keys():
                 response[i] = deque(response[i], point_count)
             return response
-        elif return_as == 'df':
+        elif return_as == "df":
             return response
         else:
             utils.info_print(f"Return type {return_as} is not supported.")

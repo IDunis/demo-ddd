@@ -15,12 +15,16 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import random
+
 import requests
 
 import trapilot.utils.utils
-from trapilot.exchanges.interfaces.alpaca.alpaca_websocket import Tickers as Alpaca_Ticker
-from trapilot.exchanges.interfaces.binance.binance_websocket import Tickers as Binance_Ticker
+from trapilot.exchanges.interfaces.alpaca.alpaca_websocket import \
+    Tickers as Alpaca_Ticker
+from trapilot.exchanges.interfaces.binance.binance_websocket import \
+    Tickers as Binance_Ticker
 from trapilot.exchanges.managers.websocket_manager import WebsocketManager
 
 
@@ -34,7 +38,9 @@ class TickerManager(WebsocketManager):
         """
         self.__default_exchange = default_exchange
         if default_exchange == "binance":
-            default_symbol = trapilot.utils.to_exchange_symbol(default_symbol, "binance").lower()
+            default_symbol = trapilot.utils.to_exchange_symbol(
+                default_symbol, "binance"
+            ).lower()
         elif default_exchange == "alpaca":
             default_symbol = trapilot.utils.to_exchange_symbol(default_symbol, "alpaca")
         elif default_exchange == "ssi":
@@ -51,8 +57,14 @@ class TickerManager(WebsocketManager):
     Manager Functions
     """
 
-    def create_ticker(self, callback, log: str = None, override_symbol: str = None, override_exchange: str = None,
-                      **kwargs):
+    def create_ticker(
+        self,
+        callback,
+        log: str = None,
+        override_symbol: str = None,
+        override_exchange: str = None,
+        **kwargs
+    ):
         """
         Create a ticker on a given exchange.
         Args:
@@ -67,11 +79,11 @@ class TickerManager(WebsocketManager):
 
         # Delete the symbol arg because it shouldn't be in kwargs
         try:
-            del(kwargs['symbol'])
+            del kwargs["symbol"]
         except KeyError:
             pass
 
-        sandbox_mode = self.preferences['settings']['use_sandbox_websockets']
+        sandbox_mode = self.preferences["settings"]["use_sandbox_websockets"]
 
         exchange_name = self.__default_exchange
         # Ensure the ticker dict has this overridden exchange
@@ -85,41 +97,54 @@ class TickerManager(WebsocketManager):
             if override_symbol is None:
                 override_symbol = self.__default_symbol
 
-            override_symbol = trapilot.utils.to_exchange_symbol(override_symbol, "binance").lower()
+            override_symbol = trapilot.utils.to_exchange_symbol(
+                override_symbol, "binance"
+            ).lower()
             if sandbox_mode:
-                ticker = Binance_Ticker(override_symbol,
-                                        "aggTrade",
-                                        log=log,
-                                        websocket_url="wss://testnet.binance.vision/ws", **kwargs)
+                ticker = Binance_Ticker(
+                    override_symbol,
+                    "aggTrade",
+                    log=log,
+                    websocket_url="wss://testnet.binance.vision/ws",
+                    **kwargs
+                )
             else:
-                ticker = Binance_Ticker(override_symbol,
-                                        "aggTrade",
-                                        log=log, **kwargs)
+                ticker = Binance_Ticker(override_symbol, "aggTrade", log=log, **kwargs)
             ticker.append_callback(callback)
             override_symbol = override_symbol.upper()
-            self.__tickers['binance'][override_symbol] = ticker
+            self.__tickers["binance"][override_symbol] = ticker
             return ticker
 
         elif exchange_name == "alpaca":
-            stream = self.preferences['settings']['alpaca']['websocket_stream']
+            stream = self.preferences["settings"]["alpaca"]["websocket_stream"]
             if override_symbol is None:
                 override_symbol = self.__default_symbol
 
-            override_symbol = trapilot.utils.to_exchange_symbol(override_symbol, "alpaca")
+            override_symbol = trapilot.utils.to_exchange_symbol(
+                override_symbol, "alpaca"
+            )
             if sandbox_mode:
-                ticker = Alpaca_Ticker(override_symbol,
-                                       "trades",
-                                       log=log,
-                                       websocket_url="wss://paper-api.alpaca.markets/stream/v2/{}/".format(stream),
-                                       **kwargs)
+                ticker = Alpaca_Ticker(
+                    override_symbol,
+                    "trades",
+                    log=log,
+                    websocket_url="wss://paper-api.alpaca.markets/stream/v2/{}/".format(
+                        stream
+                    ),
+                    **kwargs
+                )
             else:
-                ticker = Alpaca_Ticker(override_symbol,
-                                       "trades",
-                                       log=log,
-                                       websocket_url="wss://stream.data.alpaca.markets/v2/{}/".format(stream),
-                                       **kwargs)
+                ticker = Alpaca_Ticker(
+                    override_symbol,
+                    "trades",
+                    log=log,
+                    websocket_url="wss://stream.data.alpaca.markets/v2/{}/".format(
+                        stream
+                    ),
+                    **kwargs
+                )
             ticker.append_callback(callback)
-            self.__tickers['alpaca'][override_symbol] = ticker
+            self.__tickers["alpaca"][override_symbol] = ticker
             return ticker
 
         else:

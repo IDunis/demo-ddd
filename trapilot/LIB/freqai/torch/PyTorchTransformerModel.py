@@ -3,7 +3,6 @@ import math
 import torch
 from torch import nn
 
-
 """
 The architecture is based on the paper “Attention Is All You Need”.
 Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez,
@@ -19,8 +18,16 @@ class PyTorchTransformerModel(nn.Module):
     Lukasz Kaiser, and Illia Polosukhin. 2017.
     """
 
-    def __init__(self, input_dim: int = 7, output_dim: int = 7, hidden_dim=1024,
-                 n_layer=2, dropout_percent=0.1, time_window=10, nhead=8):
+    def __init__(
+        self,
+        input_dim: int = 7,
+        output_dim: int = 7,
+        hidden_dim=1024,
+        n_layer=2,
+        dropout_percent=0.1,
+        time_window=10,
+        nhead=8,
+    ):
         super().__init__()
         self.time_window = time_window
         # ensure the input dimension to the transformer is divisible by nhead
@@ -30,11 +37,14 @@ class PyTorchTransformerModel(nn.Module):
         )
 
         # Encode the timeseries with Positional encoding
-        self.positional_encoding = PositionalEncoding(d_model=self.dim_val, max_len=self.dim_val)
+        self.positional_encoding = PositionalEncoding(
+            d_model=self.dim_val, max_len=self.dim_val
+        )
 
         # Define the encoder block of the Transformer
         self.encoder_layer = nn.TransformerEncoderLayer(
-            d_model=self.dim_val, nhead=nhead, dropout=dropout_percent, batch_first=True)
+            d_model=self.dim_val, nhead=nhead, dropout=dropout_percent, batch_first=True
+        )
         self.transformer = nn.TransformerEncoder(self.encoder_layer, num_layers=n_layer)
 
         # the pseudo decoding FC
@@ -48,7 +58,7 @@ class PyTorchTransformerModel(nn.Module):
             nn.Linear(int(hidden_dim / 2), int(hidden_dim / 4)),
             nn.ReLU(),
             nn.Dropout(dropout_percent),
-            nn.Linear(int(hidden_dim / 4), output_dim)
+            nn.Linear(int(hidden_dim / 4), output_dim),
         )
 
     def forward(self, x, mask=None, add_positional_encoding=True):
@@ -81,7 +91,9 @@ class PositionalEncoding(nn.Module):
         # for max_len inputs
         pe = torch.zeros(max_len, d_model)
         position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
-        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
+        div_term = torch.exp(
+            torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model)
+        )
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
         pe = pe.unsqueeze(0)

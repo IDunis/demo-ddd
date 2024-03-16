@@ -15,6 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 from trapilot.exchanges.orders.order import Order
 
 
@@ -107,13 +108,17 @@ class StopLimit(Order):
 
         return_string = self.add_new_line(return_string, "Stop Order Parameters: ")
 
-        return_string = self.add_new_line(return_string, "Time In Force: ", newline=False)
+        return_string = self.add_new_line(
+            return_string, "Time In Force: ", newline=False
+        )
         return_string = self.add_new_line(return_string, self.get_time_in_force())
 
         return_string = self.add_new_line(return_string, "Stop Price: ", newline=False)
         return_string = self.add_new_line(return_string, self.get_stop_price())
 
-        return_string = self.add_new_line(return_string, "Stop Limit Price: ", newline=False)
+        return_string = self.add_new_line(
+            return_string, "Stop Limit Price: ", newline=False
+        )
         return_string = self.add_new_line(return_string, self.get_limit_price())
 
         return_string = self.add_new_line(return_string, "Stop Type: ", newline=False)

@@ -15,21 +15,25 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import threading
-import abc
 
-from typing import Union, Any
+import abc
+import threading
+import time
+from typing import Any, Union
 
 from trapilot.exchanges.abc_base_exchange import ABCBaseExchange
-from trapilot.exchanges.futures.futures_exchange import FuturesExchange
-from trapilot.exchanges.interfaces.paper_trade.backtest_controller import BackTestController, BacktestResult
-from trapilot.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
-from trapilot.exchanges.interfaces.paper_trade.abc_backtest_controller import ABCBacktestController
-from trapilot.exchanges.interfaces.paper_trade.futures.futures_paper_trade import FuturesPaperTrade
-from trapilot.exchanges.interfaces.paper_trade.paper_trade import PaperTrade
 from trapilot.exchanges.exchange import Exchange
+from trapilot.exchanges.futures.futures_exchange import FuturesExchange
+from trapilot.exchanges.interfaces.abc_exchange_interface import \
+    ABCExchangeInterface
+from trapilot.exchanges.interfaces.paper_trade.abc_backtest_controller import \
+    ABCBacktestController
+from trapilot.exchanges.interfaces.paper_trade.backtest_controller import (
+    BackTestController, BacktestResult)
+from trapilot.exchanges.interfaces.paper_trade.futures.futures_paper_trade import \
+    FuturesPaperTrade
+from trapilot.exchanges.interfaces.paper_trade.paper_trade import PaperTrade
 from trapilot.utils.time_builder import time_interval_to_seconds
-import time
 
 
 class Model(abc.ABC):
@@ -48,7 +52,9 @@ class Model(abc.ABC):
         # Type these internal calls to the specific backtester
         self.__backtester: BackTestController = self.backtester
 
-    def backtest(self, args, initial_values: dict = None, settings_path: str = None, kwargs=None) -> BacktestResult:
+    def backtest(
+        self, args, initial_values: dict = None, settings_path: str = None, kwargs=None
+    ) -> BacktestResult:
         # Construct the backtest controller
         if kwargs is None:
             kwargs = {}
@@ -62,12 +68,13 @@ class Model(abc.ABC):
         else:
             raise NotImplementedError
         self.interface = self.__exchange.interface
-        backtest = self.__backtester.run(args,
-                                         initial_account_values=initial_values,
-                                         exchange=self.__exchange,
-                                         backtest_settings_path=settings_path,
-                                         **kwargs
-                                         )
+        backtest = self.__backtester.run(
+            args,
+            initial_account_values=initial_values,
+            exchange=self.__exchange,
+            backtest_settings_path=settings_path,
+            **kwargs
+        )
 
         self.is_backtesting = False
         self.__exchange = self.__exchange_cache
@@ -79,7 +86,9 @@ class Model(abc.ABC):
         thread = threading.Thread(target=self.main, args=(args,))
         thread.start()
         # Don't force them to always enable limit order watch
-        if isinstance(self.__exchange, Exchange) and isinstance(self.__exchange, PaperTrade):
+        if isinstance(self.__exchange, Exchange) and isinstance(
+            self.__exchange, PaperTrade
+        ):
             self.__exchange.start_limit_order_watch()
         return thread
 

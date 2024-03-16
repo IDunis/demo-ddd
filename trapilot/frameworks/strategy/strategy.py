@@ -15,6 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import threading
 import time
 import traceback
@@ -24,12 +25,14 @@ import warnings
 import trapilot
 from trapilot.exchanges.abc_base_exchange import ABCBaseExchange
 from trapilot.exchanges.exchange import Exchange
-from trapilot.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
-from trapilot.exchanges.interfaces.paper_trade.backtest_result import BacktestResult
+from trapilot.exchanges.interfaces.abc_exchange_interface import \
+    ABCExchangeInterface
+from trapilot.exchanges.interfaces.paper_trade.backtest_result import \
+    BacktestResult
 from trapilot.exchanges.strategy_logger import StrategyLogger
 from trapilot.frameworks.model.model import Model
-from trapilot.frameworks.strategy.strategy_base import StrategyBase, EventType
 from trapilot.frameworks.strategy import StrategyState
+from trapilot.frameworks.strategy.strategy_base import EventType, StrategyBase
 from trapilot.utils.utils import info_print
 
 
@@ -45,8 +48,14 @@ class StrategyStructure(Model):
         self.schedulers = None
         self.remote_backtesting = None
 
-    def construct_strategy(self, schedulers, orderbook_websockets,
-                           ticker_websockets, orderbook_manager, ticker_manager):
+    def construct_strategy(
+        self,
+        schedulers,
+        orderbook_websockets,
+        ticker_websockets,
+        orderbook_manager,
+        ticker_manager,
+    ):
         self.schedulers = schedulers
         self.orderbook_websockets = orderbook_websockets
         self.ticker_websockets = ticker_websockets
@@ -54,38 +63,56 @@ class StrategyStructure(Model):
         self.ticker_manager = ticker_manager
 
     def rest_event(self, **event):
-        callback = event['callback']  # type: callable
-        symbol = event['symbol']  # type: str
-        resolution = event['resolution']  # type: int
-        variables = event['variables']  # type: dict
-        type_ = event['type']  # type: EventType
-        state = event['state']  # type: StrategyState
+        callback = event["callback"]  # type: callable
+        symbol = event["symbol"]  # type: str
+        resolution = event["resolution"]  # type: int
+        variables = event["variables"]  # type: dict
+        type_ = event["type"]  # type: EventType
+        state = event["state"]  # type: StrategyState
 
         state.variables = variables
         state.resolution = resolution
 
         if type_ == EventType.bar_event:
             if not self.is_backtesting:
-                bar_time = event['bar_time']
+                bar_time = event["bar_time"]
                 while True:
                     # Sometimes coinbase doesn't download recent data correctly
                     try:
                         # A few seconds should pass before querying alpaca because any solution is acceptable
                         if self.interface.get_exchange_type() == "alpaca":
                             time.sleep(2)
-                            data = self.interface.history(symbol=symbol, to=1, resolution=resolution).iloc[-1].to_dict()
+                            data = (
+                                self.interface.history(
+                                    symbol=symbol, to=1, resolution=resolution
+                                )
+                                .iloc[-1]
+                                .to_dict()
+                            )
                             break
                         else:
-                            data = self.interface.history(symbol=symbol, to=1, resolution=resolution).iloc[-1].to_dict()
-                            if data['time'] + resolution == bar_time:
+                            data = (
+                                self.interface.history(
+                                    symbol=symbol, to=1, resolution=resolution
+                                )
+                                .iloc[-1]
+                                .to_dict()
+                            )
+                            if data["time"] + resolution == bar_time:
                                 break
                     except IndexError:
                         pass
-                    time.sleep(.5)
+                    time.sleep(0.5)
             else:
                 # If we are backtesting always just grab the last point and hope for the best of course
                 try:
-                    data = self.interface.history(symbol=symbol, to=1, resolution=resolution).iloc[-1].to_dict()
+                    data = (
+                        self.interface.history(
+                            symbol=symbol, to=1, resolution=resolution
+                        )
+                        .iloc[-1]
+                        .to_dict()
+                    )
                 except IndexError:
                     warnings.warn("No bar found for this time range")
                     return
@@ -105,6 +132,7 @@ class StrategyStructure(Model):
 
             # We have to be a bit more strategy if we're live
             else:
+
                 def grab_price(threaded_symbol):
                     prices[threaded_symbol] = self.interface.get_price(threaded_symbol)
 
@@ -131,26 +159,26 @@ class StrategyStructure(Model):
     def run_price_events(self, events: list):
         # run all events once at start
         for event in events:
-            event['next_run'] = self.backtester.initial_time
+            event["next_run"] = self.backtester.initial_time
 
         while self.has_data:
-            events.sort(key=lambda d: d['next_run'])
+            events.sort(key=lambda d: d["next_run"])
             event = events[0]
 
             # Sleep the difference
-            self.sleep(event['next_run'] - self.time)
+            self.sleep(event["next_run"] - self.time)
 
             # Run the event
             next_run = self.rest_event(**event)
             if next_run:
                 # if rest_event returns something, run this event again at that time
                 # this implies the event did *not* run
-                event['next_run'] = next_run
-                event['was_delayed'] = True
+                event["next_run"] = next_run
+                event["was_delayed"] = True
             else:
                 # otherwise, the event ran. we can revalue account and re-run normally @ `resolution` intervals
                 self.backtester.value_account()
-                event['next_run'] += event['resolution']
+                event["next_run"] += event["resolution"]
 
     def main(self, args):
         if self.is_backtesting:
@@ -163,7 +191,7 @@ class StrategyStructure(Model):
         for scheduler in self.schedulers:
             kwargs = scheduler.get_kwargs()
             # Overwrite the internal interface in the created strategy
-            kwargs['state'].strategy.interface = self.interface
+            kwargs["state"].strategy.interface = self.interface
         self.__run_init()
 
         events = []
@@ -178,11 +206,11 @@ class StrategyStructure(Model):
             self.interface.backtesting = False
         for i in self.schedulers:
             kwargs = i.get_kwargs()
-            if kwargs['init'] is not None:
-                if kwargs['type'] != EventType.scheduled_event:
-                    kwargs['init'](kwargs['symbol'], kwargs['state'])
+            if kwargs["init"] is not None:
+                if kwargs["type"] != EventType.scheduled_event:
+                    kwargs["init"](kwargs["symbol"], kwargs["state"])
                 else:
-                    kwargs['init'](kwargs['state'])
+                    kwargs["init"](kwargs["state"])
 
         # Switch back to the backtesting status
         self.interface.backtesting = self.is_backtesting
@@ -209,21 +237,25 @@ class StrategyStructure(Model):
         for i in self.schedulers:
             i.stop_scheduler()
             kwargs = i.get_kwargs()
-            teardown = kwargs['teardown']
-            state_object = kwargs['state']
-            symbol = kwargs['symbol']
+            teardown = kwargs["teardown"]
+            state_object = kwargs["state"]
+            symbol = kwargs["symbol"]
             if callable(teardown):
                 teardown(symbol, state_object)
 
         for i in self.orderbook_websockets:
-            self.orderbook_manager.close_websocket(override_symbol=i[0], override_exchange=i[1])
+            self.orderbook_manager.close_websocket(
+                override_symbol=i[0], override_exchange=i[1]
+            )
             # Call the stored teardown
             teardown_func = i[4]
             if callable(teardown_func):
                 teardown_func(i[3])
 
         for i in self.ticker_websockets:
-            self.ticker_manager.close_websocket(override_symbol=i[0], override_exchange=i[1])
+            self.ticker_manager.close_websocket(
+                override_symbol=i[0], override_exchange=i[1]
+            )
         self.lock.release()
 
 
@@ -233,21 +265,26 @@ class Strategy(StrategyBase):
 
     def __init__(self, exchange: ABCBaseExchange):
         self.model = StrategyStructure(exchange)
-        super().__init__(exchange, StrategyLogger(exchange.get_interface(), strategy=self), model=self.model)
+        super().__init__(
+            exchange,
+            StrategyLogger(exchange.get_interface(), strategy=self),
+            model=self.model,
+        )
         self._paper_trade_exchange = trapilot.PaperTrade(exchange)
         self.__prices_added = False
 
     def teardown(self):
         pass
 
-    def backtest(self,
-                 to: str = None,
-                 initial_values: dict = None,
-                 start_date: typing.Union[str, float, int] = None,
-                 end_date: typing.Union[str, float, int] = None,
-                 settings_path: str = None,
-                 **kwargs
-                 ) -> BacktestResult:
+    def backtest(
+        self,
+        to: str = None,
+        initial_values: dict = None,
+        start_date: typing.Union[str, float, int] = None,
+        end_date: typing.Union[str, float, int] = None,
+        settings_path: str = None,
+        **kwargs
+    ) -> BacktestResult:
         """
         Turn this strategy into a backtest.
 
@@ -313,11 +350,18 @@ class Strategy(StrategyBase):
         """
         self.setup_model()
         if len(self.orderbook_websockets) != 0 or len(self.ticker_websockets) != 0:
-            info_print("Found websocket events added to this strategy. These are not yet backtestable without "
-                       "event based data")
+            info_print(
+                "Found websocket events added to this strategy. These are not yet backtestable without "
+                "event based data"
+            )
 
         self.__add_prices(to, start_date, end_date)
-        res = self.model.backtest(args={}, initial_values=initial_values, settings_path=settings_path, kwargs=kwargs)
+        res = self.model.backtest(
+            args={},
+            initial_values=initial_values,
+            settings_path=settings_path,
+            kwargs=kwargs,
+        )
         self.model.teardown()
         return res
 
@@ -326,33 +370,44 @@ class Strategy(StrategyBase):
             event_element = scheduler.get_kwargs()
 
             # Skip any scheduled events
-            if event_element['symbol'] is None:
+            if event_element["symbol"] is None:
                 continue
 
             # Loop through the symbols if it is a list
-            if isinstance(event_element['symbol'], list):
-                for symbol in event_element['symbol']:
-                    self.model.backtester.add_prices(to=to,
-                                                     start_date=start_date,
-                                                     stop_date=end_date,
-                                                     symbol=symbol,
-                                                     resolution=event_element['resolution'])
+            if isinstance(event_element["symbol"], list):
+                for symbol in event_element["symbol"]:
+                    self.model.backtester.add_prices(
+                        to=to,
+                        start_date=start_date,
+                        stop_date=end_date,
+                        symbol=symbol,
+                        resolution=event_element["resolution"],
+                    )
             else:
-                self.model.backtester.add_prices(to=to,
-                                                 start_date=start_date,
-                                                 stop_date=end_date,
-                                                 symbol=event_element['symbol'],
-                                                 resolution=event_element['resolution'])
+                self.model.backtester.add_prices(
+                    to=to,
+                    start_date=start_date,
+                    stop_date=end_date,
+                    symbol=event_element["symbol"],
+                    resolution=event_element["resolution"],
+                )
 
             self.__prices_added = True
 
         if not self.__prices_added:
-            raise LookupError("No prices added. If using scheduled events, create an empty price event or add prices"
-                              " manually using strategy.add_prices()")
+            raise LookupError(
+                "No prices added. If using scheduled events, create an empty price event or add prices"
+                " manually using strategy.add_prices()"
+            )
 
-    def add_prices(self, symbol: str, resolution: [str, int, float], to: str = None,
-                   start_date: typing.Union[str, float, int] = None,
-                   stop_date: typing.Union[str, float, int] = None):
+    def add_prices(
+        self,
+        symbol: str,
+        resolution: [str, int, float],
+        to: str = None,
+        start_date: typing.Union[str, float, int] = None,
+        stop_date: typing.Union[str, float, int] = None,
+    ):
         """
         Directly add prices to the strategy
         """
@@ -360,9 +415,13 @@ class Strategy(StrategyBase):
         self.__prices_added = True
 
     def setup_model(self):
-        self.model.construct_strategy(self.schedulers, self.orderbook_websockets,
-                                      self.ticker_websockets, self.orderbook_manager,
-                                      self.ticker_manager)
+        self.model.construct_strategy(
+            self.schedulers,
+            self.orderbook_websockets,
+            self.ticker_websockets,
+            self.orderbook_manager,
+            self.ticker_manager,
+        )
 
     def start(self):
         """
@@ -372,7 +431,9 @@ class Strategy(StrategyBase):
         """
         self.setup_model()
         if self.remote_backtesting:
-            warnings.warn("Aborted attempt to start a live strategy a backtest configuration")
+            warnings.warn(
+                "Aborted attempt to start a live strategy a backtest configuration"
+            )
             return
         self.model.run()
 

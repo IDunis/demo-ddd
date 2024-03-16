@@ -15,13 +15,15 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import abc
-from trapilot.utils.utils import info_print
 
 import trapilot
 from trapilot.exchanges.abc_base_exchange import ABCBaseExchange
 from trapilot.exchanges.auth.utils import write_auth_cache
-from trapilot.exchanges.interfaces.futures_exchange_interface import FuturesExchangeInterface
+from trapilot.exchanges.interfaces.futures_exchange_interface import \
+    FuturesExchangeInterface
+from trapilot.utils.utils import info_print
 
 
 class FuturesExchange(ABCBaseExchange, abc.ABC):
@@ -29,13 +31,14 @@ class FuturesExchange(ABCBaseExchange, abc.ABC):
     portfolio_name: str
 
     def __init__(self, exchange_type, portfolio_name, preferences_path):
-        info_print("Live futures trading is untested due to US regulations - this prevents trapilot developers "
-                   "from integrating with these exchanges. We are looking for someone who is interested in helping us "
-                   "create & test our integrations.")
+        info_print(
+            "Live futures trading is untested due to US regulations - this prevents trapilot developers "
+            "from integrating with these exchanges. We are looking for someone who is interested in helping us "
+            "create & test our integrations."
+        )
         self.exchange_type = exchange_type  # binance, ftx
         self.portfolio_name = portfolio_name  # my_cool_portfolio
-        self.preferences = trapilot.utils.load_user_preferences(
-            preferences_path)
+        self.preferences = trapilot.utils.load_user_preferences(preferences_path)
         self.models = {}
 
     @property

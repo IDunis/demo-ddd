@@ -5,9 +5,8 @@ from typing import Any
 from torch.utils.tensorboard import SummaryWriter
 from xgboost import callback
 
-from trapilot.LIB.freqai.tensorboard.base_tensorboard import (BaseTensorBoardCallback,
-                                                           BaseTensorboardLogger)
-
+from trapilot.LIB.freqai.tensorboard.base_tensorboard import (
+    BaseTensorBoardCallback, BaseTensorboardLogger)
 
 logger = logging.getLogger(__name__)
 

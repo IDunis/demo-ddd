@@ -1,6 +1,7 @@
 """
 Main Trapilot worker class.
 """
+
 import logging
 import time
 import traceback
@@ -16,7 +17,6 @@ from trapilot.LIB.enums import RPCMessageType, State
 from trapilot.LIB.exceptions import OperationalException, TemporaryError
 from trapilot.LIB.exchange import timeframe_to_next_date
 from trapilot.LIB.tradebot import TradeBot
-
 
 logger = logging.getLogger(__name__)
 
@@ -52,13 +52,17 @@ class Worker:
         # Init the instance of the bot
         self.tradebot = TradeBot(self._config)
 
-        internals_config = self._config.get('internals', {})
-        self._throttle_secs = internals_config.get('process_throttle_secs',
-                                                   PROCESS_THROTTLE_SECS)
-        self._heartbeat_interval = internals_config.get('heartbeat_interval', 60)
+        internals_config = self._config.get("internals", {})
+        self._throttle_secs = internals_config.get(
+            "process_throttle_secs", PROCESS_THROTTLE_SECS
+        )
+        self._heartbeat_interval = internals_config.get("heartbeat_interval", 60)
 
-        self._sd_notify = sdnotify.SystemdNotifier() if \
-            self._config.get('internals', {}).get('sd_notify', False) else None
+        self._sd_notify = (
+            sdnotify.SystemdNotifier()
+            if self._config.get("internals", {}).get("sd_notify", False)
+            else None
+        )
 
     def _notify(self, message: str) -> None:
         """
@@ -88,10 +92,11 @@ class Worker:
         if state != old_state:
 
             if old_state != State.RELOAD_CONFIG:
-                self.tradebot.notify_status(f'{state.name.lower()}')
+                self.tradebot.notify_status(f"{state.name.lower()}")
 
             logger.info(
-                f"Changing state{f' from {old_state.name}' if old_state else ''} to: {state.name}")
+                f"Changing state{f' from {old_state.name}' if old_state else ''} to: {state.name}"
+            )
             if state == State.RUNNING:
                 self.tradebot.startup()
 
@@ -106,33 +111,46 @@ class Worker:
             # Ping systemd watchdog before sleeping in the stopped state
             self._notify("WATCHDOG=1\nSTATUS=State: STOPPED.")
 
-            self._throttle(func=self._process_stopped, throttle_secs=self._throttle_secs)
+            self._throttle(
+                func=self._process_stopped, throttle_secs=self._throttle_secs
+            )
 
         elif state == State.RUNNING:
             # Ping systemd watchdog before throttling
             self._notify("WATCHDOG=1\nSTATUS=State: RUNNING.")
 
             # Use an offset of 1s to ensure a new candle has been issued
-            self._throttle(func=self._process_running, throttle_secs=self._throttle_secs,
-                           timeframe=self._config['timeframe'] if self._config else None,
-                           timeframe_offset=1)
+            self._throttle(
+                func=self._process_running,
+                throttle_secs=self._throttle_secs,
+                timeframe=self._config["timeframe"] if self._config else None,
+                timeframe_offset=1,
+            )
 
         if self._heartbeat_interval:
             now = time.time()
             if (now - self._heartbeat_msg) > self._heartbeat_interval:
                 version = __version__
                 strategy_version = self.tradebot.strategy.version()
-                if (strategy_version is not None):
-                    version += ', strategy_version: ' + strategy_version
-                logger.info(f"Bot heartbeat. PID={getpid()}, "
-                            f"version='{version}', state='{state.name}'")
+                if strategy_version is not None:
+                    version += ", strategy_version: " + strategy_version
+                logger.info(
+                    f"Bot heartbeat. PID={getpid()}, "
+                    f"version='{version}', state='{state.name}'"
+                )
                 self._heartbeat_msg = now
 
         return state
 
-    def _throttle(self, func: Callable[..., Any], throttle_secs: float,
-                  timeframe: Optional[str] = None, timeframe_offset: float = 1.0,
-                  *args, **kwargs) -> Any:
+    def _throttle(
+        self,
+        func: Callable[..., Any],
+        throttle_secs: float,
+        timeframe: Optional[str] = None,
+        timeframe_offset: float = 1.0,
+        *args,
+        **kwargs,
+    ) -> Any:
         """
         Throttles the given callable that it
         takes at least `min_secs` to finish execution.
@@ -160,10 +178,11 @@ class Worker:
         sleep_duration = max(sleep_duration, 0.0)
         # next_iter = datetime.now(timezone.utc) + timedelta(seconds=sleep_duration)
 
-        logger.debug(f"Throttling with '{func.__name__}()': sleep for {sleep_duration:.2f} s, "
-                     f"last iteration took {time_passed:.2f} s."
-                     #  f"next: {next_iter}"
-                     )
+        logger.debug(
+            f"Throttling with '{func.__name__}()': sleep for {sleep_duration:.2f} s, "
+            f"last iteration took {time_passed:.2f} s."
+            #  f"next: {next_iter}"
+        )
         self._sleep(sleep_duration)
         return result
 
@@ -183,14 +202,14 @@ class Worker:
             time.sleep(RETRY_TIMEOUT)
         except OperationalException:
             tb = traceback.format_exc()
-            hint = 'Issue `/start` if you think it is safe to restart.'
+            hint = "Issue `/start` if you think it is safe to restart."
 
             self.tradebot.notify_status(
-                f'*OperationalException:*\n```\n{tb}```\n {hint}',
-                msg_type=RPCMessageType.EXCEPTION
+                f"*OperationalException:*\n```\n{tb}```\n {hint}",
+                msg_type=RPCMessageType.EXCEPTION,
             )
 
-            logger.exception('OperationalException. Stopping trader ...')
+            logger.exception("OperationalException. Stopping trader ...")
             self.tradebot.state = State.STOPPED
 
     def _reconfigure(self) -> None:
@@ -207,7 +226,7 @@ class Worker:
         # Load and validate config and create new instance of the bot
         self._init(True)
 
-        self.tradebot.notify_status('config reloaded')
+        self.tradebot.notify_status("config reloaded")
 
         # Tell systemd that we completed reconfiguration
         self._notify("READY=1")
@@ -217,5 +236,5 @@ class Worker:
         self._notify("STOPPING=1")
 
         if self.tradebot:
-            self.tradebot.notify_status('process died')
+            self.tradebot.notify_status("process died")
             self.tradebot.cleanup()

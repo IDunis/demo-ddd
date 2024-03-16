@@ -17,7 +17,8 @@
 """
 
 from typing import Union
-from numpy import int64, int32
+
+from numpy import int32, int64
 
 
 def build_second() -> int:
@@ -64,12 +65,16 @@ def time_interval_to_seconds(interval: Union[str, float]) -> float:
     """
     Extract the number of seconds in an interval string
     """
-    if isinstance(interval, float) or isinstance(interval, int) or isinstance(interval, int64) or \
-            isinstance(interval, int32):
+    if (
+        isinstance(interval, float)
+        or isinstance(interval, int)
+        or isinstance(interval, int64)
+        or isinstance(interval, int32)
+    ):
         return float(interval)
     # Extract intervals
-    if 'mo' in interval:
-        interval = interval.replace('mo', 'M')
+    if "mo" in interval:
+        interval = interval.replace("mo", "M")
     try:
         magnitude = int(interval[:-1])
     except ValueError:
@@ -114,12 +119,12 @@ def number_interval_to_string(interval: int) -> str:
         interval: An integer representing the conversion time
     """
     times = {
-        'mo': build_month(),
-        'wk': build_week(),
-        'd': build_day(),
-        'h': build_hour(),
-        'm': build_minute(),
-        's': build_second()
+        "mo": build_month(),
+        "wk": build_week(),
+        "d": build_day(),
+        "h": build_hour(),
+        "m": build_minute(),
+        "s": build_second(),
     }
 
     unit = None
@@ -129,6 +134,6 @@ def number_interval_to_string(interval: int) -> str:
             unit = i
             break
 
-    magnitude = int(interval/times[unit])
+    magnitude = int(interval / times[unit])
 
-    return f'{magnitude}{unit}'
+    return f"{magnitude}{unit}"

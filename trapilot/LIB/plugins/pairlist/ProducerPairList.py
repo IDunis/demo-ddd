@@ -3,13 +3,14 @@ External Pair List provider
 
 Provides pair list from Leader data
 """
+
 import logging
 from typing import Any, Dict, List, Optional
 
 from trapilot.LIB.exceptions import OperationalException
 from trapilot.LIB.exchange.types import Tickers
-from trapilot.LIB.plugins.pairlist.IPairList import IPairList, PairlistParameter
-
+from trapilot.LIB.plugins.pairlist.IPairList import (IPairList,
+                                                     PairlistParameter)
 
 logger = logging.getLogger(__name__)
 
@@ -28,18 +29,27 @@ class ProducerPairList(IPairList):
             }
         ],
     """
+
     is_pairlist_generator = True
 
-    def __init__(self, exchange, pairlistmanager,
-                 config: Dict[str, Any], pairlistconfig: Dict[str, Any],
-                 pairlist_pos: int) -> None:
-        super().__init__(exchange, pairlistmanager, config, pairlistconfig, pairlist_pos)
+    def __init__(
+        self,
+        exchange,
+        pairlistmanager,
+        config: Dict[str, Any],
+        pairlistconfig: Dict[str, Any],
+        pairlist_pos: int,
+    ) -> None:
+        super().__init__(
+            exchange, pairlistmanager, config, pairlistconfig, pairlist_pos
+        )
 
-        self._num_assets: int = self._pairlistconfig.get('number_assets', 0)
-        self._producer_name = self._pairlistconfig.get('producer_name', 'default')
-        if not config.get('external_message_consumer', {}).get('enabled'):
+        self._num_assets: int = self._pairlistconfig.get("number_assets", 0)
+        self._producer_name = self._pairlistconfig.get("producer_name", "default")
+        if not config.get("external_message_consumer", {}).get("enabled"):
             raise OperationalException(
-                "ProducerPairList requires external_message_consumer to be enabled.")
+                "ProducerPairList requires external_message_consumer to be enabled."
+            )
 
     @property
     def needstickers(self) -> bool:
@@ -74,21 +84,26 @@ class ProducerPairList(IPairList):
                 "type": "string",
                 "default": "default",
                 "description": "Producer name",
-                "help": ("Name of the producer to use. Requires additional "
-                         "external_message_consumer configuration.")
+                "help": (
+                    "Name of the producer to use. Requires additional "
+                    "external_message_consumer configuration."
+                ),
             },
         }
 
     def _filter_pairlist(self, pairlist: Optional[List[str]]):
         upstream_pairlist = self._pairlistmanager._dataprovider.get_producer_pairs(
-            self._producer_name)
+            self._producer_name
+        )
 
         if pairlist is None:
-            pairlist = self._pairlistmanager._dataprovider.get_producer_pairs(self._producer_name)
+            pairlist = self._pairlistmanager._dataprovider.get_producer_pairs(
+                self._producer_name
+            )
 
         pairs = list(dict.fromkeys(pairlist + upstream_pairlist))
         if self._num_assets:
-            pairs = pairs[:self._num_assets]
+            pairs = pairs[: self._num_assets]
 
         return pairs
 
@@ -100,7 +115,9 @@ class ProducerPairList(IPairList):
         """
         pairs = self._filter_pairlist(None)
         self.log_once(f"Received pairs: {pairs}", logger.debug)
-        pairs = self._whitelist_for_active_markets(self.verify_whitelist(pairs, logger.info))
+        pairs = self._whitelist_for_active_markets(
+            self.verify_whitelist(pairs, logger.info)
+        )
         return pairs
 
     def filter_pairlist(self, pairlist: List[str], tickers: Tickers) -> List[str]:

@@ -25,8 +25,10 @@ import tulipy as ti
 from trapilot.indicators.utils import check_series, convert_to_numpy
 
 
-def rsi(data: Any, period: int = 14, round_rsi: bool = False, use_series=False) -> np.array:
-    """ Implements RSI Indicator """
+def rsi(
+    data: Any, period: int = 14, round_rsi: bool = False, use_series=False
+) -> np.array:
+    """Implements RSI Indicator"""
     if period >= len(data):
         return pd.Series() if use_series else []
     if check_series(data):
@@ -63,7 +65,9 @@ def absolute_price_oscillator(data, short_period=12, long_period=26, use_series=
     return pd.Series(apo) if use_series else apo
 
 
-def percentage_price_oscillator(data, short_period=12, long_period=26, use_series=False):
+def percentage_price_oscillator(
+    data, short_period=12, long_period=26, use_series=False
+):
     if check_series(data):
         use_series = True
     data = convert_to_numpy(data)
@@ -71,19 +75,33 @@ def percentage_price_oscillator(data, short_period=12, long_period=26, use_serie
     return pd.Series(ppo) if use_series else ppo
 
 
-def stochastic_oscillator(high_data, low_data, close_data, pct_k_period=14, pct_k_slowing_period=3, pct_d_period=3,
-                          use_series=False):
+def stochastic_oscillator(
+    high_data,
+    low_data,
+    close_data,
+    pct_k_period=14,
+    pct_k_slowing_period=3,
+    pct_d_period=3,
+    use_series=False,
+):
     if check_series(high_data) or check_series(low_data) or check_series(close_data):
         use_series = True
     high_data = convert_to_numpy(high_data)
     low_data = convert_to_numpy(low_data)
     close_data = convert_to_numpy(close_data)
-    stoch = ti.stoch(high_data, low_data, close_data, pct_k_period, pct_k_slowing_period, pct_d_period)
+    stoch = ti.stoch(
+        high_data,
+        low_data,
+        close_data,
+        pct_k_period,
+        pct_k_slowing_period,
+        pct_d_period,
+    )
     return pd.Series(stoch) if use_series else stoch
 
 
 def stochastic_rsi(data, period=14, smooth_pct_k=3, smooth_pct_d=3):
-    """ Calculates Stochoastic RSI Courteous of @lukazbinden
+    """Calculates Stochoastic RSI Courteous of @lukazbinden
     :param data:
     :param period:
     :param smooth_pct_k:
@@ -96,7 +114,8 @@ def stochastic_rsi(data, period=14, smooth_pct_k=3, smooth_pct_d=3):
     # Calculate StochRSI
     rsi_values = pd.Series(rsi_values)
     stochrsi = (rsi_values - rsi_values.rolling(period).min()) / (
-                rsi_values.rolling(period).max() - rsi_values.rolling(period).min())
+        rsi_values.rolling(period).max() - rsi_values.rolling(period).min()
+    )
     stochrsi_K = stochrsi.rolling(smooth_pct_k).mean()
     stochrsi_D = stochrsi_K.rolling(smooth_pct_d).mean()
 

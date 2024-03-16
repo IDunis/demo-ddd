@@ -22,10 +22,11 @@ from typing import Union
 
 import pandas
 
-from trapilot.exchanges.interfaces.abc_base_exchange_interface import ABCBaseExchangeInterface
-from trapilot.utils.utils import AttributeDict
+from trapilot.exchanges.interfaces.abc_base_exchange_interface import \
+    ABCBaseExchangeInterface
 from trapilot.exchanges.orders.limit_order import LimitOrder
 from trapilot.exchanges.orders.market_order import MarketOrder
+from trapilot.utils.utils import AttributeDict
 
 
 class ABCExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
@@ -72,8 +73,7 @@ class ABCExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_account(self,
-                    symbol: str = None) -> AttributeDict:
+    def get_account(self, symbol: str = None) -> AttributeDict:
         """
         Get all assets in an account, or sort by symbol/account_id
         Args:
@@ -86,10 +86,7 @@ class ABCExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def market_order(self,
-                     symbol: str,
-                     side: str,
-                     size: float) -> MarketOrder:
+    def market_order(self, symbol: str, side: str, size: float) -> MarketOrder:
         """
         Used for buying or selling market orders
         Args:
@@ -100,11 +97,9 @@ class ABCExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def limit_order(self,
-                    symbol: str,
-                    side: str,
-                    price: float,
-                    size: float) -> LimitOrder:
+    def limit_order(
+        self, symbol: str, side: str, price: float, size: float
+    ) -> LimitOrder:
         """
         Used for buying or selling limit orders
         Args:
@@ -116,10 +111,7 @@ class ABCExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def take_profit_order(self,
-                          symbol: str,
-                          price: float,
-                          size: float) -> LimitOrder:
+    def take_profit_order(self, symbol: str, price: float, size: float) -> LimitOrder:
         """
         Take profit order
         Args:
@@ -130,10 +122,7 @@ class ABCExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def stop_loss_order(self,
-                        symbol: str,
-                        price: float,
-                        size: float) -> LimitOrder:
+    def stop_loss_order(self, symbol: str, price: float, size: float) -> LimitOrder:
         """
         Stop loss order
         Args:
@@ -144,9 +133,7 @@ class ABCExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def cancel_order(self,
-                     symbol: str,
-                     order_id: str) -> dict:
+    def cancel_order(self, symbol: str, order_id: str) -> dict:
         """
         Cancel an order on a particular symbol & order id
 
@@ -158,8 +145,7 @@ class ABCExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_open_orders(self,
-                        symbol: str = None) -> list:
+    def get_open_orders(self, symbol: str = None) -> list:
         """
         List open orders.
         Args:
@@ -169,9 +155,7 @@ class ABCExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_order(self,
-                  symbol: str,
-                  order_id: str) -> dict:
+    def get_order(self, symbol: str, order_id: str) -> dict:
         """
         Get a certain order
         Args:
@@ -190,8 +174,7 @@ class ABCExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_order_filter(self,
-                         symbol: str) -> dict:
+    def get_order_filter(self, symbol: str) -> dict:
         """
         Find order limits for the exchange
         Args:
@@ -201,8 +184,7 @@ class ABCExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_price(self,
-                  symbol: str) -> float:
+    def get_price(self, symbol: str) -> float:
         """
         Returns just the price of a symbol.
         Args:

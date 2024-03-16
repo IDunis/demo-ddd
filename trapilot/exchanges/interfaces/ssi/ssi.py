@@ -16,17 +16,21 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from trapilot.exchanges.exchange import Exchange
 from trapilot.exchanges.auth.auth_constructor import AuthConstructor
-from trapilot.exchanges.interfaces.ssi.ssi_api import create_client, REST
+from trapilot.exchanges.exchange import Exchange
+from trapilot.exchanges.interfaces.ssi.ssi_api import REST, create_client
 
 
 class SSI(Exchange):
-    def __init__(self, portfolio_name=None, keys_path="user_data/keys.json", settings_path=None):
+    def __init__(
+        self, portfolio_name=None, keys_path="user_data/keys.json", settings_path=None
+    ):
         Exchange.__init__(self, "ssi", portfolio_name, settings_path)
 
         # Load the auth from the keys file
-        auth = AuthConstructor(keys_path, portfolio_name, 'ssi', ['API_KEY', 'API_SECRET', 'sandbox'])
+        auth = AuthConstructor(
+            keys_path, portfolio_name, "ssi", ["API_KEY", "API_SECRET", "sandbox"]
+        )
 
         sandbox = super().evaluate_sandbox(auth)
 

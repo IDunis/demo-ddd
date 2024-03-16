@@ -15,14 +15,26 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import pandas as pd
-from pandas import DataFrame, to_datetime, Timestamp
-from trapilot.utils import time_interval_to_seconds as _time_interval_to_seconds, info_print
+from pandas import DataFrame, Timestamp, to_datetime
+
+from trapilot.utils import info_print
+from trapilot.utils import \
+    time_interval_to_seconds as _time_interval_to_seconds
 
 
 class BacktestResult:
-    def __init__(self, history_and_returns: dict, trades: dict, history: dict,
-                 start_time: float, stop_time: float, quote_currency: str, figures: list):
+    def __init__(
+        self,
+        history_and_returns: dict,
+        trades: dict,
+        history: dict,
+        start_time: float,
+        stop_time: float,
+        quote_currency: str,
+        figures: list,
+    ):
         # This can use a ton of memory if these attributes are not cleared
         self.history_and_returns = history_and_returns
         self.metrics = None  # Assigned after construction
@@ -39,13 +51,13 @@ class BacktestResult:
         self.figures = figures
 
     def get_account_history(self) -> DataFrame:
-        return self.history_and_returns['history']
+        return self.history_and_returns["history"]
 
     def get_returns(self) -> DataFrame:
-        return self.history_and_returns['returns']
+        return self.history_and_returns["returns"]
 
     def get_resampled_account(self) -> DataFrame:
-        return self.history_and_returns['resampled_account_value']
+        return self.history_and_returns["resampled_account_value"]
 
     def get_user_callback_results(self) -> dict:
         return self.user_callbacks
@@ -53,9 +65,13 @@ class BacktestResult:
     def get_metrics(self) -> dict:
         return self.metrics
 
-    def resample_account(self, symbol, interval: [str, float],
-                         use_asset_history: bool = False,
-                         use_price=None) -> DataFrame:
+    def resample_account(
+        self,
+        symbol,
+        interval: [str, float],
+        use_asset_history: bool = False,
+        use_price=None,
+    ) -> DataFrame:
         """
         Resample the raw account value metrics to any resolution
 
@@ -87,6 +103,7 @@ class BacktestResult:
                             search_index += 1
                     else:
                         return 0
+
             try:
                 # Iterate and find the correct quote price
                 index_ = search(times, len(times), epoch)
@@ -100,12 +117,12 @@ class BacktestResult:
 
         if use_asset_history:
             # Find the necessary values to assemble the resamples
-            time_array = self.history[symbol]['time'].tolist()
+            time_array = self.history[symbol]["time"].tolist()
             price_array = self.history[symbol][use_price].tolist()
         else:
             # Find the necessary values to assemble the resamples
-            time_array = self.history_and_returns['history']['time'].tolist()
-            price_array = self.history_and_returns['history'][symbol].tolist()
+            time_array = self.history_and_returns["history"]["time"].tolist()
+            price_array = self.history_and_returns["history"][symbol].tolist()
 
         # Add the epoch
         epoch_start = time_array[0]
@@ -114,54 +131,62 @@ class BacktestResult:
         try:
             while epoch_start <= epoch_stop:
                 # Append this dict to the array
-                resampled_array.append({
-                    'time': epoch_start,
-                    'value': search_price(price_array, time_array, epoch_start)
-                })
+                resampled_array.append(
+                    {
+                        "time": epoch_start,
+                        "value": search_price(price_array, time_array, epoch_start),
+                    }
+                )
 
                 # Increase the epoch value
                 epoch_start += interval
         except TypeError:
-            raise TypeError("No valid account data found, make sure to create valid account value datapoints.")
+            raise TypeError(
+                "No valid account data found, make sure to create valid account value datapoints."
+            )
 
         # Turn that resample into a dataframe
-        return DataFrame(resampled_array, columns=['time', 'value'])
+        return DataFrame(resampled_array, columns=["time", "value"])
 
     def get_quantstats_metrics(self):
         try:
             import quantstats as qs
+
             try:
-                returns = self.get_returns()['value']
-                returns.index = to_datetime(returns.index, origin=Timestamp(self.start_time, unit='s'), unit='D')
+                returns = self.get_returns()["value"]
+                returns.index = to_datetime(
+                    returns.index, origin=Timestamp(self.start_time, unit="s"), unit="D"
+                )
                 return qs.reports.metrics(returns, display=False)
             except ValueError as e:
                 info_print(e)
         except ImportError:
             raise ImportError(
-                "Quantstats not installed. Run 'pip install quantstats' to calculate metrics using Quantstats.")
+                "Quantstats not installed. Run 'pip install quantstats' to calculate metrics using Quantstats."
+            )
 
     def __str__(self):
         return_string = "\n"
         return_string += "Historical Dataframes: \n"
 
         return_string += "Account History: \n"
-        return_string += self.history_and_returns['history'].__str__()
+        return_string += self.history_and_returns["history"].__str__()
         return_string += "\n"
 
         return_string += "Account Returns: \n"
-        return_string += self.history_and_returns['returns'].__str__()
+        return_string += self.history_and_returns["returns"].__str__()
         return_string += "\n"
 
         return_string += "Resampled Account Value: \n"
-        return_string += self.history_and_returns['resampled_account_value'].__str__()
+        return_string += self.history_and_returns["resampled_account_value"].__str__()
         return_string += "\n"
 
         return_string += "Trapilot Metrics: \n"
         for i in self.metrics.keys():
-            display_name = self.metrics[i]['display_name']
-            value = self.metrics[i]['value']
+            display_name = self.metrics[i]["display_name"]
+            value = self.metrics[i]["value"]
             spaces_needed = 33 - len(display_name)
-            user_metrics_line = display_name + ": " + (' ' * spaces_needed) + str(value)
+            user_metrics_line = display_name + ": " + (" " * spaces_needed) + str(value)
             if display_name[-3:] == "(%)":
                 user_metrics_line += "%"
             user_metrics_line += "\n"
@@ -176,24 +201,24 @@ class BacktestResult:
         return return_string
 
     def to_dict(self) -> dict:
-        history_copy: pd.DataFrame = self.history_and_returns['history'].copy(deep=True)
+        history_copy: pd.DataFrame = self.history_and_returns["history"].copy(deep=True)
         value_column = None
         for column in history_copy:
             if column[0:13] == "Account Value":
                 value_column = column
 
         # Renae the account value to just value
-        history_copy = history_copy.rename(columns={value_column: 'value'})
+        history_copy = history_copy.rename(columns={value_column: "value"})
 
         result = {
-            'metrics': self.metrics,
-            'exchange': self.exchange,
-            'trades': self.trades,
-            'quote_currency': self.quote_currency,
-            'start_time': self.start_time,
-            'stop_time': self.stop_time,
+            "metrics": self.metrics,
+            "exchange": self.exchange,
+            "trades": self.trades,
+            "quote_currency": self.quote_currency,
+            "start_time": self.start_time,
+            "stop_time": self.stop_time,
             # "returns": self.history_and_returns['returns'].to_dict(),
-            "history": history_copy.to_dict('records')
+            "history": history_copy.to_dict("records"),
         }
 
         return result

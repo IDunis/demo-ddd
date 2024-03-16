@@ -15,6 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 from alpaca_trade_api.entity_v2 import trade_mapping_v2
 from msgpack.ext import Timestamp
 
@@ -28,7 +29,7 @@ def parse_alpaca_timestamp(value: Timestamp):
 def alpaca_remapping(dictionary: dict, mapping: dict):
     # From https://stackoverflow.com/a/67573821/8087739
     try:
-        dictionary.pop('T')
+        dictionary.pop("T")
     except KeyError:
         pass
     return {mapping[k]: dictionary[k] for k in dictionary}
@@ -36,13 +37,17 @@ def alpaca_remapping(dictionary: dict, mapping: dict):
 
 def switch_type(stream):
     if stream == "trades":
-        return trades_logging, \
-               trades_interface, \
-               "id,symbol,conditions,exchange,price,size,timestamp,tape\n"
+        return (
+            trades_logging,
+            trades_interface,
+            "id,symbol,conditions,exchange,price,size,timestamp,tape\n",
+        )
     elif stream == "quotes":
-        return quotes_logging, \
-               no_callback, \
-               "symbol,ask_exchange,ask_price,ask_size,bid_exchange,bid_price,bid_size,conditions,timestamp,tape\n"
+        return (
+            quotes_logging,
+            no_callback,
+            "symbol,ask_exchange,ask_price,ask_size,bid_exchange,bid_price,bid_size,conditions,timestamp,tape\n",
+        )
     else:
         return no_logging_callback, no_callback, ""
 
@@ -55,21 +60,31 @@ def no_logging_callback(message):
     response = ""
     for i in list(message.keys()):
         response += str(message[i])
-        response += ','
+        response += ","
 
-    response += '\n'
+    response += "\n"
     return response
 
 
 def trades_logging(message: dict):
-    return str(str(message["i"]) + "," +
-               str(message["S"]) + "," +
-               str(message["c"]) + "," +
-               str(message["x"]) + "," +
-               str(message["p"]) + "," +
-               str(message["s"]) + "," +
-               str(message["t"]) + "," +
-               str(message["z"]) + "\n")
+    return str(
+        str(message["i"])
+        + ","
+        + str(message["S"])
+        + ","
+        + str(message["c"])
+        + ","
+        + str(message["x"])
+        + ","
+        + str(message["p"])
+        + ","
+        + str(message["s"])
+        + ","
+        + str(message["t"])
+        + ","
+        + str(message["z"])
+        + "\n"
+    )
 
 
 def trades_interface(message):
@@ -85,7 +100,7 @@ def trades_interface(message):
     }
     """
     message = alpaca_remapping(message, trade_mapping_v2)
-    message['time'] = message.pop('timestamp')
+    message["time"] = message.pop("timestamp")
 
     renames = [
         ["id", "trade_id"],
@@ -98,19 +113,31 @@ def trades_interface(message):
         ["price", float],
         ["time", float],
         ["trade_id", int],
-        ["size", float]
+        ["size", float],
     ]
     return isolate_specific(needed, message)
 
 
 def quotes_logging(message):
-    return str(str(message["S"]) + "," +
-               str(message["ax"]) + "," +
-               str(message["ap"]) + "," +
-               str(message["as"]) + "," +
-               str(message["bx"]) + "," +
-               str(message["bp"]) + "," +
-               str(message["bs"]) + "," +
-               str(message["c"]) + "," +
-               str(message["t"]) + "," +
-               str(message["z"]) + "\n")
+    return str(
+        str(message["S"])
+        + ","
+        + str(message["ax"])
+        + ","
+        + str(message["ap"])
+        + ","
+        + str(message["as"])
+        + ","
+        + str(message["bx"])
+        + ","
+        + str(message["bp"])
+        + ","
+        + str(message["bs"])
+        + ","
+        + str(message["c"])
+        + ","
+        + str(message["t"])
+        + ","
+        + str(message["z"])
+        + "\n"
+    )

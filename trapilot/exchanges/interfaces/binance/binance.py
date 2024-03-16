@@ -18,27 +18,37 @@
 
 from binance.client import Client
 
-from trapilot.exchanges.exchange import Exchange
 from trapilot.exchanges.auth.auth_constructor import AuthConstructor
+from trapilot.exchanges.exchange import Exchange
 from trapilot.utils import utils
 
 
 class Binance(Exchange):
-    def __init__(self, portfolio_name=None, keys_path="user_data/keys.json", settings_path=None):
+    def __init__(
+        self, portfolio_name=None, keys_path="user_data/keys.json", settings_path=None
+    ):
         Exchange.__init__(self, "binance", portfolio_name, settings_path)
 
         # Load the auth from the keys file
-        auth = AuthConstructor(keys_path, portfolio_name, 'binance', ['API_KEY', 'API_SECRET', 'sandbox'])
+        auth = AuthConstructor(
+            keys_path, portfolio_name, "binance", ["API_KEY", "API_SECRET", "sandbox"]
+        )
 
         sandbox = super().evaluate_sandbox(auth)
 
         if sandbox:
-            calls = Client(api_key=auth.keys['API_KEY'], api_secret=auth.keys['API_SECRET'],
-                           tld=self.preferences["settings"]['binance']["binance_tld"],
-                           testnet=True)
+            calls = Client(
+                api_key=auth.keys["API_KEY"],
+                api_secret=auth.keys["API_SECRET"],
+                tld=self.preferences["settings"]["binance"]["binance_tld"],
+                testnet=True,
+            )
         else:
-            calls = Client(api_key=auth.keys['API_KEY'], api_secret=auth.keys['API_SECRET'],
-                           tld=self.preferences["settings"]['binance']["binance_tld"])
+            calls = Client(
+                api_key=auth.keys["API_KEY"],
+                api_secret=auth.keys["API_SECRET"],
+                tld=self.preferences["settings"]["binance"]["binance_tld"],
+            )
 
         # Always finish the method with this function
         super().construct_interface_and_cache(calls)

@@ -10,7 +10,6 @@ from trapilot.LIB.misc import dataframe_to_json, json_to_dataframe
 from trapilot.LIB.rpc.api_server.ws.proxy import WebSocketProxy
 from trapilot.LIB.rpc.api_server.ws_schemas import WSMessageSchemaType
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -46,15 +45,12 @@ class HybridJSONWebSocketSerializer(WebSocketSerializer):
 # Support serializing pandas DataFrames
 def _json_default(z):
     if isinstance(z, DataFrame):
-        return {
-            '__type__': 'dataframe',
-            '__value__': dataframe_to_json(z)
-        }
+        return {"__type__": "dataframe", "__value__": dataframe_to_json(z)}
     raise TypeError
 
 
 # Support deserializing JSON to pandas DataFrames
 def _json_object_hook(z):
-    if z.get('__type__') == 'dataframe':
-        return json_to_dataframe(z.get('__value__'))
+    if z.get("__type__") == "dataframe":
+        return json_to_dataframe(z.get("__value__"))
     return z

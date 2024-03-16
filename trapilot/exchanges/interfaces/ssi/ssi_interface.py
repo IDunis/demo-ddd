@@ -18,7 +18,8 @@
 
 import time
 import warnings
-from datetime import datetime as dt, timezone
+from datetime import datetime as dt
+from datetime import timezone
 
 import pandas as pd
 
@@ -29,26 +30,35 @@ from trapilot.exchanges.orders.stop_loss import StopLossOrder
 from trapilot.exchanges.orders.take_profit import TakeProfitOrder
 from trapilot.utils import utils as utils
 from trapilot.utils.exceptions import APIException
-from trapilot.utils.time_builder import build_minute, time_interval_to_seconds, number_interval_to_string
+from trapilot.utils.time_builder import (build_minute,
+                                         number_interval_to_string,
+                                         time_interval_to_seconds)
 
 
 class SsiInterface(ExchangeInterface):
     def __init__(self, exchange_name, authenticated_api):
         self.__unique_assets = None
-        super().__init__(exchange_name, authenticated_api, valid_resolutions=[60, 60 * 5, 60 * 15,
-                                                                              60 * 60 * 24])
+        super().__init__(
+            exchange_name,
+            authenticated_api,
+            valid_resolutions=[60, 60 * 5, 60 * 15, 60 * 60 * 24],
+        )
 
     def init_exchange(self):
         try:
             account_info = self.calls.get_account()
         except Exception as e:
-            raise APIException(e.__str__() + ". Are you trying to use your normal exchange keys "
-                                             "while in sandbox mode? \nTry toggling the \'sandbox\' setting "
-                                             "in your user_data/keys.json or check if the keys were input correctly into your "
-                                             "user_data/keys.json.")
+            raise APIException(
+                e.__str__() + ". Are you trying to use your normal exchange keys "
+                "while in sandbox mode? \nTry toggling the 'sandbox' setting "
+                "in your user_data/keys.json or check if the keys were input correctly into your "
+                "user_data/keys.json."
+            )
         try:
-            if account_info['account_blocked']:
-                warnings.warn('Your SSI account is indicated as blocked for trading....')
+            if account_info["account_blocked"]:
+                warnings.warn(
+                    "Your SSI account is indicated as blocked for trading...."
+                )
         except KeyError:
             raise LookupError("SSI API call failed")
 

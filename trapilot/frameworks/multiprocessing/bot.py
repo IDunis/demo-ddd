@@ -22,7 +22,8 @@ from multiprocessing import Manager, Process
 from binance.client import Client as Binance_API
 
 import trapilot
-from trapilot.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
+from trapilot.exchanges.interfaces.abc_exchange_interface import \
+    ABCExchangeInterface
 from trapilot.exchanges.managers.orderbook_manager import OrderbookManager
 from trapilot.exchanges.managers.ticker_manager import TickerManager
 from trapilot.utils.utils import info_print
@@ -53,7 +54,9 @@ class Trapilot:
         self.direct_calls = None
         self.process = Process(target=self.setup_process)
 
-    def setup(self, exchange_type, currency_pair, user_preferences, initial_state, interface):
+    def setup(
+        self, exchange_type, currency_pair, user_preferences, initial_state, interface
+    ):
         """
         This function is populated by the exchange.
         Args:
@@ -95,7 +98,9 @@ class Trapilot:
         Create any objects that need to be process-specific in the other process
         """
         self.ticker_manager = trapilot.TickerManager(self.exchange_type, self.symbol)
-        self.orderbook_manager = trapilot.OrderbookManager(self.exchange_type, self.symbol)
+        self.orderbook_manager = trapilot.OrderbookManager(
+            self.exchange_type, self.symbol
+        )
         self.main(args)
 
     """
