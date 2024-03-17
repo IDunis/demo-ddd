@@ -16,12 +16,16 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import \
-    FuturesExchangeInterface
-from trapilot.blankly.frameworks.strategy.futures_strategy import \
-    FuturesStrategy
-from trapilot.blankly.utils.utils import (AttributeDict, get_base_asset,
-                                          get_quote_asset, pretty_print_json)
+from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import (
+    FuturesExchangeInterface,
+)
+from trapilot.blankly.frameworks.strategy.futures_strategy import FuturesStrategy
+from trapilot.blankly.utils.utils import (
+    AttributeDict,
+    get_base_asset,
+    get_quote_asset,
+    pretty_print_json,
+)
 
 
 class FuturesStrategyState:

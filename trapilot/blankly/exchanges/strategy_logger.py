@@ -22,8 +22,9 @@ from typing import Union
 import pandas
 
 import trapilot
-from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import \
-    ABCExchangeInterface
+from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import (
+    ABCExchangeInterface,
+)
 from trapilot.blankly.exchanges.orders.limit_order import LimitOrder
 from trapilot.blankly.exchanges.orders.market_order import MarketOrder
 from trapilot.blankly.utils.utils import AttributeDict

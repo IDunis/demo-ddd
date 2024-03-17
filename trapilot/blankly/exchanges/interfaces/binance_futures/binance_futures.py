@@ -20,10 +20,12 @@ from binance.client import Client
 
 from trapilot.blankly.exchanges.auth.auth_constructor import AuthConstructor
 from trapilot.blankly.exchanges.futures.futures_exchange import FuturesExchange
-from trapilot.blankly.exchanges.interfaces.binance_futures.binance_futures_interface import \
-    BinanceFuturesInterface
-from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import \
-    FuturesExchangeInterface
+from trapilot.blankly.exchanges.interfaces.binance_futures.binance_futures_interface import (
+    BinanceFuturesInterface,
+)
+from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import (
+    FuturesExchangeInterface,
+)
 
 
 class BinanceFutures(FuturesExchange):

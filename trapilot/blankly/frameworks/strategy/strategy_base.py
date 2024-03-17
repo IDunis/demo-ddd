@@ -22,10 +22,12 @@ import typing
 
 import trapilot
 from trapilot.blankly.exchanges.abc_base_exchange import ABCBaseExchange
-from trapilot.blankly.exchanges.interfaces.abc_base_exchange_interface import \
-    ABCBaseExchangeInterface
-from trapilot.blankly.exchanges.interfaces.paper_trade.backtest_result import \
-    BacktestResult
+from trapilot.blankly.exchanges.interfaces.abc_base_exchange_interface import (
+    ABCBaseExchangeInterface,
+)
+from trapilot.blankly.exchanges.interfaces.paper_trade.backtest_result import (
+    BacktestResult,
+)
 from trapilot.blankly.frameworks.strategy.strategy_state import StrategyState
 from trapilot.blankly.utils.time_builder import time_interval_to_seconds
 from trapilot.blankly.utils.utils import AttributeDict

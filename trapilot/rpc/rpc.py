@@ -20,9 +20,15 @@ from trapilot.configuration.timerange import TimeRange
 from trapilot.constants import CANCEL_REASON, Config
 from trapilot.data.history import load_data
 from trapilot.data.metrics import calculate_expectancy, calculate_max_drawdown
-from trapilot.enums import (CandleType, ExitCheckTuple, ExitType,
-                            MarketDirection, SignalDirection, State,
-                            TradingMode)
+from trapilot.enums import (
+    CandleType,
+    ExitCheckTuple,
+    ExitType,
+    MarketDirection,
+    SignalDirection,
+    State,
+    TradingMode,
+)
 from trapilot.exceptions import ExchangeError, PricingError
 from trapilot.exchange import timeframe_to_minutes, timeframe_to_msecs
 from trapilot.exchange.types import Tickers
@@ -32,8 +38,14 @@ from trapilot.persistence.models import PairLock
 from trapilot.plugins.pairlist.pairlist_helpers import expand_pairlist
 from trapilot.rpc.fiat_convert import CryptoToFiatConverter
 from trapilot.rpc.rpc_types import RPCSendMsg
-from trapilot.util import (decimals_per_coin, dt_humanize, dt_now, dt_ts_def,
-                           format_date, shorten_date)
+from trapilot.util import (
+    decimals_per_coin,
+    dt_humanize,
+    dt_now,
+    dt_ts_def,
+    format_date,
+    shorten_date,
+)
 from trapilot.wallets import PositionWallet, Wallet
 
 logger = logging.getLogger(__name__)

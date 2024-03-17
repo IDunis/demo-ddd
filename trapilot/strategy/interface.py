@@ -10,21 +10,39 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from pandas import DataFrame
 
-from trapilot.constants import (CUSTOM_TAG_MAX_LENGTH, Config, IntOrInf,
-                                ListPairsWithTimeframes)
+from trapilot.constants import (
+    CUSTOM_TAG_MAX_LENGTH,
+    Config,
+    IntOrInf,
+    ListPairsWithTimeframes,
+)
 from trapilot.data.dataprovider import DataProvider
-from trapilot.enums import (CandleType, ExitCheckTuple, ExitType,
-                            MarketDirection, RunMode, SignalDirection,
-                            SignalTagType, SignalType, TradingMode)
+from trapilot.enums import (
+    CandleType,
+    ExitCheckTuple,
+    ExitType,
+    MarketDirection,
+    RunMode,
+    SignalDirection,
+    SignalTagType,
+    SignalType,
+    TradingMode,
+)
 from trapilot.exceptions import OperationalException, StrategyError
-from trapilot.exchange import (timeframe_to_minutes, timeframe_to_next_date,
-                               timeframe_to_seconds)
+from trapilot.exchange import (
+    timeframe_to_minutes,
+    timeframe_to_next_date,
+    timeframe_to_seconds,
+)
 from trapilot.misc import remove_entry_exit_signals
 from trapilot.persistence import Order, PairLocks, Trade
 from trapilot.strategy.hyper import HyperStrategyMixin
 from trapilot.strategy.informative_decorator import (
-    InformativeData, PopulateIndicators, _create_and_merge_informative_pair,
-    _format_pair_name)
+    InformativeData,
+    PopulateIndicators,
+    _create_and_merge_informative_pair,
+    _format_pair_name,
+)
 from trapilot.strategy.strategy_wrapper import strategy_safe_wrapper
 from trapilot.util import dt_now
 from trapilot.wallets import Wallets
@@ -163,8 +181,7 @@ class IStrategy(ABC, HyperStrategyMixin):
         if self.config.get("freqai", {}).get("enabled", False):
             # Import here to avoid importing this if freqAI is disabled
             from trapilot.freqai.utils import download_all_data_for_training
-            from trapilot.resolvers.freqaimodel_resolver import \
-                FreqaiModelResolver
+            from trapilot.resolvers.freqaimodel_resolver import FreqaiModelResolver
 
             self.freqai = FreqaiModelResolver.load_freqaimodel(self.config)
             self.freqai_info = self.config["freqai"]

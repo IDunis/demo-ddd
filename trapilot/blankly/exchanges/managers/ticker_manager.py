@@ -21,12 +21,13 @@ import random
 import requests
 
 import trapilot.blankly.utils.utils
-from trapilot.blankly.exchanges.interfaces.alpaca.alpaca_websocket import \
-    Tickers as Alpaca_Ticker
-from trapilot.blankly.exchanges.interfaces.binance.binance_websocket import \
-    Tickers as Binance_Ticker
-from trapilot.blankly.exchanges.managers.websocket_manager import \
-    WebsocketManager
+from trapilot.blankly.exchanges.interfaces.alpaca.alpaca_websocket import (
+    Tickers as Alpaca_Ticker,
+)
+from trapilot.blankly.exchanges.interfaces.binance.binance_websocket import (
+    Tickers as Binance_Ticker,
+)
+from trapilot.blankly.exchanges.managers.websocket_manager import WebsocketManager
 
 
 class TickerManager(WebsocketManager):

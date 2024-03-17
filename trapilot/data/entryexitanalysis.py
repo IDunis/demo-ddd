@@ -8,8 +8,11 @@ from tabulate import tabulate
 
 from trapilot.configuration import TimeRange
 from trapilot.constants import Config
-from trapilot.data.btanalysis import (get_latest_backtest_filename,
-                                      load_backtest_data, load_backtest_stats)
+from trapilot.data.btanalysis import (
+    get_latest_backtest_filename,
+    load_backtest_data,
+    load_backtest_stats,
+)
 from trapilot.exceptions import OperationalException
 
 logger = logging.getLogger(__name__)

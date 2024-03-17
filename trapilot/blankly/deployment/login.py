@@ -24,8 +24,12 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Optional
 
 from trapilot.blankly.deployment.api import API
-from trapilot.blankly.deployment.ui import (print_failure, print_success,
-                                            print_work, show_spinner)
+from trapilot.blankly.deployment.ui import (
+    print_failure,
+    print_success,
+    print_work,
+    show_spinner,
+)
 
 SUCCESS_URL = "https://firebasestorage.googleapis.com/v0/b/trapilot-6ada5.appspot.com/o/login_success.html?alt=media&token=41d734e2-0a88-44c4-b1dd-7e081fd019e7"
 FAILURE_URL = "https://firebasestorage.googleapis.com/v0/b/trapilot-6ada5.appspot.com/o/login_failure.html?alt=media&token=b2d9f6dc-aa54-4da2-aa6f-1f75a4025634"

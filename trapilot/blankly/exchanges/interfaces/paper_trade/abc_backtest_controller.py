@@ -19,8 +19,12 @@
 import abc
 import typing
 
-from trapilot.blankly.data.data_reader import (DataReader, JsonEventReader,
-                                               PriceReader, TickReader)
+from trapilot.blankly.data.data_reader import (
+    DataReader,
+    JsonEventReader,
+    PriceReader,
+    TickReader,
+)
 
 
 class ABCBacktestController(abc.ABC):

@@ -15,29 +15,35 @@ from html import escape
 from itertools import chain
 from math import isnan
 from threading import Thread
-from typing import (Any, Callable, Coroutine, Dict, List, Literal, Optional,
-                    Union)
+from typing import Any, Callable, Coroutine, Dict, List, Literal, Optional, Union
 
 from tabulate import tabulate
-from telegram import (CallbackQuery, InlineKeyboardButton,
-                      InlineKeyboardMarkup, KeyboardButton,
-                      ReplyKeyboardMarkup, Update)
+from telegram import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+    Update,
+)
 from telegram.constants import MessageLimit, ParseMode
 from telegram.error import BadRequest, NetworkError, TelegramError
-from telegram.ext import (Application, CallbackContext, CallbackQueryHandler,
-                          CommandHandler)
+from telegram.ext import (
+    Application,
+    CallbackContext,
+    CallbackQueryHandler,
+    CommandHandler,
+)
 from telegram.helpers import escape_markdown
 
 from trapilot.__init__ import __version__
 from trapilot.constants import DUST_PER_COIN, Config
-from trapilot.enums import (MarketDirection, RPCMessageType, SignalDirection,
-                            TradingMode)
+from trapilot.enums import MarketDirection, RPCMessageType, SignalDirection, TradingMode
 from trapilot.exceptions import OperationalException
 from trapilot.misc import chunks, plural
 from trapilot.persistence import Trade
 from trapilot.rpc import RPC, RPCException, RPCHandler
-from trapilot.rpc.rpc_types import (RPCEntryMsg, RPCExitMsg, RPCOrderMsg,
-                                    RPCSendMsg)
+from trapilot.rpc.rpc_types import RPCEntryMsg, RPCExitMsg, RPCOrderMsg, RPCSendMsg
 from trapilot.util import dt_humanize, fmt_coin, round_value
 
 MAX_MESSAGE_LENGTH = MessageLimit.MAX_TEXT_LENGTH
@@ -145,9 +151,9 @@ class Telegram(RPCHandler):
         section.
         """
         self._keyboard: List[List[Union[str, KeyboardButton]]] = [
-            # ['/daily', '/profit', '/balance'],
-            # ['/status', '/status table', '/performance', '/count'],
-            ["/start", "/stop", "/prices", "/help"]
+            ["/daily", "/profit", "/balance"],
+            ["/status", "/status table", "/performance"],
+            ["/count", "/start", "/stop", "/help"],
         ]
         # do not allow commands with mandatory arguments and critical cmds
         # TODO: DRY! - its not good to list all valid cmds here. But otherwise
@@ -156,7 +162,8 @@ class Telegram(RPCHandler):
         valid_keys: List[str] = [
             r"/start$",
             r"/stop$",
-            r"/prices$",
+            r"/price (symbol)$",
+            r"/price$",
             r"/status$",
             r"/status table$",
             r"/trades$",
@@ -245,7 +252,7 @@ class Telegram(RPCHandler):
 
         # Register command handler and start telegram message polling
         handles = [
-            CommandHandler("prices", self._tracking_prices),
+            CommandHandler("price", self._price),
             CommandHandler("status", self._status),
             CommandHandler("profit", self._profit),
             CommandHandler("balance", self._balance),
@@ -728,9 +735,19 @@ class Telegram(RPCHandler):
         await self._send_msg(msg.format(**r))
 
     @authorized_only
-    async def _tracking_prices(self, update: Update, context: CallbackContext) -> None:
+    async def _price(self, update: Update, context: CallbackContext) -> None:
         try:
-            symbols = ["BTC/USDT", "ETH/USDT", "DOT/USDT", "CHZ/USDT"]
+            stake_cur = self._config["stake_currency"]
+
+            symbols = []
+            if context.args and len(context.args) == 1:
+                assets = context.args[0].split(",")
+            else:
+                assets = ["BTC", "ETH", "DOT", "CHZ"]
+
+            for asset in assets:
+                symbols.append(f"{asset.upper()}/{stake_cur}")
+
             tickers = self._rpc._tradebot.exchange.get_tickers(
                 symbols=symbols, cached=False
             )

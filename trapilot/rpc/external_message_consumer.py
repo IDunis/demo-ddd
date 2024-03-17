@@ -20,13 +20,15 @@ from trapilot.enums import RPCMessageType
 from trapilot.misc import remove_entry_exit_signals
 from trapilot.rpc.api_server.ws.channel import WebSocketChannel, create_channel
 from trapilot.rpc.api_server.ws.message_stream import MessageStream
-from trapilot.rpc.api_server.ws_schemas import (WSAnalyzedDFMessage,
-                                                WSAnalyzedDFRequest,
-                                                WSMessageSchema,
-                                                WSRequestSchema,
-                                                WSSubscribeRequest,
-                                                WSWhitelistMessage,
-                                                WSWhitelistRequest)
+from trapilot.rpc.api_server.ws_schemas import (
+    WSAnalyzedDFMessage,
+    WSAnalyzedDFRequest,
+    WSMessageSchema,
+    WSRequestSchema,
+    WSSubscribeRequest,
+    WSWhitelistMessage,
+    WSWhitelistRequest,
+)
 
 if TYPE_CHECKING:
     import websockets.connect

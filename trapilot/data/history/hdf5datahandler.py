@@ -5,8 +5,7 @@ import numpy as np
 import pandas as pd
 
 from trapilot.configuration import TimeRange
-from trapilot.constants import (DEFAULT_DATAFRAME_COLUMNS,
-                                DEFAULT_TRADES_COLUMNS)
+from trapilot.constants import DEFAULT_DATAFRAME_COLUMNS, DEFAULT_TRADES_COLUMNS
 from trapilot.enums import CandleType
 
 from .idatahandler import IDataHandler

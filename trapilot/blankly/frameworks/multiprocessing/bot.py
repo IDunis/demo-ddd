@@ -22,10 +22,10 @@ from multiprocessing import Manager, Process
 from binance.client import Client as Binance_API
 
 import trapilot
-from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import \
-    ABCExchangeInterface
-from trapilot.blankly.exchanges.managers.orderbook_manager import \
-    OrderbookManager
+from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import (
+    ABCExchangeInterface,
+)
+from trapilot.blankly.exchanges.managers.orderbook_manager import OrderbookManager
 from trapilot.blankly.exchanges.managers.ticker_manager import TickerManager
 from trapilot.blankly.utils.utils import info_print
 

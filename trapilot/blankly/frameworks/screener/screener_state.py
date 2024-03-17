@@ -18,8 +18,9 @@
 
 import time
 
-from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import \
-    ABCExchangeInterface as Interface
+from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import (
+    ABCExchangeInterface as Interface,
+)
 from trapilot.blankly.utils.utils import AttributeDict, format_with_new_line
 
 

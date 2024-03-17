@@ -6,8 +6,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any, ClassVar, Optional
 
-from sqlalchemy import (Boolean, Float, Integer, ScalarResult, Select, String,
-                        select)
+from sqlalchemy import Boolean, Float, Integer, ScalarResult, Select, String, select
 from sqlalchemy.orm import Mapped, mapped_column
 
 from trapilot.persistence.base import ModelBase, SessionType

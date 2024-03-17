@@ -23,8 +23,7 @@ from trapilot.exceptions import OperationalException
 from trapilot.freqai.data_kitchen import FreqaiDataKitchen
 from trapilot.freqai.freqai_interface import IFreqaiModel
 from trapilot.freqai.RL.Base5ActionRLEnv import Actions, Base5ActionRLEnv
-from trapilot.freqai.RL.BaseEnvironment import (BaseActions, BaseEnvironment,
-                                                Positions)
+from trapilot.freqai.RL.BaseEnvironment import BaseActions, BaseEnvironment, Positions
 from trapilot.freqai.tensorboard.TensorboardCallback import TensorboardCallback
 from trapilot.persistence import Trade
 

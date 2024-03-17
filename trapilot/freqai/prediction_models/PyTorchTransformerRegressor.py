@@ -5,14 +5,14 @@ import numpy.typing as npt
 import pandas as pd
 import torch
 
-from trapilot.freqai.base_models.BasePyTorchRegressor import \
-    BasePyTorchRegressor
+from trapilot.freqai.base_models.BasePyTorchRegressor import BasePyTorchRegressor
 from trapilot.freqai.data_kitchen import FreqaiDataKitchen
 from trapilot.freqai.torch.PyTorchDataConvertor import (
-    DefaultPyTorchDataConvertor, PyTorchDataConvertor)
+    DefaultPyTorchDataConvertor,
+    PyTorchDataConvertor,
+)
 from trapilot.freqai.torch.PyTorchModelTrainer import PyTorchTransformerTrainer
-from trapilot.freqai.torch.PyTorchTransformerModel import \
-    PyTorchTransformerModel
+from trapilot.freqai.torch.PyTorchTransformerModel import PyTorchTransformerModel
 
 
 class PyTorchTransformerRegressor(BasePyTorchRegressor):

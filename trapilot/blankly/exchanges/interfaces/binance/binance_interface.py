@@ -23,8 +23,7 @@ import pandas as pd
 import trapilot.blankly.utils.exceptions as exceptions
 import trapilot.blankly.utils.utils
 import trapilot.blankly.utils.utils as utils
-from trapilot.blankly.exchanges.interfaces.exchange_interface import \
-    ExchangeInterface
+from trapilot.blankly.exchanges.interfaces.exchange_interface import ExchangeInterface
 from trapilot.blankly.exchanges.orders.limit_order import LimitOrder
 from trapilot.blankly.exchanges.orders.market_order import MarketOrder
 from trapilot.blankly.exchanges.orders.stop_loss import StopLossOrder

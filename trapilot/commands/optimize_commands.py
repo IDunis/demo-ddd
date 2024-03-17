@@ -69,8 +69,10 @@ def start_backtesting_show(args: Dict[str, Any]) -> None:
     config = setup_utils_configuration(args, RunMode.UTIL_NO_EXCHANGE)
 
     from trapilot.data.btanalysis import load_backtest_stats
-    from trapilot.optimize.optimize_reports import (show_backtest_results,
-                                                    show_sorted_pairlist)
+    from trapilot.optimize.optimize_reports import (
+        show_backtest_results,
+        show_sorted_pairlist,
+    )
 
     results = load_backtest_stats(config["exportfilename"])
 
@@ -147,8 +149,9 @@ def start_lookahead_analysis(args: Dict[str, Any]) -> None:
     :param args: Cli args from Arguments()
     :return: None
     """
-    from trapilot.optimize.analysis.lookahead_helpers import \
-        LookaheadAnalysisSubFunctions
+    from trapilot.optimize.analysis.lookahead_helpers import (
+        LookaheadAnalysisSubFunctions,
+    )
 
     config = setup_utils_configuration(args, RunMode.UTIL_NO_EXCHANGE)
     LookaheadAnalysisSubFunctions.start(config)
@@ -160,8 +163,9 @@ def start_recursive_analysis(args: Dict[str, Any]) -> None:
     :param args: Cli args from Arguments()
     :return: None
     """
-    from trapilot.optimize.analysis.recursive_helpers import \
-        RecursiveAnalysisSubFunctions
+    from trapilot.optimize.analysis.recursive_helpers import (
+        RecursiveAnalysisSubFunctions,
+    )
 
     config = setup_utils_configuration(args, RunMode.UTIL_NO_EXCHANGE)
     RecursiveAnalysisSubFunctions.start(config)

@@ -25,14 +25,15 @@ import warnings
 import trapilot
 from trapilot.blankly.exchanges.abc_base_exchange import ABCBaseExchange
 from trapilot.blankly.exchanges.exchange import Exchange
-from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import \
-    ABCExchangeInterface
-from trapilot.blankly.exchanges.interfaces.paper_trade.backtest_result import \
-    BacktestResult
+from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import (
+    ABCExchangeInterface,
+)
+from trapilot.blankly.exchanges.interfaces.paper_trade.backtest_result import (
+    BacktestResult,
+)
 from trapilot.blankly.exchanges.strategy_logger import StrategyLogger
 from trapilot.blankly.frameworks.model.model import Model
-from trapilot.blankly.frameworks.strategy.strategy_base import (EventType,
-                                                                StrategyBase)
+from trapilot.blankly.frameworks.strategy.strategy_base import EventType, StrategyBase
 from trapilot.blankly.utils.utils import info_print
 
 

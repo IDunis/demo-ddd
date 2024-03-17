@@ -15,16 +15,25 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import rapidjson
 from colorama import init as colorama_init
-from joblib import (Parallel, cpu_count, delayed, dump, load,
-                    wrap_non_picklable_objects)
+from joblib import Parallel, cpu_count, delayed, dump, load, wrap_non_picklable_objects
 from joblib.externals import cloudpickle
 from pandas import DataFrame
-from rich.progress import (BarColumn, MofNCompleteColumn, Progress,
-                           TaskProgressColumn, TextColumn, TimeElapsedColumn,
-                           TimeRemainingColumn)
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+)
 
-from trapilot.constants import (DATETIME_PRINT_FORMAT, FTHYPT_FILEVERSION,
-                                LAST_BT_RESULT_FN, Config)
+from trapilot.constants import (
+    DATETIME_PRINT_FORMAT,
+    FTHYPT_FILEVERSION,
+    LAST_BT_RESULT_FN,
+    Config,
+)
 from trapilot.data.converter import trim_dataframes
 from trapilot.data.history import get_timerange
 from trapilot.data.metrics import calculate_market_change
@@ -32,12 +41,15 @@ from trapilot.enums import HyperoptState
 from trapilot.exceptions import OperationalException
 from trapilot.misc import deep_merge_dicts, file_dump_json, plural
 from trapilot.optimize.backtesting import Backtesting
+
 # Import IHyperOpt and IHyperOptLoss to allow unpickling classes from these modules
 from trapilot.optimize.hyperopt_auto import HyperOptAuto
 from trapilot.optimize.hyperopt_loss_interface import IHyperOptLoss
-from trapilot.optimize.hyperopt_tools import (HyperoptStateContainer,
-                                              HyperoptTools,
-                                              hyperopt_serializer)
+from trapilot.optimize.hyperopt_tools import (
+    HyperoptStateContainer,
+    HyperoptTools,
+    hyperopt_serializer,
+)
 from trapilot.optimize.optimize_reports import generate_strategy_stats
 from trapilot.resolvers.hyperopt_resolver import HyperOptLossResolver
 

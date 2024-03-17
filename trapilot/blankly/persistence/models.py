@@ -15,8 +15,11 @@ from sqlalchemy.pool import StaticPool
 from trapilot.blankly.persistence.base import ModelBase
 from trapilot.blankly.persistence.key_value_store import _KeyValueStoreModel
 from trapilot.blankly.persistence.pairlock import PairLock
-from trapilot.blankly.persistence.settings import (SettingBacktest, SettingKey,
-                                                   SettingNotify)
+from trapilot.blankly.persistence.settings import (
+    SettingBacktest,
+    SettingKey,
+    SettingNotify,
+)
 from trapilot.blankly.persistence.trade_model import Order, Trade
 
 logger = logging.getLogger(__name__)

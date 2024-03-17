@@ -13,13 +13,16 @@ from typing import Any, Dict, List, Optional, Tuple
 from pandas import DataFrame, Timedelta, Timestamp, to_timedelta
 
 from trapilot.configuration import TimeRange
-from trapilot.constants import (FULL_DATAFRAME_THRESHOLD, Config,
-                                ListPairsWithTimeframes, PairWithTimeframe)
+from trapilot.constants import (
+    FULL_DATAFRAME_THRESHOLD,
+    Config,
+    ListPairsWithTimeframes,
+    PairWithTimeframe,
+)
 from trapilot.data.history import load_pair_history
 from trapilot.enums import CandleType, RPCMessageType, RunMode
 from trapilot.exceptions import ExchangeError, OperationalException
-from trapilot.exchange import (Exchange, timeframe_to_prev_date,
-                               timeframe_to_seconds)
+from trapilot.exchange import Exchange, timeframe_to_prev_date, timeframe_to_seconds
 from trapilot.exchange.types import OrderBook
 from trapilot.misc import append_candles_to_dataframe
 from trapilot.rpc import RPCManager

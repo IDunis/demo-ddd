@@ -6,8 +6,9 @@ from typing import Any, Dict
 from catboost import CatBoostClassifier, Pool
 
 from trapilot.freqai.base_models.BaseClassifierModel import BaseClassifierModel
-from trapilot.freqai.base_models.FreqaiMultiOutputClassifier import \
-    FreqaiMultiOutputClassifier
+from trapilot.freqai.base_models.FreqaiMultiOutputClassifier import (
+    FreqaiMultiOutputClassifier,
+)
 from trapilot.freqai.data_kitchen import FreqaiDataKitchen
 
 logger = logging.getLogger(__name__)

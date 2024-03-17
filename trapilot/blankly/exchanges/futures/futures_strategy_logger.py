@@ -19,11 +19,12 @@
 from abc import ABC
 
 from trapilot.blankly.enums import Side
-from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import \
-    FuturesExchangeInterface
+from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import (
+    FuturesExchangeInterface,
+)
+
 # TODO
-from trapilot.blankly.exchanges.orders.futures.futures_order import \
-    FuturesOrder
+from trapilot.blankly.exchanges.orders.futures.futures_order import FuturesOrder
 
 
 class FuturesStrategyLogger:

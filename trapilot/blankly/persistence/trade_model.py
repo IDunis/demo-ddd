@@ -10,29 +10,44 @@ from datetime import datetime, timedelta, timezone
 from math import isclose
 from typing import Any, ClassVar, Dict, List, Optional, Sequence, cast
 
-from sqlalchemy import (JSON, Boolean, Enum, Float, ForeignKey, Integer,
-                        ScalarResult, Select, String, UniqueConstraint, desc,
-                        func, select)
-from sqlalchemy.orm import (Mapped, lazyload, mapped_column, relationship,
-                            validates)
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    ScalarResult,
+    Select,
+    String,
+    UniqueConstraint,
+    desc,
+    func,
+    select,
+)
+from sqlalchemy.orm import Mapped, lazyload, mapped_column, relationship, validates
 from typing_extensions import Self
 
-from trapilot.blankly.LIB.constants import (CANCELED_EXCHANGE_STATES,
-                                            CUSTOM_TAG_MAX_LENGTH,
-                                            DATETIME_PRINT_FORMAT,
-                                            MATH_CLOSE_PREC,
-                                            NON_OPEN_EXCHANGE_STATES, BuySell,
-                                            LongShort)
+from trapilot.blankly.LIB.constants import (
+    CANCELED_EXCHANGE_STATES,
+    CUSTOM_TAG_MAX_LENGTH,
+    DATETIME_PRINT_FORMAT,
+    MATH_CLOSE_PREC,
+    NON_OPEN_EXCHANGE_STATES,
+    BuySell,
+    LongShort,
+)
 from trapilot.blankly.LIB.enums import ExitType, TradingMode
-from trapilot.blankly.LIB.exceptions import (DependencyException,
-                                             OperationalException)
-from trapilot.blankly.LIB.exchange import (ROUND_DOWN, ROUND_UP,
-                                           amount_to_contract_precision,
-                                           price_to_precision)
+from trapilot.blankly.LIB.exceptions import DependencyException, OperationalException
+from trapilot.blankly.LIB.exchange import (
+    ROUND_DOWN,
+    ROUND_UP,
+    amount_to_contract_precision,
+    price_to_precision,
+)
 from trapilot.blankly.LIB.leverage import interest
 from trapilot.blankly.LIB.misc import safe_value_fallback
-from trapilot.blankly.LIB.util import (FtPrecise, dt_from_ts, dt_now, dt_ts,
-                                       dt_ts_none)
+from trapilot.blankly.LIB.util import FtPrecise, dt_from_ts, dt_now, dt_ts, dt_ts_none
 from trapilot.blankly.persistence.base import ModelBase, SessionType
 
 logger = logging.getLogger(__name__)

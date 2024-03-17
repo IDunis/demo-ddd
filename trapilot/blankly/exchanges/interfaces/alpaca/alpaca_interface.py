@@ -26,17 +26,18 @@ import pandas as pd
 from alpaca_trade_api.rest import APIError as AlpacaAPIError
 from alpaca_trade_api.rest import TimeFrame
 
-from trapilot.blankly.exchanges.interfaces.exchange_interface import \
-    ExchangeInterface
+from trapilot.blankly.exchanges.interfaces.exchange_interface import ExchangeInterface
 from trapilot.blankly.exchanges.orders.limit_order import LimitOrder
 from trapilot.blankly.exchanges.orders.market_order import MarketOrder
 from trapilot.blankly.exchanges.orders.stop_loss import StopLossOrder
 from trapilot.blankly.exchanges.orders.take_profit import TakeProfitOrder
 from trapilot.blankly.utils import utils as utils
 from trapilot.blankly.utils.exceptions import APIException
-from trapilot.blankly.utils.time_builder import (build_minute,
-                                                 number_interval_to_string,
-                                                 time_interval_to_seconds)
+from trapilot.blankly.utils.time_builder import (
+    build_minute,
+    number_interval_to_string,
+    time_interval_to_seconds,
+)
 
 
 class AlpacaInterface(ExchangeInterface):

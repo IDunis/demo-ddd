@@ -16,11 +16,16 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import \
-    ABCExchangeInterface as Interface
-from trapilot.blankly.utils.utils import (AttributeDict, format_with_new_line,
-                                          get_base_asset, get_quote_asset,
-                                          pretty_print_json)
+from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import (
+    ABCExchangeInterface as Interface,
+)
+from trapilot.blankly.utils.utils import (
+    AttributeDict,
+    format_with_new_line,
+    get_base_asset,
+    get_quote_asset,
+    pretty_print_json,
+)
 
 
 class StrategyState:

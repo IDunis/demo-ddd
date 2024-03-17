@@ -9,8 +9,7 @@ from torch.optim import Optimizer
 from torch.utils.data import DataLoader, TensorDataset
 
 from trapilot.freqai.torch.PyTorchDataConvertor import PyTorchDataConvertor
-from trapilot.freqai.torch.PyTorchTrainerInterface import \
-    PyTorchTrainerInterface
+from trapilot.freqai.torch.PyTorchTrainerInterface import PyTorchTrainerInterface
 
 from .datasets import WindowDataset
 
