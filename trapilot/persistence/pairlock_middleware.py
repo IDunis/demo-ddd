@@ -4,7 +4,7 @@ from typing import List, Optional, Sequence
 
 from sqlalchemy import select
 
-from trapilot.LIB.exchange import timeframe_to_next_date
+from trapilot.exchange import timeframe_to_next_date
 from trapilot.persistence.models import PairLock
 
 logger = logging.getLogger(__name__)

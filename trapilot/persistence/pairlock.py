@@ -4,7 +4,7 @@ from typing import Any, ClassVar, Dict, Optional
 from sqlalchemy import ScalarResult, String, or_, select
 from sqlalchemy.orm import Mapped, mapped_column
 
-from trapilot.LIB.constants import DATETIME_PRINT_FORMAT
+from trapilot.constants import DATETIME_PRINT_FORMAT
 from trapilot.persistence.base import ModelBase, SessionType
 
 

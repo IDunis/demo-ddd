@@ -28,7 +28,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, lazyload, mapped_column, relationship, validates
 from typing_extensions import Self
 
-from trapilot.LIB.constants import (
+from trapilot.constants import (
     CANCELED_EXCHANGE_STATES,
     CUSTOM_TAG_MAX_LENGTH,
     DATETIME_PRINT_FORMAT,
@@ -37,18 +37,18 @@ from trapilot.LIB.constants import (
     BuySell,
     LongShort,
 )
-from trapilot.LIB.enums import ExitType, TradingMode
-from trapilot.LIB.exceptions import DependencyException, OperationalException
-from trapilot.LIB.exchange import (
+from trapilot.enums import ExitType, TradingMode
+from trapilot.exceptions import DependencyException, OperationalException
+from trapilot.exchange import (
     ROUND_DOWN,
     ROUND_UP,
     amount_to_contract_precision,
     price_to_precision,
 )
-from trapilot.LIB.leverage import interest
-from trapilot.LIB.misc import safe_value_fallback
-from trapilot.LIB.util import FtPrecise, dt_from_ts, dt_now, dt_ts, dt_ts_none
+from trapilot.leverage import interest
+from trapilot.misc import safe_value_fallback
 from trapilot.persistence.base import ModelBase, SessionType
+from trapilot.util import FtPrecise, dt_from_ts, dt_now, dt_ts, dt_ts_none
 
 logger = logging.getLogger(__name__)
 
