@@ -18,7 +18,7 @@
 
 from trapilot.exchanges.auth.auth_constructor import AuthConstructor
 from trapilot.exchanges.exchange import Exchange
-from trapilot.exchanges.interfaces.ssi.ssi_api import REST, create_client
+from trapilot.exchanges.interfaces.ssi.ssi_api import SsiAPI
 
 
 class SSI(Exchange):
@@ -34,19 +34,10 @@ class SSI(Exchange):
 
         dry_run = super().evaluate_sandbox(auth)
 
-        calls = create_client(auth, dry_run)
+        calls = SsiAPI(auth, dry_run)
 
         # Always finish the method with this function
         super().construct_interface_and_cache(calls)
 
-    def get_exchange_state(self):
-        return self.interface.get_products()
-
-    def get_asset_state(self, symbol):
-        return self.interface.get_account(symbol)
-
-    def get_direct_calls(self) -> REST:
+    def get_direct_calls(self) -> SsiAPI:
         return self.calls
-
-    def get_market_clock(self):
-        return self.calls.get_clock()

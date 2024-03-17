@@ -1,59 +1,111 @@
-"""
-    Alpaca API creation definition.
-    Copyright (C) 2021 Arun Annamalai
+import json
+import requests
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published
-    by the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 from trapilot.exchanges.auth.auth_constructor import AuthConstructor
 
-live_url = "https://fc-tradeapi.ssi.com.vn"
-paper_url = "https://fc-tradeapi.ssi.com.vn"
+class SsiAPI:
+    __API_URL_BASE = 'https://fc-tradeapi.ssi.com.vn/api/v2/'
+    __PAPER_API_URL_BASE = 'https://fc-tradeapi.ssi.com.vn/api/v2/'
 
+    def __init__(self, auth: AuthConstructor, dry_run: bool = True, retries=1):
+        self.api_key = auth.keys["api_key"]
+        self.api_secret = auth.keys["api_secret"]
+        if dry_run:
+            self.api_base_url = self.__PAPER_API_URL_BASE
+        else:
+            self.api_base_url = self.__API_URL_BASE
+        self.request_timeout = 120
 
-class REST:
-    def __init__(
-        self,
-        key_id: str = None,
-        secret_key: str = None,
-        base_url: str = None,
-        api_version: str = None,
-        oauth=None,
-        raw_data: bool = False,
-    ):
-        self.key_id = key_id
-        self.secret_key = secret_key
-        self.base_url = base_url
-        self.api_version = api_version
-        self.oauth = oauth
-        self.raw_data = raw_data
+        self.session = requests.Session()
+        retries = Retry(total=retries, backoff_factor=0.5, status_forcelist=[502, 503, 504])
+        self.session.mount('https://', HTTPAdapter(max_retries=retries))
 
-    def get_account(self) -> any:
-        print("SSI REST get_account")
-        return {}
+    def __request(self, url):
+        print(url)
+        try:
+            response = self.session.get(url, timeout=self.request_timeout)
+        except requests.exceptions.RequestException:
+            raise
 
-    def get_clock(self) -> str:
-        print("SSI REST get_clock")
-        return ""
+        try:
+            response.raise_for_status()
+            content = json.loads(response.content.decode('utf-8'))
+            return content
+        except Exception as e:
+            # check if json (with error message) is returned
+            try:
+                content = json.loads(response.content.decode('utf-8'))
+                raise ValueError(content)
+            # if no json
+            except json.decoder.JSONDecodeError:
+                pass
 
+            raise
 
-def create_client(auth: AuthConstructor, sandbox_mode=True):
-    if sandbox_mode:
-        api_url = paper_url
-    else:
-        api_url = live_url
+    def __api_url_params(self, api_url, params, api_url_has_params=False):
+        # if using pro version of CoinGecko, inject key in every call
+        if self.api_key:
+            params['x_cg_pro_api_key'] = self.api_key
 
-    return REST(
-        auth.keys["api_key"], auth.keys["api_secret"], api_url, "v2", raw_data=True
-    )
+        if params:
+            # if api_url contains already params and there is already a '?' avoid
+            # adding second '?' (api_url += '&' if '?' in api_url else '?'); causes
+            # issues with request parametes (usually for endpoints with required
+            # arguments passed as parameters)
+            api_url += '&' if api_url_has_params else '?'
+            for key, value in params.items():
+                if type(value) == bool:
+                    value = str(value).lower()
+
+                api_url += "{0}={1}&".format(key, value)
+            api_url = api_url[:-1]
+        return api_url
+
+    # ---------- PING ----------#
+    def ping(self, **kwargs):
+        """Check API server status"""
+
+        api_url = '{0}ping'.format(self.api_base_url)
+        api_url = self.__api_url_params(api_url, kwargs)
+
+        return self.__request(api_url)
+
+    # ---------- EXCHANGES ----------#
+    # @func_args_preprocessing
+    def get_exchanges_list(self, **kwargs):
+        """List all exchanges"""
+
+        api_url = '{0}exchanges'.format(self.api_base_url)
+        api_url = self.__api_url_params(api_url, kwargs)
+
+        return self.__request(api_url)
+
+    # @func_args_preprocessing
+    def get_exchanges_by_id(self, id, **kwargs):
+        """Get exchange volume in BTC and tickers"""
+
+        api_url = '{0}exchanges/{1}'.format(self.api_base_url, id)
+        api_url = self.__api_url_params(api_url, kwargs)
+
+        return self.__request(api_url)
+
+    # @func_args_preprocessing
+    def get_exchanges_tickers_by_id(self, id, **kwargs):
+        """Get exchange tickers (paginated, 100 tickers per page)"""
+
+        api_url = '{0}exchanges/{1}/tickers'.format(self.api_base_url, id)
+        api_url = self.__api_url_params(api_url, kwargs)
+
+        return self.__request(api_url)
+
+    # @func_args_preprocessing
+    # def get_exchanges_status_updates_by_id(self, id, **kwargs):
+    #     """Get status updates for a given exchange"""
+    #
+    #     api_url = '{0}exchanges/{1}/status_updates'.format(self.api_base_url, id)
+    #     api_url = self.__api_url_params(api_url, kwargs)
+    #
+    #     return self.__request(api_url)
