@@ -6,7 +6,8 @@ This module load custom hyperopt
 import logging
 from pathlib import Path
 
-from trapilot.constants import HYPEROPT_LOSS_BUILTIN, USERPATH_HYPEROPTS, Config
+from trapilot.constants import (HYPEROPT_LOSS_BUILTIN, USERPATH_HYPEROPTS,
+                                Config)
 from trapilot.exceptions import OperationalException
 from trapilot.optimize.hyperopt_loss_interface import IHyperOptLoss
 from trapilot.resolvers import IResolver

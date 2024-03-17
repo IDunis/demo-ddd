@@ -27,7 +27,7 @@ import numpy
 import pandas
 import pandas as pd
 
-from trapilot import utils
+from trapilot.blankly import utils
 from trapilot.blankly.utils import time_interval_to_seconds
 
 

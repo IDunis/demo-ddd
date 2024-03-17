@@ -20,7 +20,8 @@ import alpaca_trade_api
 
 from trapilot.blankly.exchanges.auth.auth_constructor import AuthConstructor
 from trapilot.blankly.exchanges.exchange import Exchange
-from trapilot.blankly.exchanges.interfaces.alpaca.alpaca_api import create_alpaca_client
+from trapilot.blankly.exchanges.interfaces.alpaca.alpaca_api import \
+    create_alpaca_client
 
 
 class Alpaca(Exchange):

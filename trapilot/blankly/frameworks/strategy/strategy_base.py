@@ -22,10 +22,10 @@ import typing
 
 import trapilot
 from trapilot.blankly.exchanges.abc_base_exchange import ABCBaseExchange
-from trapilot.blankly.exchanges.interfaces.abc_base_exchange_interface import (
-    ABCBaseExchangeInterface,
-)
-from trapilot.blankly.exchanges.interfaces.paper_trade.backtest_result import BacktestResult
+from trapilot.blankly.exchanges.interfaces.abc_base_exchange_interface import \
+    ABCBaseExchangeInterface
+from trapilot.blankly.exchanges.interfaces.paper_trade.backtest_result import \
+    BacktestResult
 from trapilot.blankly.frameworks.strategy.strategy_state import StrategyState
 from trapilot.blankly.utils.time_builder import time_interval_to_seconds
 from trapilot.blankly.utils.utils import AttributeDict
@@ -63,7 +63,9 @@ class StrategyBase:
         self.__exchange = exchange
         self.interface = interface
 
-        self.ticker_manager = trapilot.blankly.TickerManager(self.__exchange.get_type(), "")
+        self.ticker_manager = trapilot.blankly.TickerManager(
+            self.__exchange.get_type(), ""
+        )
         self.orderbook_manager = trapilot.blankly.OrderbookManager(
             self.__exchange.get_type(), ""
         )

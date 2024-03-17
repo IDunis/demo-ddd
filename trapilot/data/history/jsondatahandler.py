@@ -6,7 +6,8 @@ from pandas import DataFrame, read_json, to_datetime
 
 from trapilot import misc
 from trapilot.configuration import TimeRange
-from trapilot.constants import DEFAULT_DATAFRAME_COLUMNS, DEFAULT_TRADES_COLUMNS
+from trapilot.constants import (DEFAULT_DATAFRAME_COLUMNS,
+                                DEFAULT_TRADES_COLUMNS)
 from trapilot.data.converter import trades_dict_to_list, trades_list_to_df
 from trapilot.enums import CandleType
 

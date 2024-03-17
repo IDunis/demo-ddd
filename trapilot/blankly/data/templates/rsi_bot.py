@@ -10,7 +10,9 @@ def price_event(price, symbol, state: trapilot.blankly.StrategyState):
 
     if rsi[-1] < 30 and not current_position:
         # Dollar cost average buy
-        buy = trapilot.blankly.trunc(state.interface.cash / price, state.variables.precision)
+        buy = trapilot.blankly.trunc(
+            state.interface.cash / price, state.variables.precision
+        )
         state.interface.market_order(symbol, side="buy", size=buy)
 
     elif rsi[-1] > 70 and current_position:

@@ -19,75 +19,40 @@ from ccxt import TICK_SIZE
 from dateutil import parser
 from pandas import DataFrame, concat
 
-from trapilot.constants import (
-    DEFAULT_AMOUNT_RESERVE_PERCENT,
-    NON_OPEN_EXCHANGE_STATES,
-    BidAsk,
-    BuySell,
-    Config,
-    EntryExit,
-    ExchangeConfig,
-    ListPairsWithTimeframes,
-    MakerTaker,
-    OBLiteral,
-    PairWithTimeframe,
-)
-from trapilot.data.converter import (
-    clean_ohlcv_dataframe,
-    ohlcv_to_dataframe,
-    trades_dict_to_list,
-)
-from trapilot.enums import (
-    OPTIMIZE_MODES,
-    CandleType,
-    MarginMode,
-    PriceType,
-    RunMode,
-    TradingMode,
-)
-from trapilot.exceptions import (
-    DDosProtection,
-    ExchangeError,
-    InsufficientFundsError,
-    InvalidOrderException,
-    OperationalException,
-    PricingError,
-    RetryableOrderError,
-    TemporaryError,
-)
-from trapilot.exchange.common import (
-    API_FETCH_ORDER_RETRY_COUNT,
-    remove_exchange_credentials,
-    retrier,
-    retrier_async,
-)
-from trapilot.exchange.exchange_utils import (
-    ROUND,
-    ROUND_DOWN,
-    ROUND_UP,
-    CcxtModuleType,
-    amount_to_contract_precision,
-    amount_to_contracts,
-    amount_to_precision,
-    contracts_to_amount,
-    date_minus_candles,
-    is_exchange_known_ccxt,
-    market_is_active,
-    price_to_precision,
-    timeframe_to_minutes,
-    timeframe_to_msecs,
-    timeframe_to_next_date,
-    timeframe_to_prev_date,
-    timeframe_to_seconds,
-)
+from trapilot.constants import (DEFAULT_AMOUNT_RESERVE_PERCENT,
+                                NON_OPEN_EXCHANGE_STATES, BidAsk, BuySell,
+                                Config, EntryExit, ExchangeConfig,
+                                ListPairsWithTimeframes, MakerTaker, OBLiteral,
+                                PairWithTimeframe)
+from trapilot.data.converter import (clean_ohlcv_dataframe, ohlcv_to_dataframe,
+                                     trades_dict_to_list)
+from trapilot.enums import (OPTIMIZE_MODES, CandleType, MarginMode, PriceType,
+                            RunMode, TradingMode)
+from trapilot.exceptions import (DDosProtection, ExchangeError,
+                                 InsufficientFundsError, InvalidOrderException,
+                                 OperationalException, PricingError,
+                                 RetryableOrderError, TemporaryError)
+from trapilot.exchange.common import (API_FETCH_ORDER_RETRY_COUNT,
+                                      remove_exchange_credentials, retrier,
+                                      retrier_async)
+from trapilot.exchange.exchange_utils import (ROUND, ROUND_DOWN, ROUND_UP,
+                                              CcxtModuleType,
+                                              amount_to_contract_precision,
+                                              amount_to_contracts,
+                                              amount_to_precision,
+                                              contracts_to_amount,
+                                              date_minus_candles,
+                                              is_exchange_known_ccxt,
+                                              market_is_active,
+                                              price_to_precision,
+                                              timeframe_to_minutes,
+                                              timeframe_to_msecs,
+                                              timeframe_to_next_date,
+                                              timeframe_to_prev_date,
+                                              timeframe_to_seconds)
 from trapilot.exchange.types import OHLCVResponse, OrderBook, Ticker, Tickers
-from trapilot.misc import (
-    chunks,
-    deep_merge_dicts,
-    file_dump_json,
-    file_load_json,
-    safe_value_fallback2,
-)
+from trapilot.misc import (chunks, deep_merge_dicts, file_dump_json,
+                           file_load_json, safe_value_fallback2)
 from trapilot.plugins.pairlist.pairlist_helpers import expand_pairlist
 from trapilot.util import dt_from_ts, dt_now
 from trapilot.util.datetime_helpers import dt_humanize, dt_ts

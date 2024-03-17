@@ -4,7 +4,8 @@ from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, RootModel, SerializeAsAny
 
 from trapilot.constants import IntOrInf
-from trapilot.enums import MarginMode, OrderTypeValues, SignalDirection, TradingMode
+from trapilot.enums import (MarginMode, OrderTypeValues, SignalDirection,
+                            TradingMode)
 from trapilot.types import ValidExchangesType
 
 

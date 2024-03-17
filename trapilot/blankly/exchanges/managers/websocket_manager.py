@@ -17,7 +17,8 @@
 """
 
 import trapilot.blankly.utils.utils
-from trapilot.blankly.exchanges.abc_exchange_websocket import ABCExchangeWebsocket
+from trapilot.blankly.exchanges.abc_exchange_websocket import \
+    ABCExchangeWebsocket
 
 
 class WebsocketManager(ABCExchangeWebsocket):
@@ -57,7 +58,9 @@ class WebsocketManager(ABCExchangeWebsocket):
             exchange = self.__default_exchange
 
         if exchange == "binance":
-            currency_id = trapilot.blankly.utils.to_exchange_symbol(currency_id, "binance")
+            currency_id = trapilot.blankly.utils.to_exchange_symbol(
+                currency_id, "binance"
+            )
         if exchange == "ftx":
             currency_id = trapilot.blankly.utils.to_exchange_symbol(currency_id, "ftx")
         return self.websockets[exchange][currency_id]

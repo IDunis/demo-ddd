@@ -7,7 +7,8 @@ from jsonschema import Draft4Validator, validators
 from jsonschema.exceptions import ValidationError, best_match
 
 from trapilot import constants
-from trapilot.configuration.deprecated_settings import process_deprecated_setting
+from trapilot.configuration.deprecated_settings import \
+    process_deprecated_setting
 from trapilot.enums import RunMode, TradingMode
 from trapilot.exceptions import OperationalException
 

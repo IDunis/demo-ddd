@@ -21,13 +21,12 @@ import random
 import requests
 
 import trapilot.blankly.utils.utils
-from trapilot.blankly.exchanges.interfaces.alpaca.alpaca_websocket import (
-    Tickers as Alpaca_Ticker,
-)
-from trapilot.blankly.exchanges.interfaces.binance.binance_websocket import (
-    Tickers as Binance_Ticker,
-)
-from trapilot.blankly.exchanges.managers.websocket_manager import WebsocketManager
+from trapilot.blankly.exchanges.interfaces.alpaca.alpaca_websocket import \
+    Tickers as Alpaca_Ticker
+from trapilot.blankly.exchanges.interfaces.binance.binance_websocket import \
+    Tickers as Binance_Ticker
+from trapilot.blankly.exchanges.managers.websocket_manager import \
+    WebsocketManager
 
 
 class TickerManager(WebsocketManager):
@@ -44,9 +43,13 @@ class TickerManager(WebsocketManager):
                 default_symbol, "binance"
             ).lower()
         elif default_exchange == "alpaca":
-            default_symbol = trapilot.blankly.utils.to_exchange_symbol(default_symbol, "alpaca")
+            default_symbol = trapilot.blankly.utils.to_exchange_symbol(
+                default_symbol, "alpaca"
+            )
         elif default_exchange == "ssi":
-            default_symbol = trapilot.blankly.utils.to_exchange_symbol(default_symbol, "ssi")
+            default_symbol = trapilot.blankly.utils.to_exchange_symbol(
+                default_symbol, "ssi"
+            )
 
         self.__default_symbol = default_symbol
 

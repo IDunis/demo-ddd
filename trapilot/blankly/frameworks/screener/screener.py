@@ -63,7 +63,10 @@ class Screener:
             formatter: Optional formatting function that pretties the results form the evaluator
         """
 
-        if not trapilot.blankly.is_deployed and trapilot.blankly._screener_runner is None:
+        if (
+            not trapilot.blankly.is_deployed
+            and trapilot.blankly._screener_runner is None
+        ):
             cron_settings = load_deployment_settings()["screener"]["schedule"]
             trapilot.blankly._screener_runner = ScreenerRunner(cron_settings)
 

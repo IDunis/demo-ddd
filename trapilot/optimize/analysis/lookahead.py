@@ -9,10 +9,8 @@ from pandas import DataFrame
 
 from trapilot.data.history import get_timerange
 from trapilot.exchange import timeframe_to_minutes
-from trapilot.loggers.set_log_levels import (
-    reduce_verbosity_for_bias_tester,
-    restore_verbosity_for_bias_tester,
-)
+from trapilot.loggers.set_log_levels import (reduce_verbosity_for_bias_tester,
+                                             restore_verbosity_for_bias_tester)
 from trapilot.optimize.backtesting import Backtesting
 from trapilot.optimize.base_analysis import BaseAnalysis, VarHolder
 

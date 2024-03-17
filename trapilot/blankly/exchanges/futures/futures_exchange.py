@@ -21,9 +21,8 @@ import abc
 import trapilot
 from trapilot.blankly.exchanges.abc_base_exchange import ABCBaseExchange
 from trapilot.blankly.exchanges.auth.utils import write_auth_cache
-from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import (
-    FuturesExchangeInterface,
-)
+from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import \
+    FuturesExchangeInterface
 from trapilot.blankly.utils.utils import info_print
 
 
@@ -39,7 +38,9 @@ class FuturesExchange(ABCBaseExchange, abc.ABC):
         )
         self.exchange_type = exchange_type  # binance, ftx
         self.portfolio_name = portfolio_name  # my_cool_portfolio
-        self.preferences = trapilot.blankly.utils.load_user_preferences(preferences_path)
+        self.preferences = trapilot.blankly.utils.load_user_preferences(
+            preferences_path
+        )
         self.models = {}
 
     @property

@@ -7,23 +7,14 @@ from math import ceil, floor
 from typing import Any, Dict, List, Optional, Tuple
 
 import ccxt
-from ccxt import (
-    DECIMAL_PLACES,
-    ROUND,
-    ROUND_DOWN,
-    ROUND_UP,
-    SIGNIFICANT_DIGITS,
-    TICK_SIZE,
-    TRUNCATE,
-    decimal_to_precision,
-)
+from ccxt import (DECIMAL_PLACES, ROUND, ROUND_DOWN, ROUND_UP,
+                  SIGNIFICANT_DIGITS, TICK_SIZE, TRUNCATE,
+                  decimal_to_precision)
 
-from trapilot.exchange.common import (
-    BAD_EXCHANGES,
-    EXCHANGE_HAS_OPTIONAL,
-    EXCHANGE_HAS_REQUIRED,
-    SUPPORTED_EXCHANGES,
-)
+from trapilot.exchange.common import (BAD_EXCHANGES, EXCHANGE_HAS_OPTIONAL,
+                                      EXCHANGE_HAS_REQUIRED,
+                                      MAP_EXCHANGE_CHILDCLASS,
+                                      SUPPORTED_EXCHANGES)
 from trapilot.types import ValidExchangesType
 from trapilot.util import FtPrecise
 from trapilot.util.datetime_helpers import dt_from_ts, dt_ts
@@ -50,6 +41,15 @@ def available_exchanges(ccxt_module: Optional[CcxtModuleType] = None) -> List[st
     """
     exchanges = ccxt_exchanges(ccxt_module)
     return [x for x in exchanges if validate_exchange(x)[0]]
+
+
+def available_exchange_tlds(exchange: str) -> List[str]:
+    tlds = []
+    for tld in MAP_EXCHANGE_CHILDCLASS:
+        _exchange = MAP_EXCHANGE_CHILDCLASS.get(tld)
+        if _exchange == exchange and tld is not exchange:
+            tlds.append(tld)
+    return tlds
 
 
 def validate_exchange(exchange: str) -> Tuple[bool, str]:

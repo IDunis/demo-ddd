@@ -5,25 +5,18 @@ from collections import defaultdict
 from copy import deepcopy
 from typing import List, Optional
 
-from trapilot.blankly.enums import (
-    ContractType,
-    HedgeMode,
-    MarginType,
-    OrderStatus,
-    OrderType,
-    PositionMode,
-    Side,
-    TimeInForce,
-)
-from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import (
-    FuturesExchangeInterface,
-)
-from trapilot.blankly.exchanges.interfaces.paper_trade.backtesting_wrapper import (
-    BacktestingWrapper,
-)
-from trapilot.blankly.exchanges.orders.futures.futures_order import FuturesOrder
+from trapilot.blankly.enums import (ContractType, HedgeMode, MarginType,
+                                    OrderStatus, OrderType, PositionMode, Side,
+                                    TimeInForce)
+from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import \
+    FuturesExchangeInterface
+from trapilot.blankly.exchanges.interfaces.paper_trade.backtesting_wrapper import \
+    BacktestingWrapper
+from trapilot.blankly.exchanges.orders.futures.futures_order import \
+    FuturesOrder
 from trapilot.blankly.utils import utils as utils
-from trapilot.blankly.utils.exceptions import BacktestingException, InvalidOrder
+from trapilot.blankly.utils.exceptions import (BacktestingException,
+                                               InvalidOrder)
 
 
 class FuturesPaperTradeInterface(FuturesExchangeInterface, BacktestingWrapper):

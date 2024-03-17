@@ -21,13 +21,12 @@ import random
 import requests
 
 import trapilot.blankly.utils.utils
-from trapilot.blankly.exchanges.interfaces.alpaca.alpaca_websocket import (
-    Tickers as Alpaca_Websocket,
-)
-from trapilot.blankly.exchanges.interfaces.binance.binance_websocket import (
-    Tickers as Binance_Websocket,
-)
-from trapilot.blankly.exchanges.managers.websocket_manager import WebsocketManager
+from trapilot.blankly.exchanges.interfaces.alpaca.alpaca_websocket import \
+    Tickers as Alpaca_Websocket
+from trapilot.blankly.exchanges.interfaces.binance.binance_websocket import \
+    Tickers as Binance_Websocket
+from trapilot.blankly.exchanges.managers.websocket_manager import \
+    WebsocketManager
 
 
 class GeneralManager(WebsocketManager):
@@ -90,7 +89,9 @@ class GeneralManager(WebsocketManager):
         elif exchange_cache == "alpaca":
             stream = self.preferences["settings"]["alpaca"]["websocket_stream"]
 
-            asset_id_cache = trapilot.blankly.utils.to_exchange_symbol(asset_id_cache, "alpaca")
+            asset_id_cache = trapilot.blankly.utils.to_exchange_symbol(
+                asset_id_cache, "alpaca"
+            )
             if use_sandbox:
                 websocket = Alpaca_Websocket(
                     asset_id_cache,

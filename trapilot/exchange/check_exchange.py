@@ -3,12 +3,10 @@ import logging
 from trapilot.constants import Config
 from trapilot.enums import RunMode
 from trapilot.exceptions import OperationalException
-from trapilot.exchange import (
-    available_exchanges,
-    is_exchange_known_ccxt,
-    validate_exchange,
-)
-from trapilot.exchange.common import MAP_EXCHANGE_CHILDCLASS, SUPPORTED_EXCHANGES
+from trapilot.exchange import (available_exchanges, is_exchange_known_ccxt,
+                               validate_exchange)
+from trapilot.exchange.common import (MAP_EXCHANGE_CHILDCLASS,
+                                      SUPPORTED_EXCHANGES)
 
 logger = logging.getLogger(__name__)
 

@@ -7,6 +7,9 @@ To launch Trapilot as a module
 """
 
 from trapilot import main
+from trapilot.constants import DEFAULT_DB_DRYRUN_URL
+from trapilot.persistence.models import init_db
 
 if __name__ == "__main__":
+    init_db(DEFAULT_DB_DRYRUN_URL)
     main.main()

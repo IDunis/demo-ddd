@@ -10,41 +10,22 @@ from datetime import datetime, timedelta, timezone
 from math import isclose
 from typing import Any, ClassVar, Dict, List, Optional, Sequence, cast
 
-from sqlalchemy import (
-    JSON,
-    Boolean,
-    Enum,
-    Float,
-    ForeignKey,
-    Integer,
-    ScalarResult,
-    Select,
-    String,
-    UniqueConstraint,
-    desc,
-    func,
-    select,
-)
-from sqlalchemy.orm import Mapped, lazyload, mapped_column, relationship, validates
+from sqlalchemy import (JSON, Boolean, Enum, Float, ForeignKey, Integer,
+                        ScalarResult, Select, String, UniqueConstraint, desc,
+                        func, select)
+from sqlalchemy.orm import (Mapped, lazyload, mapped_column, relationship,
+                            validates)
 from typing_extensions import Self
 
-from trapilot.constants import (
-    CANCELED_EXCHANGE_STATES,
-    CUSTOM_TAG_MAX_LENGTH,
-    DATETIME_PRINT_FORMAT,
-    MATH_CLOSE_PREC,
-    NON_OPEN_EXCHANGE_STATES,
-    BuySell,
-    LongShort,
-)
+from trapilot.constants import (CANCELED_EXCHANGE_STATES,
+                                CUSTOM_TAG_MAX_LENGTH, DATETIME_PRINT_FORMAT,
+                                MATH_CLOSE_PREC, NON_OPEN_EXCHANGE_STATES,
+                                BuySell, LongShort)
 from trapilot.enums import ExitType, TradingMode
 from trapilot.exceptions import DependencyException, OperationalException
-from trapilot.exchange import (
-    ROUND_DOWN,
-    ROUND_UP,
-    amount_to_contract_precision,
-    price_to_precision,
-)
+from trapilot.exchange import (ROUND_DOWN, ROUND_UP,
+                               amount_to_contract_precision,
+                               price_to_precision)
 from trapilot.leverage import interest
 from trapilot.misc import safe_value_fallback
 from trapilot.persistence.base import ModelBase, SessionType

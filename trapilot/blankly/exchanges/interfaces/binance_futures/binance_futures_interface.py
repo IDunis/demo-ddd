@@ -20,7 +20,8 @@ import time
 from operator import itemgetter
 from typing import Optional
 
-from trapilot.blankly.exchanges.interfaces.binance.binance_interface import BinanceInterface
+from trapilot.blankly.exchanges.interfaces.binance.binance_interface import \
+    BinanceInterface
 
 try:
     from functools import cached_property
@@ -37,20 +38,13 @@ import pandas as pd
 from binance.client import Client
 
 import trapilot
-from trapilot.blankly.enums import (
-    ContractType,
-    HedgeMode,
-    MarginType,
-    OrderStatus,
-    OrderType,
-    PositionMode,
-    Side,
-    TimeInForce,
-)
-from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import (
-    FuturesExchangeInterface,
-)
-from trapilot.blankly.exchanges.orders.futures.futures_order import FuturesOrder
+from trapilot.blankly.enums import (ContractType, HedgeMode, MarginType,
+                                    OrderStatus, OrderType, PositionMode, Side,
+                                    TimeInForce)
+from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import \
+    FuturesExchangeInterface
+from trapilot.blankly.exchanges.orders.futures.futures_order import \
+    FuturesOrder
 from trapilot.blankly.utils import time_builder, utils
 
 BINANCE_FUTURES_FEES = [

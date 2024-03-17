@@ -22,10 +22,14 @@ import time
 import trapilot
 from trapilot.blankly.exchanges.abc_exchange import ABCExchange
 from trapilot.blankly.exchanges.auth.utils import write_auth_cache
-from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
-from trapilot.blankly.exchanges.interfaces.alpaca.alpaca_interface import AlpacaInterface
-from trapilot.blankly.exchanges.interfaces.binance.binance_interface import BinanceInterface
-from trapilot.blankly.exchanges.interfaces.ssi.ssi_interface import SsiInterface
+from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import \
+    ABCExchangeInterface
+from trapilot.blankly.exchanges.interfaces.alpaca.alpaca_interface import \
+    AlpacaInterface
+from trapilot.blankly.exchanges.interfaces.binance.binance_interface import \
+    BinanceInterface
+from trapilot.blankly.exchanges.interfaces.ssi.ssi_interface import \
+    SsiInterface
 
 
 class Exchange(ABCExchange, abc.ABC):
@@ -38,7 +42,9 @@ class Exchange(ABCExchange, abc.ABC):
         # Make a public version of portfolio name
         self.portfolio_name = self.__name
 
-        self.preferences = trapilot.blankly.utils.load_user_preferences(preferences_path)
+        self.preferences = trapilot.blankly.utils.load_user_preferences(
+            preferences_path
+        )
 
         self.models = {}
 

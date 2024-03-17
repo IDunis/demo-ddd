@@ -13,6 +13,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from trapilot.exceptions import OperationalException
+from trapilot.persistence.api_key import ApiKey
 from trapilot.persistence.base import ModelBase
 from trapilot.persistence.key_value_store import _KeyValueStoreModel
 from trapilot.persistence.migrations import check_migrate
@@ -87,6 +88,7 @@ def init_db(db_url: str) -> None:
     )
     Order.session = Trade.session
     PairLock.session = Trade.session
+    ApiKey.session = Trade.session
     Configuration.session = Trade.session
     _KeyValueStoreModel.session = Trade.session
 

@@ -11,7 +11,8 @@ import utils_find_1st as utf1st
 from pandas import DataFrame
 
 from trapilot.configuration import TimeRange
-from trapilot.constants import DATETIME_PRINT_FORMAT, UNLIMITED_STAKE_AMOUNT, Config
+from trapilot.constants import (DATETIME_PRINT_FORMAT, UNLIMITED_STAKE_AMOUNT,
+                                Config)
 from trapilot.data.history import get_timerange, load_data, refresh_data
 from trapilot.enums import CandleType, ExitType, RunMode
 from trapilot.exceptions import OperationalException

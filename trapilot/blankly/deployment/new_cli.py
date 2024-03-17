@@ -34,34 +34,21 @@ from typing import Any, Dict, Optional
 
 from questionary import Choice
 
-from trapilot import __version__
+from trapilot.blankly import __version__
 from trapilot.blankly.deployment.api import API
 from trapilot.blankly.deployment.deploy import get_python_version, zip_dir
 from trapilot.blankly.deployment.exchange_data import (
-    EXCHANGE_CHOICES,
-    EXCHANGE_CHOICES_NO_KEYLESS,
-    EXCHANGES,
-    Exchange,
-    exc_display_name,
-)
+    EXCHANGE_CHOICES, EXCHANGE_CHOICES_NO_KEYLESS, EXCHANGES, Exchange,
+    exc_display_name)
 from trapilot.blankly.deployment.keys import add_key, load_keys, write_keys
 from trapilot.blankly.deployment.login import get_token, logout, poll_login
-from trapilot.blankly.deployment.ui import (
-    confirm,
-    path,
-    print_failure,
-    print_success,
-    print_work,
-    select,
-    show_spinner,
-    text,
-)
+from trapilot.blankly.deployment.ui import (confirm, path, print_failure,
+                                            print_success, print_work, select,
+                                            show_spinner, text)
 from trapilot.blankly.utils.gc_setup import gc_set_threshold
-from trapilot.blankly.utils.utils import (
-    load_backtest_preferences,
-    load_deployment_settings,
-    load_user_preferences,
-)
+from trapilot.blankly.utils.utils import (load_backtest_preferences,
+                                          load_deployment_settings,
+                                          load_user_preferences)
 
 TEMPLATES = {
     "strategy": {"none": "none.py", "rsi_bot": "rsi_bot.py"},

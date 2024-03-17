@@ -22,8 +22,10 @@ from multiprocessing import Manager, Process
 from binance.client import Client as Binance_API
 
 import trapilot
-from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
-from trapilot.blankly.exchanges.managers.orderbook_manager import OrderbookManager
+from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import \
+    ABCExchangeInterface
+from trapilot.blankly.exchanges.managers.orderbook_manager import \
+    OrderbookManager
 from trapilot.blankly.exchanges.managers.ticker_manager import TickerManager
 from trapilot.blankly.utils.utils import info_print
 
@@ -96,7 +98,9 @@ class Trapilot:
         """
         Create any objects that need to be process-specific in the other process
         """
-        self.ticker_manager = trapilot.blankly.TickerManager(self.exchange_type, self.symbol)
+        self.ticker_manager = trapilot.blankly.TickerManager(
+            self.exchange_type, self.symbol
+        )
         self.orderbook_manager = trapilot.blankly.OrderbookManager(
             self.exchange_type, self.symbol
         )

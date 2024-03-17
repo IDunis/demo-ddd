@@ -17,12 +17,10 @@ from pandas import DataFrame
 from trapilot import misc
 from trapilot.configuration import TimeRange
 from trapilot.constants import DEFAULT_TRADES_COLUMNS, ListPairsWithTimeframes
-from trapilot.data.converter import (
-    clean_ohlcv_dataframe,
-    trades_convert_types,
-    trades_df_remove_duplicates,
-    trim_dataframe,
-)
+from trapilot.data.converter import (clean_ohlcv_dataframe,
+                                     trades_convert_types,
+                                     trades_df_remove_duplicates,
+                                     trim_dataframe)
 from trapilot.enums import CandleType, TradingMode
 from trapilot.exchange import timeframe_to_seconds
 

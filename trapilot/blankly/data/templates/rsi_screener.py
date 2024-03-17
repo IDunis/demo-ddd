@@ -1,5 +1,5 @@
 import trapilot
-from trapilot import EXCHANGE_CLASS, Screener, ScreenerState
+from trapilot.blankly import EXCHANGE_CLASS, Screener, ScreenerState
 from trapilot.blankly.indicators import rsi
 
 tickers = SYMBOL_LIST  # any stocks that you may want

@@ -1,4 +1,4 @@
-from trapilot import EXCHANGE_CLASS, Screener, ScreenerState
+from trapilot.blankly import EXCHANGE_CLASS, Screener, ScreenerState
 
 
 def evaluator(symbol, state: ScreenerState):

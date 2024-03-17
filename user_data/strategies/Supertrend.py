@@ -19,7 +19,7 @@ import talib.abstract as ta
 from numpy.lib import math
 from pandas import DataFrame
 
-from trapilot.LIB.strategy import IntParameter, IStrategy
+from trapilot.strategy import IntParameter, IStrategy
 
 
 class Supertrend(IStrategy):

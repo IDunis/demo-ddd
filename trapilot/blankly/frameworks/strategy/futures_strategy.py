@@ -19,11 +19,12 @@
 import typing
 
 from trapilot.blankly.exchanges.futures.futures_exchange import FuturesExchange
-from trapilot.blankly.exchanges.futures.futures_strategy_logger import FuturesStrategyLogger
-from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import (
-    FuturesExchangeInterface,
-)
-from trapilot.blankly.exchanges.interfaces.paper_trade.backtest_result import BacktestResult
+from trapilot.blankly.exchanges.futures.futures_strategy_logger import \
+    FuturesStrategyLogger
+from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import \
+    FuturesExchangeInterface
+from trapilot.blankly.exchanges.interfaces.paper_trade.backtest_result import \
+    BacktestResult
 from trapilot.blankly.frameworks.strategy.strategy import Strategy
 from trapilot.blankly.frameworks.strategy.strategy_base import StrategyBase
 

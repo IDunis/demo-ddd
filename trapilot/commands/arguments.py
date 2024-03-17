@@ -87,6 +87,8 @@ ARGS_BACKTEST_SHOW = ["exportfilename", "backtest_show_pair_list", "backtest_bre
 
 ARGS_LIST_EXCHANGES = ["print_one_column", "list_exchanges_all"]
 
+ARGS_MANAGE_APIKEY = ["add", "init", "remove"]
+
 ARGS_LIST_TIMEFRAMES = ["exchange", "print_one_column"]
 
 ARGS_LIST_PAIRS = [
@@ -358,38 +360,28 @@ class Arguments:
         )
         self._build_args(optionlist=["version"], parser=self.parser)
 
-        from trapilot.commands import (
-            start_analysis_entries_exits,
-            start_backtesting,
-            start_backtesting_show,
-            start_convert_data,
-            start_convert_db,
-            start_convert_trades,
-            start_create_userdir,
-            start_download_data,
-            start_edge,
-            start_hyperopt,
-            start_hyperopt_list,
-            start_hyperopt_show,
-            start_install_ui,
-            start_list_data,
-            start_list_exchanges,
-            start_list_freqAI_models,
-            start_list_markets,
-            start_list_strategies,
-            start_list_timeframes,
-            start_lookahead_analysis,
-            start_new_config,
-            start_new_strategy,
-            start_plot_dataframe,
-            start_plot_profit,
-            start_recursive_analysis,
-            start_show_trades,
-            start_strategy_update,
-            start_test_pairlist,
-            start_trading,
-            start_webserver,
-        )
+        from trapilot.commands import (start_analysis_entries_exits,
+                                       start_api_key, start_backtesting,
+                                       start_backtesting_show,
+                                       start_convert_data, start_convert_db,
+                                       start_convert_trades,
+                                       start_create_userdir,
+                                       start_download_data, start_edge,
+                                       start_hyperopt, start_hyperopt_list,
+                                       start_hyperopt_show, start_install_ui,
+                                       start_list_data, start_list_exchanges,
+                                       start_list_freqAI_models,
+                                       start_list_markets,
+                                       start_list_strategies,
+                                       start_list_timeframes,
+                                       start_lookahead_analysis,
+                                       start_new_config, start_new_strategy,
+                                       start_plot_dataframe, start_plot_profit,
+                                       start_recursive_analysis,
+                                       start_show_trades,
+                                       start_strategy_update,
+                                       start_test_pairlist, start_trading,
+                                       start_webserver)
 
         subparsers = self.parser.add_subparsers(
             dest="command",
@@ -538,6 +530,15 @@ class Arguments:
         )
         hyperopt_show_cmd.set_defaults(func=start_hyperopt_show)
         self._build_args(optionlist=ARGS_HYPEROPT_SHOW, parser=hyperopt_show_cmd)
+
+        # Mange exchange apikey subcommand
+        api_key_cmd = subparsers.add_parser(
+            "apikey",
+            help="Manage an Exchange API Key.",
+            parents=[_common_parser],
+        )
+        api_key_cmd.set_defaults(func=start_api_key)
+        # self._build_args(optionlist=ARGS_MANAGE_APIKEY, parser=api_key_cmd)
 
         # Add list-exchanges subcommand
         list_exchanges_cmd = subparsers.add_parser(
