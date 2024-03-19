@@ -206,6 +206,7 @@ def get_tb_logger(model_type: str, path: Path, activate: bool) -> Any:
 
         return TBLogger(path, activate)
     else:
-        from trapilot.freqai.tensorboard.base_tensorboard import BaseTensorboardLogger
+        from trapilot.freqai.tensorboard.base_tensorboard import \
+            BaseTensorboardLogger
 
         return BaseTensorboardLogger(path, activate)

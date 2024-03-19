@@ -26,12 +26,11 @@ import msgpack
 from websocket import create_connection
 
 import trapilot
-from trapilot.blankly.exchanges.abc_exchange_websocket import ABCExchangeWebsocket
+from trapilot.blankly.exchanges.abc_exchange_websocket import \
+    ABCExchangeWebsocket
 from trapilot.blankly.exchanges.auth.utils import load_auth
 from trapilot.blankly.exchanges.interfaces.alpaca.alpaca_websocket_utils import (
-    parse_alpaca_timestamp,
-    switch_type,
-)
+    parse_alpaca_timestamp, switch_type)
 from trapilot.blankly.utils.utils import info_print
 
 

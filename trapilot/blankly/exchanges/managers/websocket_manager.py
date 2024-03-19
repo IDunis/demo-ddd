@@ -17,7 +17,8 @@
 """
 
 import trapilot.blankly.utils.utils
-from trapilot.blankly.exchanges.abc_exchange_websocket import ABCExchangeWebsocket
+from trapilot.blankly.exchanges.abc_exchange_websocket import \
+    ABCExchangeWebsocket
 
 
 class WebsocketManager(ABCExchangeWebsocket):

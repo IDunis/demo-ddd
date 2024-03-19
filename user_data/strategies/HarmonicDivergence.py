@@ -20,13 +20,8 @@ from pandas import DataFrame, Series
 from technical.util import resample_to_interval, resampled_merge
 
 import trapilot.vendor.qtpylib.indicators as qtpylib
-from trapilot.strategy import (
-    CategoricalParameter,
-    DecimalParameter,
-    IntParameter,
-    IStrategy,
-    merge_informative_pair,
-)
+from trapilot.strategy import (CategoricalParameter, DecimalParameter,
+                               IntParameter, IStrategy, merge_informative_pair)
 
 
 class PivotSource(Enum):

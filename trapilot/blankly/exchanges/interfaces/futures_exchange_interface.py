@@ -21,19 +21,12 @@ import abc
 from typing import List, Optional, Union
 
 import trapilot.blankly.utils.utils as utils
-from trapilot.blankly.enums import (
-    ContractType,
-    HedgeMode,
-    MarginType,
-    OrderType,
-    PositionMode,
-    Side,
-    TimeInForce,
-)
-from trapilot.blankly.exchanges.interfaces.abc_base_exchange_interface import (
-    ABCBaseExchangeInterface,
-)
-from trapilot.blankly.exchanges.orders.futures.futures_order import FuturesOrder
+from trapilot.blankly.enums import (ContractType, HedgeMode, MarginType,
+                                    OrderType, PositionMode, Side, TimeInForce)
+from trapilot.blankly.exchanges.interfaces.abc_base_exchange_interface import \
+    ABCBaseExchangeInterface
+from trapilot.blankly.exchanges.orders.futures.futures_order import \
+    FuturesOrder
 
 
 class FuturesExchangeInterface(ABCBaseExchangeInterface, abc.ABC):

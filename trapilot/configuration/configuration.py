@@ -9,23 +9,15 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from trapilot import constants
-from trapilot.configuration.deprecated_settings import (
-    process_temporary_deprecated_settings,
-)
-from trapilot.configuration.directory_operations import (
-    create_datadir,
-    create_userdata_dir,
-)
+from trapilot.configuration.deprecated_settings import \
+    process_temporary_deprecated_settings
+from trapilot.configuration.directory_operations import (create_datadir,
+                                                         create_userdata_dir)
 from trapilot.configuration.environment_vars import enironment_vars_to_dict
 from trapilot.configuration.load_config import load_file, load_from_files
 from trapilot.constants import Config
-from trapilot.enums import (
-    NON_UTIL_MODES,
-    TRADING_MODES,
-    CandleType,
-    RunMode,
-    TradingMode,
-)
+from trapilot.enums import (NON_UTIL_MODES, TRADING_MODES, CandleType, RunMode,
+                            TradingMode)
 from trapilot.exceptions import OperationalException
 from trapilot.loggers import setup_logging
 from trapilot.misc import deep_merge_dicts, parse_db_uri_for_logging

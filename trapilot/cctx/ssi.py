@@ -7,27 +7,12 @@ from typing import List
 
 from ccxt.abstract.alpaca import ImplicitAPI
 from ccxt.base.decimal_to_precision import TICK_SIZE
-from ccxt.base.errors import (
-    BadRequest,
-    BadSymbol,
-    ExchangeError,
-    InsufficientFunds,
-    InvalidOrder,
-    NotSupported,
-    PermissionDenied,
-    RateLimitExceeded,
-)
+from ccxt.base.errors import (BadRequest, BadSymbol, ExchangeError,
+                              InsufficientFunds, InvalidOrder, NotSupported,
+                              PermissionDenied, RateLimitExceeded)
 from ccxt.base.exchange import Exchange
-from ccxt.base.types import (
-    Int,
-    Market,
-    Order,
-    OrderBook,
-    OrderSide,
-    OrderType,
-    Str,
-    Trade,
-)
+from ccxt.base.types import (Int, Market, Order, OrderBook, OrderSide,
+                             OrderType, Str, Trade)
 
 
 class Ssi(Exchange, ImplicitAPI):

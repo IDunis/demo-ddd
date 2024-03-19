@@ -6,9 +6,8 @@ from typing import Any, Dict
 from catboost import CatBoostRegressor, Pool
 
 from trapilot.freqai.base_models.BaseRegressionModel import BaseRegressionModel
-from trapilot.freqai.base_models.FreqaiMultiOutputRegressor import (
-    FreqaiMultiOutputRegressor,
-)
+from trapilot.freqai.base_models.FreqaiMultiOutputRegressor import \
+    FreqaiMultiOutputRegressor
 from trapilot.freqai.data_kitchen import FreqaiDataKitchen
 
 logger = logging.getLogger(__name__)

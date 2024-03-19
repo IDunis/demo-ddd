@@ -35,38 +35,27 @@ from bokeh.plotting import ColumnDataSource, figure, show
 
 import trapilot
 import trapilot.blankly.exchanges.interfaces.paper_trade.metrics as metrics
-from trapilot.blankly.data.data_reader import (
-    DataReader,
-    FundingRateEventReader,
-    PriceReader,
-    TickReader,
-)
+from trapilot.blankly.data.data_reader import (DataReader,
+                                               FundingRateEventReader,
+                                               PriceReader, TickReader)
 from trapilot.blankly.exchanges.exchange import ABCExchange
-from trapilot.blankly.exchanges.interfaces.paper_trade.abc_backtest_controller import (
-    ABCBacktestController,
-)
-from trapilot.blankly.exchanges.interfaces.paper_trade.backtest.format_platform_result import (
-    format_platform_result,
-)
-from trapilot.blankly.exchanges.interfaces.paper_trade.backtest_result import (
-    BacktestResult,
-)
-from trapilot.blankly.exchanges.interfaces.paper_trade.futures.futures_paper_trade_interface import (
-    FuturesPaperTradeInterface,
-)
-from trapilot.blankly.exchanges.interfaces.paper_trade.paper_trade_interface import (
-    PaperTradeInterface,
-)
+from trapilot.blankly.exchanges.interfaces.paper_trade.abc_backtest_controller import \
+    ABCBacktestController
+from trapilot.blankly.exchanges.interfaces.paper_trade.backtest.format_platform_result import \
+    format_platform_result
+from trapilot.blankly.exchanges.interfaces.paper_trade.backtest_result import \
+    BacktestResult
+from trapilot.blankly.exchanges.interfaces.paper_trade.futures.futures_paper_trade_interface import \
+    FuturesPaperTradeInterface
+from trapilot.blankly.exchanges.interfaces.paper_trade.paper_trade_interface import \
+    PaperTradeInterface
 from trapilot.blankly.utils.time_builder import time_interval_to_seconds
-from trapilot.blankly.utils.utils import (
-    aggregate_prices_by_resolution,
-    get_base_asset,
-    get_quote_asset,
-    info_print,
-    load_backtest_preferences,
-    update_progress,
-    write_backtest_preferences,
-)
+from trapilot.blankly.utils.utils import (aggregate_prices_by_resolution,
+                                          get_base_asset, get_quote_asset,
+                                          info_print,
+                                          load_backtest_preferences,
+                                          update_progress,
+                                          write_backtest_preferences)
 
 
 def to_string_key(separated_list):

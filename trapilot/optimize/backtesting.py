@@ -14,48 +14,28 @@ from pandas import DataFrame
 
 from trapilot import constants
 from trapilot.configuration import TimeRange, validate_config_consistency
-from trapilot.constants import DATETIME_PRINT_FORMAT, Config, IntOrInf, LongShort
+from trapilot.constants import (DATETIME_PRINT_FORMAT, Config, IntOrInf,
+                                LongShort)
 from trapilot.data import history
-from trapilot.data.btanalysis import (
-    find_existing_backtest_stats,
-    trade_list_to_dataframe,
-)
+from trapilot.data.btanalysis import (find_existing_backtest_stats,
+                                      trade_list_to_dataframe)
 from trapilot.data.converter import trim_dataframe, trim_dataframes
 from trapilot.data.dataprovider import DataProvider
-from trapilot.enums import (
-    BacktestState,
-    CandleType,
-    ExitCheckTuple,
-    ExitType,
-    RunMode,
-    TradingMode,
-)
+from trapilot.enums import (BacktestState, CandleType, ExitCheckTuple,
+                            ExitType, RunMode, TradingMode)
 from trapilot.exceptions import DependencyException, OperationalException
-from trapilot.exchange import (
-    amount_to_contract_precision,
-    price_to_precision,
-    timeframe_to_seconds,
-)
+from trapilot.exchange import (amount_to_contract_precision,
+                               price_to_precision, timeframe_to_seconds)
 from trapilot.exchange.exchange import Exchange
 from trapilot.mixins import LoggingMixin
 from trapilot.optimize.backtest_caching import get_strategy_run_id
 from trapilot.optimize.bt_progress import BTProgress
 from trapilot.optimize.optimize_reports import (
-    generate_backtest_stats,
-    generate_rejected_signals,
-    generate_trade_signal_candles,
-    show_backtest_results,
-    store_backtest_analysis_results,
-    store_backtest_stats,
-)
-from trapilot.persistence import (
-    LocalTrade,
-    Order,
-    PairLocks,
-    Trade,
-    disable_database_use,
-    enable_database_use,
-)
+    generate_backtest_stats, generate_rejected_signals,
+    generate_trade_signal_candles, show_backtest_results,
+    store_backtest_analysis_results, store_backtest_stats)
+from trapilot.persistence import (LocalTrade, Order, PairLocks, Trade,
+                                  disable_database_use, enable_database_use)
 from trapilot.plugins.pairlistmanager import PairListManager
 from trapilot.plugins.protectionmanager import ProtectionManager
 from trapilot.resolvers import ExchangeResolver, StrategyResolver
@@ -175,7 +155,8 @@ class Backtesting:
         self.precision_mode = self.exchange.precisionMode
 
         if self.config.get("freqai_backtest_live_models", False):
-            from trapilot.freqai.utils import get_timerange_backtest_live_models
+            from trapilot.freqai.utils import \
+                get_timerange_backtest_live_models
 
             self.config["timerange"] = get_timerange_backtest_live_models(self.config)
 

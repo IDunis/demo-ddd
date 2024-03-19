@@ -7,7 +7,8 @@ from sb3_contrib.common.maskable.utils import is_masking_supported
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor
 
 from trapilot.freqai.data_kitchen import FreqaiDataKitchen
-from trapilot.freqai.prediction_models.ReinforcementLearner import ReinforcementLearner
+from trapilot.freqai.prediction_models.ReinforcementLearner import \
+    ReinforcementLearner
 from trapilot.freqai.RL.BaseReinforcementLearningModel import make_env
 from trapilot.freqai.tensorboard.TensorboardCallback import TensorboardCallback
 

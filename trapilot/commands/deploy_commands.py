@@ -6,10 +6,8 @@ from typing import Any, Dict, Optional, Tuple
 import requests
 
 from trapilot.configuration import setup_utils_configuration
-from trapilot.configuration.directory_operations import (
-    copy_sample_files,
-    create_userdata_dir,
-)
+from trapilot.configuration.directory_operations import (copy_sample_files,
+                                                         create_userdata_dir)
 from trapilot.constants import USERPATH_STRATEGIES
 from trapilot.enums import RunMode
 from trapilot.exceptions import OperationalException

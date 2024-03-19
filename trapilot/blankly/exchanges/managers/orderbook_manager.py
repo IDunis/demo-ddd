@@ -25,13 +25,12 @@ import requests
 
 import trapilot.blankly.exchanges.auth.utils
 import trapilot.blankly.utils.utils
-from trapilot.blankly.exchanges.interfaces.alpaca.alpaca_websocket import (
-    Tickers as Alpaca_Websocket,
-)
-from trapilot.blankly.exchanges.interfaces.binance.binance_websocket import (
-    Tickers as Binance_Orderbook,
-)
-from trapilot.blankly.exchanges.managers.websocket_manager import WebsocketManager
+from trapilot.blankly.exchanges.interfaces.alpaca.alpaca_websocket import \
+    Tickers as Alpaca_Websocket
+from trapilot.blankly.exchanges.interfaces.binance.binance_websocket import \
+    Tickers as Binance_Orderbook
+from trapilot.blankly.exchanges.managers.websocket_manager import \
+    WebsocketManager
 
 
 def sort_list_tuples(list_with_tuples: list) -> List[tuple]:

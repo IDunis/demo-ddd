@@ -17,9 +17,8 @@
 """
 
 from trapilot.blankly.exchanges.exchange import Exchange
-from trapilot.blankly.exchanges.interfaces.paper_trade.paper_trade_interface import (
-    PaperTradeInterface,
-)
+from trapilot.blankly.exchanges.interfaces.paper_trade.paper_trade_interface import \
+    PaperTradeInterface
 
 
 class PaperTrade(Exchange):

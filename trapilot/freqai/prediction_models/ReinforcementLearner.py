@@ -6,11 +6,11 @@ import torch as th
 from stable_baselines3.common.callbacks import ProgressBarCallback
 
 from trapilot.freqai.data_kitchen import FreqaiDataKitchen
-from trapilot.freqai.RL.Base5ActionRLEnv import Actions, Base5ActionRLEnv, Positions
+from trapilot.freqai.RL.Base5ActionRLEnv import (Actions, Base5ActionRLEnv,
+                                                 Positions)
 from trapilot.freqai.RL.BaseEnvironment import BaseEnvironment
-from trapilot.freqai.RL.BaseReinforcementLearningModel import (
-    BaseReinforcementLearningModel,
-)
+from trapilot.freqai.RL.BaseReinforcementLearningModel import \
+    BaseReinforcementLearningModel
 
 logger = logging.getLogger(__name__)
 

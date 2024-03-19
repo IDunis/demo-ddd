@@ -1,7 +1,6 @@
 from trapilot.blankly.enums import Side
-from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import (
-    FuturesExchangeInterface,
-)
+from trapilot.blankly.exchanges.interfaces.futures_exchange_interface import \
+    FuturesExchangeInterface
 from trapilot.blankly.frameworks.strategy import FuturesStrategyState
 
 

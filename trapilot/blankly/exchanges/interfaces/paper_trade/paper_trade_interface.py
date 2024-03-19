@@ -23,16 +23,14 @@ import warnings
 
 import trapilot.blankly.exchanges.interfaces.paper_trade.utils as paper_trade
 import trapilot.blankly.utils.utils as utils
-from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import (
-    ABCExchangeInterface,
-)
-from trapilot.blankly.exchanges.interfaces.exchange_interface import ExchangeInterface
-from trapilot.blankly.exchanges.interfaces.paper_trade.backtesting_wrapper import (
-    BacktestingWrapper,
-)
-from trapilot.blankly.exchanges.interfaces.paper_trade.local_account.trade_local import (
-    LocalAccount,
-)
+from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import \
+    ABCExchangeInterface
+from trapilot.blankly.exchanges.interfaces.exchange_interface import \
+    ExchangeInterface
+from trapilot.blankly.exchanges.interfaces.paper_trade.backtesting_wrapper import \
+    BacktestingWrapper
+from trapilot.blankly.exchanges.interfaces.paper_trade.local_account.trade_local import \
+    LocalAccount
 from trapilot.blankly.exchanges.orders.limit_order import LimitOrder
 from trapilot.blankly.exchanges.orders.market_order import MarketOrder
 from trapilot.blankly.exchanges.orders.stop_loss import StopLossOrder
@@ -86,7 +84,8 @@ class PaperTradeInterface(ExchangeInterface, BacktestingWrapper):
         self.__force_shorting = self.user_preferences["settings"]["global_shorting"]
 
         if self.user_preferences["settings"]["paper"]["price_source"] == "websocket":
-            from trapilot.blankly.exchanges.managers.ticker_manager import TickerManager
+            from trapilot.blankly.exchanges.managers.ticker_manager import \
+                TickerManager
 
             warnings.warn("Experimental websocket prices enabled.")
             self.__ticker_manager = TickerManager(

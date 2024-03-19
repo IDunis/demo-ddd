@@ -5,7 +5,8 @@ from functools import wraps
 from typing import Any, Callable, Dict, List, Optional, TypeVar, cast, overload
 
 from trapilot.constants import ExchangeConfig
-from trapilot.exceptions import DDosProtection, RetryableOrderError, TemporaryError
+from trapilot.exceptions import (DDosProtection, RetryableOrderError,
+                                 TemporaryError)
 from trapilot.mixins import LoggingMixin
 
 logger = logging.getLogger(__name__)

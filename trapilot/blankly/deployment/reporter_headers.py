@@ -20,9 +20,8 @@ import smtplib
 import ssl
 from typing import Any
 
-from trapilot.blankly.exchanges.interfaces.paper_trade.backtest_result import (
-    BacktestResult,
-)
+from trapilot.blankly.exchanges.interfaces.paper_trade.backtest_result import \
+    BacktestResult
 from trapilot.blankly.frameworks.screener.screener import Screener
 from trapilot.blankly.frameworks.strategy import Strategy
 from trapilot.blankly.utils.utils import load_notify_preferences

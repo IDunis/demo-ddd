@@ -19,25 +19,28 @@
 import trapilot.blankly.data
 import trapilot.blankly.indicators
 import trapilot.blankly.utils.utils
-from trapilot.blankly.deployment.reporter_headers import Reporter as __Reporter_Headers
+from trapilot.blankly.deployment.reporter_headers import \
+    Reporter as __Reporter_Headers
 from trapilot.blankly.enums import OrderStatus, OrderType, Side, TimeInForce
-from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import (
-    ABCExchangeInterface as Interface,
-)
+from trapilot.blankly.exchanges.interfaces.abc_exchange_interface import \
+    ABCExchangeInterface as Interface
 from trapilot.blankly.exchanges.interfaces.alpaca.alpaca import Alpaca
 from trapilot.blankly.exchanges.interfaces.binance.binance import Binance
-from trapilot.blankly.exchanges.interfaces.binance_futures.binance_futures import (
-    BinanceFutures,
-)
-from trapilot.blankly.exchanges.interfaces.paper_trade.paper_trade import PaperTrade
-from trapilot.blankly.exchanges.managers.general_stream_manager import GeneralManager
-from trapilot.blankly.exchanges.managers.orderbook_manager import OrderbookManager
+from trapilot.blankly.exchanges.interfaces.binance_futures.binance_futures import \
+    BinanceFutures
+from trapilot.blankly.exchanges.interfaces.paper_trade.paper_trade import \
+    PaperTrade
+from trapilot.blankly.exchanges.managers.general_stream_manager import \
+    GeneralManager
+from trapilot.blankly.exchanges.managers.orderbook_manager import \
+    OrderbookManager
 from trapilot.blankly.exchanges.managers.ticker_manager import TickerManager
 from trapilot.blankly.frameworks.model.model import Model as Model
 from trapilot.blankly.frameworks.multiprocessing.bot import Trapilot
 from trapilot.blankly.frameworks.screener.screener import Screener
 from trapilot.blankly.frameworks.screener.screener_state import ScreenerState
-from trapilot.blankly.frameworks.strategy import FuturesStrategy, FuturesStrategyState
+from trapilot.blankly.frameworks.strategy import (FuturesStrategy,
+                                                  FuturesStrategyState)
 from trapilot.blankly.frameworks.strategy import Strategy as Strategy
 from trapilot.blankly.frameworks.strategy import StrategyState as StrategyState
 from trapilot.blankly.utils import time_builder

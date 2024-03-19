@@ -11,9 +11,7 @@ from websockets.exceptions import ConnectionClosed
 
 from trapilot.rpc.api_server.ws.proxy import WebSocketProxy
 from trapilot.rpc.api_server.ws.serializer import (
-    HybridJSONWebSocketSerializer,
-    WebSocketSerializer,
-)
+    HybridJSONWebSocketSerializer, WebSocketSerializer)
 from trapilot.rpc.api_server.ws.types import WebSocketType
 from trapilot.rpc.api_server.ws_schemas import WSMessageSchemaType
 

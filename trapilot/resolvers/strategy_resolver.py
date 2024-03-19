@@ -11,13 +11,10 @@ from os import walk
 from pathlib import Path
 from typing import Any, List, Optional
 
-from trapilot.configuration.config_validation import validate_migrated_strategy_settings
-from trapilot.constants import (
-    REQUIRED_ORDERTIF,
-    REQUIRED_ORDERTYPES,
-    USERPATH_STRATEGIES,
-    Config,
-)
+from trapilot.configuration.config_validation import \
+    validate_migrated_strategy_settings
+from trapilot.constants import (REQUIRED_ORDERTIF, REQUIRED_ORDERTYPES,
+                                USERPATH_STRATEGIES, Config)
 from trapilot.enums import TradingMode
 from trapilot.exceptions import OperationalException
 from trapilot.resolvers import IResolver

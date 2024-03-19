@@ -15,35 +15,29 @@ from html import escape
 from itertools import chain
 from math import isnan
 from threading import Thread
-from typing import Any, Callable, Coroutine, Dict, List, Literal, Optional, Union
+from typing import (Any, Callable, Coroutine, Dict, List, Literal, Optional,
+                    Union)
 
 from tabulate import tabulate
-from telegram import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    KeyboardButton,
-    ReplyKeyboardMarkup,
-    Update,
-)
+from telegram import (CallbackQuery, InlineKeyboardButton,
+                      InlineKeyboardMarkup, KeyboardButton,
+                      ReplyKeyboardMarkup, Update)
 from telegram.constants import MessageLimit, ParseMode
 from telegram.error import BadRequest, NetworkError, TelegramError
-from telegram.ext import (
-    Application,
-    CallbackContext,
-    CallbackQueryHandler,
-    CommandHandler,
-)
+from telegram.ext import (Application, CallbackContext, CallbackQueryHandler,
+                          CommandHandler)
 from telegram.helpers import escape_markdown
 
 from trapilot.__init__ import __version__
 from trapilot.constants import DUST_PER_COIN, Config
-from trapilot.enums import MarketDirection, RPCMessageType, SignalDirection, TradingMode
+from trapilot.enums import (MarketDirection, RPCMessageType, SignalDirection,
+                            TradingMode)
 from trapilot.exceptions import OperationalException
 from trapilot.misc import chunks, plural
 from trapilot.persistence import Trade
 from trapilot.rpc import RPC, RPCException, RPCHandler
-from trapilot.rpc.rpc_types import RPCEntryMsg, RPCExitMsg, RPCOrderMsg, RPCSendMsg
+from trapilot.rpc.rpc_types import (RPCEntryMsg, RPCExitMsg, RPCOrderMsg,
+                                    RPCSendMsg)
 from trapilot.util import dt_humanize, fmt_coin, round_value
 
 MAX_MESSAGE_LENGTH = MessageLimit.MAX_TEXT_LENGTH

@@ -15,39 +15,20 @@ from schedule import Scheduler
 
 from trapilot import constants
 from trapilot.configuration import validate_config_consistency
-from trapilot.constants import (
-    BuySell,
-    Config,
-    EntryExecuteMode,
-    ExchangeConfig,
-    LongShort,
-)
+from trapilot.constants import (BuySell, Config, EntryExecuteMode,
+                                ExchangeConfig, LongShort)
 from trapilot.data.converter import order_book_to_dataframe
 from trapilot.data.dataprovider import DataProvider
 from trapilot.edge import Edge
-from trapilot.enums import (
-    ExitCheckTuple,
-    ExitType,
-    RPCMessageType,
-    SignalDirection,
-    State,
-    TradingMode,
-)
-from trapilot.exceptions import (
-    DependencyException,
-    ExchangeError,
-    InsufficientFundsError,
-    InvalidOrderException,
-    PricingError,
-)
-from trapilot.exchange import (
-    ROUND_DOWN,
-    ROUND_UP,
-    remove_exchange_credentials,
-    timeframe_to_minutes,
-    timeframe_to_next_date,
-    timeframe_to_seconds,
-)
+from trapilot.enums import (ExitCheckTuple, ExitType, RPCMessageType,
+                            SignalDirection, State, TradingMode)
+from trapilot.exceptions import (DependencyException, ExchangeError,
+                                 InsufficientFundsError, InvalidOrderException,
+                                 PricingError)
+from trapilot.exchange import (ROUND_DOWN, ROUND_UP,
+                               remove_exchange_credentials,
+                               timeframe_to_minutes, timeframe_to_next_date,
+                               timeframe_to_seconds)
 from trapilot.misc import safe_value_fallback, safe_value_fallback2
 from trapilot.mixins import LoggingMixin
 from trapilot.persistence import Order, PairLocks, Trade, init_db
@@ -57,14 +38,9 @@ from trapilot.plugins.protectionmanager import ProtectionManager
 from trapilot.resolvers import ExchangeResolver, StrategyResolver
 from trapilot.rpc import RPCManager
 from trapilot.rpc.external_message_consumer import ExternalMessageConsumer
-from trapilot.rpc.rpc_types import (
-    ProfitLossStr,
-    RPCCancelMsg,
-    RPCEntryMsg,
-    RPCExitCancelMsg,
-    RPCExitMsg,
-    RPCProtectionMsg,
-)
+from trapilot.rpc.rpc_types import (ProfitLossStr, RPCCancelMsg, RPCEntryMsg,
+                                    RPCExitCancelMsg, RPCExitMsg,
+                                    RPCProtectionMsg)
 from trapilot.strategy.interface import IStrategy
 from trapilot.strategy.strategy_wrapper import strategy_safe_wrapper
 from trapilot.util import FtPrecise
