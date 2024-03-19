@@ -14,7 +14,7 @@
         "unit": "minutes"
     },
     "entry_pricing": {
-        "price_side": "same",
+        "price_side": "other",
         "use_order_book": true,
         "order_book_top": 1,
         "price_last_balance": 0.0,
@@ -24,14 +24,14 @@
         }
     },
     "exit_pricing": {
-        "price_side": "same",
+        "price_side": "other",
         "use_order_book": true,
         "order_book_top": 1
     },
     "exchange": {
         "name": "binance",
-        "key": "your_exchange_key",
-        "secret": "your_exchange_secret",
+        "key": "04A7eHQVFk4cx8gGPPcFUdmoySX34rHussUZEXZSHa9wG90FsOmFF8feY5HPxOI5",
+        "secret": "706W0aEI937oOb1mfQ67wozOn2m2nUcq7INnNGDmaDtKObPwo304TmGrKKhnnsNf",
         "ccxt_config": {},
         "ccxt_async_config": {
         },
@@ -47,7 +47,8 @@
             "number_assets": 20,
             "sort_key": "quoteVolume",
             "min_value": 0,
-            "refresh_period": 1800
+            "refresh_period": 1800,
+            "lookback_days": 1
         },
         {"method": "PrecisionFilter"},
         {"method": "PriceFilter", "low_price_ratio": 0.01, "min_price": 0.00000010}

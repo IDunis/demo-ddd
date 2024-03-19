@@ -142,7 +142,7 @@ class Telegram(RPCHandler):
         """
         Creates and starts the polling thread
         """
-        self._thread = Thread(target=self._init, name="FTTelegram")
+        self._thread = Thread(target=self._init, name="Telegram")
         self._thread.start()
 
     def _init_keyboard(self) -> None:
